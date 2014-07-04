@@ -21,11 +21,11 @@ file { "/etc/apt/sources.list.d/wheezy.list":
         notify => Exec["apt-get update"],
 }
 
-file { "/etc/apt/preferences.d/00wheezy-all":
-        source => "/puppet/templates/etc/apt/preferences.d/00wheezy-all",
-        owner => "root", group => "root", mode => "0644",
-        notify => Exec["apt-get update"],
-}
+#file { "/etc/apt/preferences.d/00wheezy-all":
+#        source => "/puppet/templates/etc/apt/preferences.d/00wheezy-all",
+#        owner => "root", group => "root", mode => "0644",
+#        notify => Exec["apt-get update"],
+#}
 
 cron { "apt":
   command => "/usr/bin/aptitude update 1>/dev/null",
