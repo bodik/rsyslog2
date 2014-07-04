@@ -1,0 +1,174 @@
+#!/bin/sh
+
+#https://wiki.metacentrum.cz/wiki/P%C5%99%C3%ADstup_do_MetaCloudu_p%C5%99es_p%C5%99%C3%ADkazovou_%C5%99%C3%A1dku
+
+export ONE_HOST="https://cloud.metacentrum.cz"
+#EnvVars for ONE tools
+export ONE_AUTH="/dev/shm/one_x509"
+touch $ONE_AUTH
+export ONE_XMLRPC="$ONE_HOST:6443/RPC2"
+export ONEUSERNAME="bodik"
+export ONECRT="/dev/shm/cert-metacloud-bodik.p12.crt.pem"
+export ONEKEY="/dev/shm/cert-metacloud-bodik.p12.key.pem"
+export ONERSA="/dev/shm/vmes1"
+
+
+
+NAME=JENKINSSTAG
+if [ -z $NAME ]; then
+	echo "RESULT: FAILED $0 no name"
+	exit 1
+fi
+cd /tmp || exit 1
+
+
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+vm_id() {
+	onevm list -v -f NAME=$NAME | tail -n1 | awk '{print $1}'
+}
+
+
+vm_destroy() {
+	VMID=$(/puppet/jenkins/metacloud.init id)
+	if [ -z "$VMID" ]; then
+		rreturn 1 "metacloud id not detected"
+	fi
+	onevm delete $VMID
+	rreturn $? "$0 destroy $@"
+}
+
+vm_destroy_cache() {
+	rreturn 0 "$0 destroy_cache $@"
+}
+vm_make_cache() {
+	rreturn $? "$0 make_cache $@"
+}
+
+vm_ssh() {
+	VMIP=$(onevm show $(/puppet/jenkins/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
+	if [ -z "$VMIP" ]; then
+		rreturn 1 "vm ip not detected from metacloud"
+	fi
+	ssh -i $ONERSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' root@$VMIP "$1"
+	rreturn $? "$0 ssh $@"
+}
+
+vm_start() {
+	/puppet/jenkins/metacloud.init status | grep $NAME
+	if [ $? -eq 0 ]; then
+		rreturn $? "metacloud svm already running"
+	fi
+
+	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $NAME
+	onetemplate instantiate bodik-wheezy-metacloud --name $NAME
+	RET=1
+	for i in `seq 1 600`; do
+		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/metacloud.init status
+		sleep 1
+	done
+	sleep 10
+	for i in `seq 1 60`; do
+		#toto dela cloudinit na svem konci pres template::user_data::runcmd
+		/puppet/jenkins/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
+		if [ $? -eq 0 ]; then
+			rreturn 0 "$0 start"
+		fi
+		echo "INFO: waiting for cloud-init to finnish"
+		sleep 1
+	done
+	rreturn 1 "$0 start failed"
+}
+
+vm_status() {
+	onevm list -v -f NAME=$NAME
+	rreturn $? "$0 status"
+}
+
+vm_shutdown() {
+	/puppet/jenkins/metacloud.init ssh /bin/true
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown vm not running"
+	fi
+
+	echo "INFO: sending halt"
+	/puppet/jenkins/metacloud.init ssh halt
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown cannot shutdown vm"
+	fi
+
+	RET=1
+	for i in `seq 1 60`; do
+		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null
+		if [ $? = 1 ]; then
+			rreturn $? "shutdown"
+		fi
+		sleep 1
+	done
+
+	rreturn 1 "shutdown did not finished in time"
+}
+
+vm_build() {
+	/puppet/jenkins/metacloud.init shutdown
+	/puppet/jenkins/metacloud.init destroy
+	sleep 5
+	rreturn $? "$0"
+}
+
+metacloud_login() {
+	cd /dev/shm || exit 1
+	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY 
+}
+
+case "$1" in
+	login)
+		metacloud_login
+	;;
+	build)
+		vm_build
+	;;
+	start)
+		vm_start
+	;;
+	status)
+		vm_status
+	;;
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		vm_destroy
+	;;
+	destroy_cache)
+		vm_destroy_cache
+	;;
+	make_cache)
+		vm_make_cache
+	;;
+	ssh)
+		vm_ssh "$2"
+	;;
+	id)
+		vm_id
+	;;
+	*)
+		rreturn 1 "$0 wrong command"
+	;;
+esac
+
