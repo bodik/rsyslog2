@@ -8,16 +8,14 @@ export ONE_AUTH="/dev/shm/one_x509"
 touch $ONE_AUTH
 export ONE_XMLRPC="$ONE_HOST:6443/RPC2"
 export ONEUSERNAME="bodik"
-export ONECRT="/dev/shm/cert-metacloud-bodik.p12.crt.pem"
-export ONEKEY="/dev/shm/cert-metacloud-bodik.p12.key.pem"
+export ONECRT="/dev/shm/usercert.pem"
+export ONEKEY="/dev/shm/userkey.pem"
 export ONERSA="/dev/shm/vmes1"
 
 
 
-NAME=JENKINSSTAG
-if [ -z $NAME ]; then
-	echo "RESULT: FAILED $0 no name"
-	exit 1
+if [ -z $VMNAME ]; then
+	VMNAME="RSERVER"
 fi
 cd /tmp || exit 1
 
@@ -39,7 +37,7 @@ rreturn() {
 }
 
 vm_id() {
-	onevm list -v -f NAME=$NAME | tail -n1 | awk '{print $1}'
+	onevm list -v -f NAME=$VMNAME | tail -n1 | awk '{print $1}'
 }
 
 
@@ -69,19 +67,23 @@ vm_ssh() {
 }
 
 vm_start() {
-	/puppet/jenkins/metacloud.init status | grep $NAME
+	#/puppet/jenkins/metacloud.init status | grep $VMNAME
+	onevm list -v -f NAME=$VMNAME | grep $ONEUSERNAME
 	if [ $? -eq 0 ]; then
 		rreturn $? "metacloud svm already running"
 	fi
 
-	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $NAME
-	onetemplate instantiate bodik-wheezy-metacloud --name $NAME
+	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $VMNAME
+	onetemplate instantiate bodik-wheezy-metacloud --name $VMNAME
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
 		/puppet/jenkins/metacloud.init status
 		sleep 1
 	done
+	if [ $RET -ne 0 ]; then
+		rreturn $RET "$0 start failed $VMNAME"
+	fi
 	sleep 10
 	for i in `seq 1 60`; do
 		#toto dela cloudinit na svem konci pres template::user_data::runcmd
@@ -96,7 +98,7 @@ vm_start() {
 }
 
 vm_status() {
-	onevm list -v -f NAME=$NAME
+	onevm list -v -f NAME=$VMNAME
 	rreturn $? "$0 status"
 }
 
@@ -136,7 +138,15 @@ metacloud_login() {
 	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY 
 }
 
+metacloud_creds() {
+	echo "scp bodik@bodik.zcu.cz:~/meta/certs/* /dev/shm/"
+	su jenkins
+}
+
 case "$1" in
+	creds)
+		metacloud_creds
+	;;
 	login)
 		metacloud_login
 	;;
