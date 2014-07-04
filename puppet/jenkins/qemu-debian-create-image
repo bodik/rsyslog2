@@ -104,6 +104,12 @@ auto eth0
 iface eth0 inet dhcp
 EOF
 
+cat <<EOF >> $MNT_DIR/etc/sysctl.conf
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+EOF
+
 mount --bind /dev/ $MNT_DIR/dev || fail "cannot bind /dev"
 chroot $MNT_DIR mount -t ext4 ${DISK}p1 /boot || fail "cannot mount /boot"
 chroot $MNT_DIR mount -t proc none /proc || fail "cannot mount /proc"
