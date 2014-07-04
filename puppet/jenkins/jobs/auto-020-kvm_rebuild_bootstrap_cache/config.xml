@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>/puppet/jenkins/kvm.init destroy_cache
+/puppet/jenkins/kvm.init build
+/puppet/jenkins/kvm.init start
+/puppet/jenkins/kvm.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.cz&apos;
+/puppet/jenkins/kvm.init shutdown
+/puppet/jenkins/kvm.init make_cache</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
