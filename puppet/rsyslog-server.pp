@@ -1,5 +1,7 @@
 #!/usr/bin/puppet apply
 
+import '/puppet/lib.pp'
+
 file { "/etc/apt/sources.list.d/wheezy-backports.list":
         source => "/puppet/templates/etc/apt/sources.list.d/wheezy-backports.list",
         owner => "root", group => "root", mode => "0644",
