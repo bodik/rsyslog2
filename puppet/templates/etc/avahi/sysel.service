@@ -1,0 +1,23 @@
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+
+<!-- See avahi.service(5) for more information about this configuration file -->
+
+<service-group>
+
+  <name replace-wildcards="yes">%h</name>
+
+  <service>
+    <type>_syseltcp._tcp</type>
+    <port>514</port>
+  </service>
+  <service>
+    <type>_syselgss._tcp</type>
+    <port>515</port>
+  </service>
+  <service>
+    <type>_syselrelp._tcp</type>
+    <port>516</port>
+  </service>
+
+</service-group>
