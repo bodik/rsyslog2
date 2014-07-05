@@ -3,8 +3,11 @@
 import '/puppet/rsyslog.pp'
 class { "rsyslog": }
 
+#toto neni hezke ale co se da delat
+import '/puppet/avahi.pp'
+
 class rsyslog-client (
-	$rsyslog_server => "sysel.metacentrum.cz"
+	$rsyslog_server = "sysel.metacentrum.cz"
 ) {
 
 	#tcp + relp - gssapi
@@ -18,12 +21,12 @@ class rsyslog-client (
 	file { "/etc/rsyslog.d/meta-remote-tcp.conf":
 		content => template("/puppet/templates/etc/rsyslog.d/meta-remote-tcp.conf.erb"),
 		owner => "root", group=> "root", mode=>"0644",
-		require => Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"], Service["avahi-daemon"]],
+		require => [Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"], Service["avahi-daemon"]],
 		notify => Service["rsyslog"],
-		
 	}
 }
 
 class { "rsyslog-client":
-#	$rsyslog_server => rsyslog_server,
+	#toto by melo prijit z facteru
+	rsyslog_server => $rsyslog_server,
 }

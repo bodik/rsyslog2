@@ -7,7 +7,7 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rsyslogd check_procs"
 fi
 
-netstat -nlp | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :514
+netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :514
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rsyslogd tcp listener"
 fi
@@ -15,12 +15,12 @@ fi
 echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
 echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
 echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
-#netstat -nlp | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :515
+#netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :515
 #if [ $? -ne 0 ]; then
 #	rreturn 1 "$0 rsyslogd gssapi listener"
 #fi
 
-netstat -nlp | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :516
+netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :516
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rsyslogd relp listener"
 fi
