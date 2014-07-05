@@ -15,7 +15,7 @@ rreturn() {
 	exit 1
 }
 
-/usr/lib/nagios/plugins/check_procs -C avahi-daemon -c 1:1
+/usr/lib/nagios/plugins/check_procs -C avahi-daemon -c 2:2
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 avahi-daemon check_procs"
 fi

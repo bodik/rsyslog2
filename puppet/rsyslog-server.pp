@@ -15,10 +15,14 @@ file { "/etc/rsyslog.conf":
 package { ["avahi-daemon", "avahi-utils"]:
 	ensure => installed,
 }
+service { "avahi-daemon": 
+	ensure => running,
+}
+
 file { "/etc/avahi/services/sysel.service":
 	source => "/puppet/templates/etc/avahi/sysel.service",
 	owner => "root", group => "root", mode => "0644",
-	require => Package["avahi-deamon"],
+	require => Package["avahi-daemon"],
 	notify => Service["avahi-daemon"],
 }
 
