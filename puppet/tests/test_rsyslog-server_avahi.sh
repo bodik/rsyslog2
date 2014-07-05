@@ -21,18 +21,18 @@ if [ $? -ne 0 ]; then
 fi
 
 SERVICE=_syseltcp._tcp
-avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress); echo $?
+avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress)
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 _syseltcp._tcp not found"
 fi
 
 SERVICE=_syselgss._tcp
-avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress); echo $?
+avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress)
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 _syseltcp._tcp not found"
 fi
 SERVICE=_syselrelp._tcp
-avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress); echo $?
+avahi-browse -t $SERVICE --resolve -p | grep $(facter ipaddress)
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 _syseltcp._tcp not found"
 fi

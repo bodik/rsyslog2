@@ -1,5 +1,6 @@
 #!/usr/bin/puppet apply
 
+
 import '/puppet/rsyslog.pp'
 class { "rsyslog": }
 
@@ -12,13 +13,7 @@ file { "/etc/rsyslog.conf":
 	
 }
 
-package { ["avahi-daemon", "avahi-utils"]:
-	ensure => installed,
-}
-service { "avahi-daemon": 
-	ensure => running,
-}
-
+import '/puppet/avahi.pp'
 file { "/etc/avahi/services/sysel.service":
 	source => "/puppet/templates/etc/avahi/sysel.service",
 	owner => "root", group => "root", mode => "0644",
