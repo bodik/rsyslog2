@@ -19,3 +19,16 @@ exec { "install_rsyslog_wheezy-backports":
 	require => [File["/etc/apt/sources.list.d/wheezy-backports.list"], Package["rsyslog"], Package["rsyslog-gssapi"]],
 }
 
+#tcp
+file { "/etc/rsyslog.conf":
+	source => "/puppet/templates/etc/rsyslog-server.conf",
+	owner => "root", group=> "root", mode=>"0644",
+	require => Package["rsyslog"],
+}
+
+#relp
+
+#gssapi
+
+
+

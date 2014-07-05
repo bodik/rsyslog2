@@ -15,7 +15,7 @@ export ONERSA="/dev/shm/vmes1"
 
 
 if [ -z $VMNAME ]; then
-	VMNAME="RSERVER"
+	VMNAME="RS"
 fi
 cd /tmp || exit 1
 
@@ -143,12 +143,19 @@ metacloud_creds() {
 	su jenkins
 }
 
+metacloud_list() {
+	onevm list -v
+}
+
 case "$1" in
 	creds)
 		metacloud_creds
 	;;
 	login)
 		metacloud_login
+	;;
+	list)
+		metacloud_list
 	;;
 	build)
 		vm_build
