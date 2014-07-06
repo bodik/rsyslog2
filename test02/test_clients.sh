@@ -59,12 +59,13 @@ case $DISRUPT in
 (
 sleep 10;
 TIMER=120
-echo "INFO: tcpkill begin $TIMER";
-./tcpkill -i eth0 port 515 or port 514 2>/dev/null &
-PPP=$!; 
-count $TIMER
-kill $PPP;
-echo "INFO: tcpkill end $TIMER";
+echo "INFO: tcpkill NOT IMPLEMENTED";
+#echo "INFO: tcpkill begin $TIMER";
+#./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
+#PPP=$!; 
+#count $TIMER
+#kill $PPP;
+#echo "INFO: tcpkill end $TIMER";
 )
 WAITRECOVERY=230
 ;;

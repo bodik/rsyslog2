@@ -10,20 +10,22 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>false</concurrentBuild>
   <axes>
     <hudson.matrix.TextAxis>
       <name>LEN</name>
       <values>
-        <string>4</string>
-        <string>1000</string>
+        <string>10000</string>
         <string>40000</string>
+        <string>300000</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
       <name>DISRUPT</name>
       <values>
         <string>none</string>
+        <string>restart</string>
+        <string>killserver</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
@@ -38,6 +40,6 @@ sh test_clients.sh $LEN $DISRUPT</command>
   <publishers/>
   <buildWrappers/>
   <executionStrategy class="hudson.matrix.DefaultMatrixExecutionStrategyImpl">
-    <runSequentially>false</runSequentially>
+    <runSequentially>true</runSequentially>
   </executionStrategy>
 </matrix-project>
