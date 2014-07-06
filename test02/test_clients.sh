@@ -52,18 +52,21 @@ done
 
 
 # VYNUCOVANI CHYB
+WAITRECOVERY=90
+
 case $DISRUPT in
-	kill)
+	tcpkill)
 (
 sleep 10;
 TIMER=120
-echo "INFO: killing begin $TIMER";
+echo "INFO: tcpkill begin $TIMER";
 ./tcpkill -i eth0 port 515 or port 514 2>/dev/null &
 PPP=$!; 
 count $TIMER
 kill $PPP;
-echo "INFO: killing end $TIMER";
+echo "INFO: tcpkill end $TIMER";
 )
+WAITRECOVERY=230
 ;;
 	restart)
 (
@@ -72,6 +75,17 @@ echo "INFO: restart begin";
 /puppet/jenkins/metacloud.init sshs '/etc/init.d/rsyslog restart'
 echo "INFO: restart end";
 )
+WAITRECOVERY=230
+;;
+	killserver)
+(
+sleep 10; 
+echo "INFO: killserver begin";
+/puppet/jenkins/metacloud.init sshs 'kill -9 `pidof rsyslogd`'
+/puppet/jenkins/metacloud.init sshs '/etc/init.d/rsyslog restart'
+echo "INFO: killserver end";
+)
+WAITRECOVERY=230
 ;;
 
 	manual)
@@ -82,10 +96,12 @@ echo "INFO: manual begin $TIMER";
 count $TIMER
 echo "INFO: manual end $TIMER";
 )
+WAITRECOVERY=230
 ;;
 
 esac
 
+echo "INFO: waiting for clients to finish"
 wait
 echo "INFO: test finished"
 
@@ -96,9 +112,8 @@ echo "INFO: test finished"
 
 # CEKANI NA DOTECENI VYSLEDKU
 #nemusi to dotect vsechno, interval je lepsi prodlouzit, ale ted nechci cekat
-SL=90
-echo "INFO: waiting to sync for $SL secs"
-count $SL
+echo "INFO: waiting to sync for $WAITRECOVERY secs"
+count $WAITRECOVERY
 
 
 
