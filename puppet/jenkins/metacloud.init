@@ -186,7 +186,7 @@ case "$1" in
 		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
 	;;
 	sshc)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
 	;;
 	id)
 		vm_id
