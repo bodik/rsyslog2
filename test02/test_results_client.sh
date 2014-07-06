@@ -19,7 +19,9 @@ else
 fi
 
 DELIVERED=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -rcH "logger: $TESTID tmsg[0-9]*" {} \; | awk -F":" '{print $2}')
-#PERC=$(echo "scale=2; $DELIVERED/($LEN/100)" | bc -l)
+if [ -z "$DELIVERED" ]; then
+	DELIVERED=0
+fi
 
 awk -F':' -v LEN=$LEN -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID '
 BEGIN {
