@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ -z $2 ]; then
 	TESTID="ti$(date +%s)"
 else
