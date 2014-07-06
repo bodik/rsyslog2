@@ -44,10 +44,12 @@ done
 #echo "INFO: waiting to sync for $SL secs"
 #count $SL
 
+sleep 5
+
 for all in $VMLIST; do
-	CLIENT=$( VMNAME=$all /puppet/jenkins/metacloud.init ssh 'facter ipaddress' )
+	CLIENT=$( VMNAME=$all /puppet/jenkins/metacloud.init ssh 'facter ipaddress' |grep -v "RESULT")
 	echo "INFO: client $all test_result.sh $LEN $TESTID $CLIENT"
-	sh test_results_client.sh $LEN $TESTID $CLIENT
+	/puppet/jenkins/metacloud.init sshs "sh /rsyslog2/test02/test_results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:"
 done
 
 exit 0

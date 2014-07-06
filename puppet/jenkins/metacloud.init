@@ -62,7 +62,7 @@ vm_ssh() {
 	if [ -z "$VMIP" ]; then
 		rreturn 1 "vm ip not detected from metacloud"
 	fi
-	ssh -i $ONERSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' root@$VMIP "$1"
+	ssh -i $ONERSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
 	rreturn $? "$0 ssh $@"
 }
 
@@ -148,6 +148,12 @@ metacloud_list() {
 	onevm list -v
 }
 
+metacloud_update() {
+	for all in $(/puppet/jenkins/metacloud.init list|grep "R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all /puppet/jenkins/metacloud.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	done
+}
+
 case "$1" in
 	creds)
 		metacloud_creds
@@ -183,10 +189,13 @@ case "$1" in
 		vm_ssh "$2"
 	;;
 	sshs)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
 	sshc)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+	;;
+	update)
+		metacloud_update
 	;;
 	id)
 		vm_id
