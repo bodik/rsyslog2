@@ -26,7 +26,11 @@ class rsyslog-client (
 	}
 }
 
-class { "rsyslog-client":
-	#toto by melo prijit z facteru
-	rsyslog_server => $rsyslog_server,
+if ( $rsyslog_server ) {
+	class { "rsyslog-client":
+		#toto by melo prijit z facteru
+		rsyslog_server => $rsyslog_server,
+	}
+} else {
+	warning("SKIPPED rsyslog-client, facts missing")
 }
