@@ -140,6 +140,7 @@ metacloud_login() {
 
 metacloud_creds() {
 	echo "scp bodik@bodik.zcu.cz:~/meta/certs/* /dev/shm/"
+	rm $ONE_AUTH
 	su jenkins
 }
 
@@ -180,6 +181,12 @@ case "$1" in
 	;;
 	ssh)
 		vm_ssh "$2"
+	;;
+	sshs)
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
+	;;
+	sshc)
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh
 	;;
 	id)
 		vm_id
