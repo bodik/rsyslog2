@@ -47,7 +47,7 @@ done
 for all in $VMLIST; do
 	CLIENT=$( VMNAME=$all /puppet/jenkins/metacloud.init ssh 'facter ipaddress' )
 	echo "INFO: client $all test_result.sh $LEN $TESTID $CLIENT"
-	sh test_results.sh $LEN $TESTID $CLIENT
+	sh test_results_client.sh $LEN $TESTID $CLIENT
 done
 
 exit 0
