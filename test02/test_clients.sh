@@ -38,7 +38,7 @@ VMLIST=$(/puppet/jenkins/metacloud.init list | grep "RC-" |awk '{print $4}')
 VMCOUNT=0
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
-	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/testi_logclean.sh)"
+	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/test_logclean.sh)"
 	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 	VMCOUNT=$(($VMCOUNT+1))
 done
