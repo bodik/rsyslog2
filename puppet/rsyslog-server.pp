@@ -13,6 +13,13 @@ file { "/etc/rsyslog.conf":
 	
 }
 
+#kvuli testovani
+#tcpkill
+package { ["libpcap0.8", "libnet1"]:
+	ensure => installed,
+}
+
+#autoconfig
 import '/puppet/avahi.pp'
 file { "/etc/avahi/services/sysel.service":
 	source => "/puppet/templates/etc/avahi/sysel.service",

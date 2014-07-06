@@ -52,20 +52,21 @@ done
 
 
 # VYNUCOVANI CHYB
-WAITRECOVERY=90
+WAITRECOVERY=60
 
 case $DISRUPT in
 	tcpkill)
 (
 sleep 10;
 TIMER=120
-echo "INFO: tcpkill NOT IMPLEMENTED";
-#echo "INFO: tcpkill begin $TIMER";
-#./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
-#PPP=$!; 
-#count $TIMER
-#kill $PPP;
-#echo "INFO: tcpkill end $TIMER";
+echo "INFO: tcpkill begin $TIMER";
+/puppet/jenkins/metacloud.init sshs "cd /rsyslog2/test02;
+./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
+PPP=\$!; 
+sleep $TIMER;
+kill \$PPP;
+"
+echo "INFO: tcpkill end $TIMER";
 )
 WAITRECOVERY=230
 ;;

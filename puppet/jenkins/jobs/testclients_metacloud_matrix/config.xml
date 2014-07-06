@@ -17,7 +17,7 @@
       <values>
         <string>10000</string>
         <string>40000</string>
-        <string>300000</string>
+        <string>200000</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
@@ -26,6 +26,7 @@
         <string>none</string>
         <string>restart</string>
         <string>killserver</string>
+        <string>tcpkill</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
