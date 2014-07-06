@@ -4,12 +4,18 @@ set -e
 
 . /puppet/tests/lib.sh
 
-LEN=4
 TESTID="ti$(date +%s)"
+
 if [ -z $1 ]; then
+    LEN=4
+else
+    LEN=$1
+fi
+
+if [ -z $2 ]; then
     DISRUPT="none"
 else
-    DISRUPT=$1
+    DISRUPT=$2
 fi
 
 #if [ -z $2 ]; then
@@ -34,13 +40,10 @@ count() {
 /puppet/jenkins/metacloud.init login
 VMLIST=$(/puppet/jenkins/metacloud.init list | grep "RC-" |awk '{print $4}')
 
-/puppet/jenkins/metacloud.init sshs "(sh /rsyslog2/test02/test_logclean.sh)" 1>/dev/null 2>/dev/null
-
 # ZALOZENI TESTU
 VMCOUNT=0
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
-	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/test_logclean.sh)" 1>/dev/null 2>/dev/null
 	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 	VMCOUNT=$(($VMCOUNT+1))
 done
