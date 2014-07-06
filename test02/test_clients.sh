@@ -33,6 +33,7 @@ count() {
 	        echo -n $'\b\b\b';
 		TIMER=$(($TIMER-1))
 	done
+	echo "INFO: counter finished"
 }
 
 ################# MAIN
