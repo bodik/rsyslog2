@@ -30,5 +30,5 @@ BEGIN {
 		RES="OK";
 	else
 		RES="FAILED";
-	print "RESULT TEST NODE:",TESTID,CLIENT,RES,"len",LEN,"deliv",DELIVERED,"rate",PERC"%";
+	print "RESULT TEST NODE:",RES,TESTID,CLIENT,"len",LEN,"deliv",DELIVERED,"rate",PERC"%";
 }'
