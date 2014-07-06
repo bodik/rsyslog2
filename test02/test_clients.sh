@@ -34,11 +34,13 @@ count() {
 /puppet/jenkins/metacloud.init login
 VMLIST=$(/puppet/jenkins/metacloud.init list | grep "RC-" |awk '{print $4}')
 
+/puppet/jenkins/metacloud.init sshs "(sh /rsyslog2/test02/test_logclean.sh)" 1>/dev/null 2>/dev/null
+
 # ZALOZENI TESTU
 VMCOUNT=0
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
-	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/test_logclean.sh)"
+	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/test_logclean.sh)" 1>/dev/null 2>/dev/null
 	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 	VMCOUNT=$(($VMCOUNT+1))
 done
@@ -86,6 +88,8 @@ echo "INFO: test finished"
 
 
 
+
+
 # CEKANI NA DOTECENI VYSLEDKU
 #nemusi to dotect vsechno, interval je lepsi prodlouzit, ale ted nechci cekat
 SL=90
@@ -93,6 +97,10 @@ echo "INFO: waiting to sync for $SL secs"
 count $SL
 
 
+
+
+
+# VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
 	CLIENT=$( VMNAME=$all /puppet/jenkins/metacloud.init ssh 'facter ipaddress' |grep -v "RESULT")
 	/puppet/jenkins/metacloud.init sshs "sh /rsyslog2/test02/test_results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
@@ -106,8 +114,6 @@ BEGIN {
 }
 //{
 	DELIVERED = DELIVERED + $10;
-	print $0
-	print $10
 }
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
