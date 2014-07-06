@@ -40,17 +40,19 @@ done
 
 # CEKANI NA DOTECENI VYSLEDKU
 #nemusi to dotect vsechno, interval je lepsi prodlouzit, ale ted nechci cekat
-#SL=230
-#echo "INFO: waiting to sync for $SL secs"
-#count $SL
+SL=10
+echo "INFO: waiting to sync for $SL secs"
+count $SL
 
-sleep 5
 
 for all in $VMLIST; do
 	CLIENT=$( VMNAME=$all /puppet/jenkins/metacloud.init ssh 'facter ipaddress' |grep -v "RESULT")
-	echo "INFO: client $all test_result.sh $LEN $TESTID $CLIENT"
-	/puppet/jenkins/metacloud.init sshs "sh /rsyslog2/test02/test_results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:"
+	#echo "INFO: client $all test_result.sh $LEN $TESTID $CLIENT"
+	/puppet/jenkins/metacloud.init sshs "sh /rsyslog2/test02/test_results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
+echo =============
+cat /tmp/test_results.$TESTID.log
+rm /tmp/test_results.$TESTID.log
 
 exit 0
 

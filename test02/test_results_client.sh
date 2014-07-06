@@ -27,6 +27,6 @@ BEGIN {
 	if(PERC >= 99.99 && PERC <= 100 )
 		RES="OK";
 	else
-		RES="FAIL";
+		RES="FAILED";
 	print "RESULT TEST NODE:",TESTID,CLIENT,RES,"len",LEN,"deliv",DELIVERED,"rate",PERC"%";
 }'
