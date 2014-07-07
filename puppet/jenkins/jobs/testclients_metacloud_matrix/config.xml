@@ -17,7 +17,7 @@
       <values>
         <string>10000</string>
         <string>40000</string>
-        <string>200000</string>
+        <string>100000</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>

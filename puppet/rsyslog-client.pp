@@ -18,8 +18,9 @@ class rsyslog-client (
 		notify => Service["rsyslog"],
 		
 	}
-	file { "/etc/rsyslog.d/meta-remote-tcp.conf":
-		content => template("/puppet/templates/etc/rsyslog.d/meta-remote-tcp.conf.erb"),
+	file { "/etc/rsyslog.d/meta-remote.conf":
+		#content => template("/puppet/templates/etc/rsyslog.d/meta-remote-tcp.conf.erb"),
+		content => template("/puppet/templates/etc/rsyslog.d/meta-remote-relp.conf.erb"),
 		owner => "root", group=> "root", mode=>"0644",
 		require => [Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"], Service["avahi-daemon"]],
 		notify => Service["rsyslog"],
