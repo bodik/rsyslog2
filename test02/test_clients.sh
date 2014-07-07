@@ -131,21 +131,24 @@ echo =============
 awk -v LEN=$LEN -v VMCOUNT=$VMCOUNT -v TESTID=$TESTID -v DISRUPT=$DISRUPT ' 
 BEGIN {
 	DELIVERED=0;
+	DELIVEREDUNIQ=0;
 	TOTALLEN=LEN*VMCOUNT;
 }
 //{
 	DELIVERED = DELIVERED + $10;
+	DELIVEREDUNIQ = DELIVEREDUNIQ + $14;
 }
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
-	if(PERC >= 99.99 && PERC <= 102 ) {
+	PERCUNIQ=DELIVEREDUNIQ/(TOTALLEN/100);
+	if(PERCUNIQ >= 99.99 && PERCUNIQ <= 100 ) {
 		RES="OK";
 		RET=0;
 	} else {
 		RES="FAILED";
 		RET=1;
 	}
-	print "RESULT TEST FINAL:",RES,TESTID,"disrupt",DISRUPT,"totallen",TOTALLEN,"deliv",DELIVERED,"rate",PERC"%";
+	print "RESULT TEST FINAL:",RES,TESTID,"disrupt",DISRUPT,"totallen",TOTALLEN,"deliv",DELIVERED,"rate",PERC"%","delivuniq",DELIVEREDUNIQ,"rateuniq",PERCUNIQ"%";
 	exit RET
 }' /tmp/test_results.$TESTID.log
 RET=$?

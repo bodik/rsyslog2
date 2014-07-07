@@ -18,18 +18,24 @@ else
 	CLIENT=$3
 fi
 
-DELIVERED=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -rcH "logger: $TESTID tmsg[0-9]*" {} \; | awk -F":" '{print $2}')
+DELIVERED=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -r "logger: $TESTID tmsg" {} \; | wc -l | awk '{print $1}')
+DELIVEREDUNIQ=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -r "logger: $TESTID tmsg" {} \; | rev | awk '{print $1}' | sort | uniq | wc -l | awk '{print $1}')
 if [ -z "$DELIVERED" ]; then
 	DELIVERED=0
 fi
 
+if [ -z "$DELIVEREDUNIQ" ]; then
+	DELIVEREDUNIQ=0
+fi
+
 #ano muze dojit az ke 101% kvuli opakovanemu prenaseni zprave
-awk -F':' -v LEN=$LEN -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID '
+awk -F':' -v LEN=$LEN -v DELIVEREDUNIQ=$DELIVEREDUNIQ -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID '
 BEGIN {
 	PERC=DELIVERED/(LEN/100);
-	if(PERC >= 99.99 && PERC <= 102 )
+	PERCUNIQ=DELIVEREDUNIQ/(LEN/100);
+	if(PERCUNIQ >= 99.99 && PERCUNIQ <= 100 )
 		RES="OK";
 	else
 		RES="FAILED";
-	print "RESULT TEST NODE:",RES,TESTID,CLIENT,"len",LEN,"deliv",DELIVERED,"rate",PERC"%";
+	print "RESULT TEST NODE:",RES,TESTID,CLIENT,"len",LEN,"deliv",DELIVERED,"rate",PERC"%","delivuniq",DELIVEREDUNIQ,"rateuniq",PERCUNIQ"%";
 }'
