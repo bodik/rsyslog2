@@ -1,0 +1,227 @@
+#!/bin/sh
+
+export MUSERNAME="bodik"
+export MKTAB="/dev/shm/user.keytab"
+export MADMKTAB="/dev/shm/useradmin.keytab"
+export FRONT="minos.zcu.cz"
+
+if [ -z $VMNAME ]; then
+	VMNAME="RS"
+fi
+cd /tmp || exit 1
+
+
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+vm_id() {
+	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | awk -F"." '{print $1"."$2}'
+}
+
+
+vm_destroy() {
+	VMID=$(/puppet/jenkins/magrathea.init id)
+	if [ -z "$VMID" ]; then
+		rreturn 1 "magrathea id not detected"
+	fi
+	front_ssh "qdel $VMID"
+	for i in `seq 1 120`; do
+		/puppet/jenkins/magrathea.init status 
+		if [ $? = 1 ]; then
+			rreturn $? "destroy"
+		fi
+		sleep 1
+	done
+	rreturn 1 "$0 destroy failed"
+}
+
+vm_destroy_cache() {
+	rreturn 0 "$0 destroy_cache $@"
+}
+vm_make_cache() {
+	rreturn $? "$0 make_cache $@"
+}
+
+vm_ssh() {
+	VMID=$(/puppet/jenkins/magrathea.init id)
+	if [ -z $VMID ]; then
+		rreturn 1 "vm id not detected from magrathea"
+	fi
+	VMIP=$(/puppet/jenkins/magrathea.init front "qstat -f $VMID" | grep "sched_nodespec = host=" | sed 's/.*host=\([^:]*\):.*/\1/')
+	if [ -z "$VMIP" ]; then
+		rreturn 1 "vm name not detected from magrathea"
+	fi
+	echo $VMIP | grep "[0-9]-2\.[a-z]" 1>/dev/null 2>/dev/null
+	if [ $? -ne 0 ]; then
+		rreturn 1 "ERROR: resolved vm ip not valid"
+	fi
+	
+	KRB5CCNAME=$MADMKTAB ssh -k -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' -o 'NumberOfPasswordPrompts=0' root@$VMIP "$1"
+	RET=$?
+	cp $MADMKTAB.clean.keytab $MADMKTAB
+	rreturn $RET "$0 ssh $@"
+}
+
+vm_start() {
+	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
+	if [ $? -eq 0 ]; then
+		rreturn $? "magrathea vm already running"
+	fi
+
+        front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME"
+	RET=1
+	for i in `seq 1 600`; do
+		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/magrathea.init status
+		sleep 1
+	done
+	if [ $RET -ne 0 ]; then
+		rreturn $RET "$0 start failed $VMNAME"
+	fi
+
+	#meta_depot bez rsyslog-relp fixup
+	#TODO TODOTODO
+	/puppet/jenkins/magrathea.init ssh 'rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi'
+
+	rreturn 0 "$0 start"
+#	sleep 10
+#	for i in `seq 1 60`; do
+#		#toto dela cloudinit na svem konci pres template::user_data::runcmd
+#		/puppet/jenkins/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
+#		if [ $? -eq 0 ]; then
+#			rreturn 0 "$0 start"
+#		fi
+#		echo "INFO: waiting for cloud-init to finnish"
+#		sleep 1
+#	done
+#	rreturn 1 "$0 start failed"
+}
+
+vm_status() {
+	/puppet/jenkins/magrathea.init list | grep " $VMNAME "
+	rreturn $? "$0 status"
+}
+
+vm_shutdown() {
+	/puppet/jenkins/magrathea.init ssh /bin/true
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown vm not running"
+	fi
+
+	echo "INFO: sending halt"
+	/puppet/jenkins/magrathea.init ssh halt
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown cannot shutdown vm"
+	fi
+
+	RET=1
+	for i in `seq 1 60`; do
+		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null
+		if [ $? = 1 ]; then
+			rreturn $? "shutdown"
+		fi
+		sleep 1
+	done
+
+	rreturn 1 "shutdown did not finished in time"
+}
+
+vm_build() {
+	/puppet/jenkins/magrathea.init shutdown
+	/puppet/jenkins/magrathea.init destroy
+	sleep 5
+	rreturn $? "$0"
+}
+
+magrathea_creds() {
+	export KRB5CCNAME=$MKTAB
+	kinit -A ${MUSERNAME}@META
+	export KRB5CCNAME=$MADMKTAB
+	kinit -A ${MUSERNAME}@ADMIN.META
+	cp $MADMKTAB $MADMKTAB.clean.keytab
+	echo "chown jenkins /dev/shm/*keytab"
+}
+
+front_ssh() {
+	KRB5CCNAME=$MKTAB ssh -K -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' $MUSERNAME@$FRONT "$1"
+}
+
+vm_list() {
+	front_ssh "qstat -u $MUSERNAME -n -1 | grep -v ' C '"
+	#onevm list -v
+}
+
+magrathea_update() {
+	for all in $(/puppet/jenkins/magrathea.init list|grep " R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all /puppet/jenkins/magrathea.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	done
+}
+
+case "$1" in
+	creds)
+		magrathea_creds
+	;;
+	login)
+		echo "WARN: NOT IMPLEMENTED"
+	;;
+	list)
+		vm_list
+	;;
+	build)
+		vm_build
+	;;
+	start)
+		vm_start
+	;;
+	status)
+		vm_status
+	;;
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		vm_destroy
+	;;
+	destroy_cache)
+		vm_destroy_cache
+	;;
+	make_cache)
+		vm_make_cache
+	;;
+	ssh)
+		vm_ssh "$2"
+	;;
+	sshs)
+		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+	;;
+	sshc)
+		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+	;;
+	update)
+		magrathea_update
+	;;
+	id)
+		vm_id
+	;;
+
+	front)
+		front_ssh "$2"
+	;;
+	*)
+		rreturn 1 "$0 wrong command"
+	;;
+esac
+

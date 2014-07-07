@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>export VMNAME=&quot;RC-$$&quot;
+/puppet/jenkins/magrathea.init login
+/puppet/jenkins/magrathea.init build
+/puppet/jenkins/magrathea.init start
+/puppet/jenkins/magrathea.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+############
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog7_installed.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog-client_netstat.sh&apos;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
