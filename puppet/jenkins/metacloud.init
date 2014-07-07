@@ -70,7 +70,7 @@ vm_start() {
 	#/puppet/jenkins/metacloud.init status | grep $VMNAME
 	onevm list -v -f NAME=$VMNAME | grep $ONEUSERNAME
 	if [ $? -eq 0 ]; then
-		rreturn $? "metacloud svm already running"
+		rreturn $? "metacloud vm already running"
 	fi
 
 	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $VMNAME
@@ -144,7 +144,7 @@ metacloud_creds() {
 	su jenkins
 }
 
-metacloud_list() {
+vm_list() {
 	onevm list -v
 }
 
@@ -162,7 +162,7 @@ case "$1" in
 		metacloud_login
 	;;
 	list)
-		metacloud_list
+		vm_list
 	;;
 	build)
 		vm_build
