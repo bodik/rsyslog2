@@ -2,6 +2,7 @@
 
 $WorkDirectory /var/spool/rsyslog  # default location for work (spool) files
 
+module(load="omrelp")
 *.* action(type="omrelp"
         target="<%= rsyslog_server %>"
         port="516"
