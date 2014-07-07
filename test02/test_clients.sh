@@ -46,7 +46,7 @@ VMCOUNT=0
 for all in $VMLIST; do
 	echo "INFO: client $all config"
 	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(cat /etc/rsyslog.d/meta-remote.conf)" > /tmp/tconf.$$
-	cat /tmp/tconf.$$ | sed "s/^/$VMNAME /"
+	VMNAME=$all cat /tmp/tconf.$$ | sed "s/^/$VMNAME /"
 	rm /tmp/tconf.$$
 	VMCOUNT=$(($VMCOUNT+1))
 done
