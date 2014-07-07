@@ -48,7 +48,6 @@ for all in $VMLIST; do
 	VMNAME=$all /puppet/jenkins/metacloud.init ssh "(cat /etc/rsyslog.d/meta-remote.conf)" | awk -v VMNAME=$all '//{ print VMNAME,$0}'
 	VMCOUNT=$(($VMCOUNT+1))
 done
-exit 1
 
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
