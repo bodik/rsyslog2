@@ -138,7 +138,7 @@ BEGIN {
 }
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
-	if(PERC >= 99.99 && PERC <= 100 ) {
+	if(PERC >= 99.99 && PERC <= 102 ) {
 		RES="OK";
 		RET=0;
 	} else {

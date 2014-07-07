@@ -23,10 +23,11 @@ if [ -z "$DELIVERED" ]; then
 	DELIVERED=0
 fi
 
+#ano muze dojit az ke 101% kvuli opakovanemu prenaseni zprave
 awk -F':' -v LEN=$LEN -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID '
 BEGIN {
 	PERC=DELIVERED/(LEN/100);
-	if(PERC >= 99.99 && PERC <= 100 )
+	if(PERC >= 99.99 && PERC <= 102 )
 		RES="OK";
 	else
 		RES="FAILED";
