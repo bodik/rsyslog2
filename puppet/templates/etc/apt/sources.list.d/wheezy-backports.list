@@ -1,1 +1,2 @@
 deb http://ftp.zcu.cz/pub/linux/debian/ wheezy-backports main non-free contrib
+deb-src http://ftp.zcu.cz/pub/linux/debian/ wheezy-backports main non-free contrib
