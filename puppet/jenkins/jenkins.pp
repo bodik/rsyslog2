@@ -72,3 +72,9 @@ exec { "gem_install_opennebula-cli":
 	require => [Package["ruby-dev"], Package["make"]],
 }
 
+file { "/usr/local/bin/metacloud.init":
+	ensure => link,
+	target => "/puppet/jenkins/metacloud.init",
+}
+
+
