@@ -94,7 +94,13 @@ vm_start() {
 
 	#meta_depot bez rsyslog-relp fixup
 	#TODO TODOTODO
-	/puppet/jenkins/magrathea.init ssh 'rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet'
+	/puppet/jenkins/magrathea.init ssh '
+	rm /etc/apt/sources.list.d/meta_depot.list;
+	apt-get clean;
+	apt-get update;
+	apt-get purge -y rsyslog rsyslog-gssapi puppet;
+	rm -r /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*
+	'
 
 	rreturn 0 "$0 start"
 #	sleep 10
@@ -156,7 +162,10 @@ magrathea_creds() {
 }
 
 front_ssh() {
-	KRB5CCNAME=$MKTAB ssh -K -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' $MUSERNAME@$FRONT "$1"
+	KRB5CCNAME=$MKTAB ssh -K -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' -o 'NumberOfPasswordPrompts=0' $MUSERNAME@$FRONT "$1"
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 cannt reach magrathea frontent"
+	fi
 }
 
 vm_list() {
@@ -170,12 +179,16 @@ magrathea_update() {
 	done
 }
 
+magrathea_login() {
+		echo "WARN: NOT IMPLEMENTED"
+}
+
 case "$1" in
 	creds)
 		magrathea_creds
 	;;
 	login)
-		echo "WARN: NOT IMPLEMENTED"
+		magrathea_login
 	;;
 	list)
 		vm_list
