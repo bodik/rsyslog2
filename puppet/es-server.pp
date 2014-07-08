@@ -48,6 +48,10 @@ logstash::configfile { 'simple':
 class { 'kibana':
 	webserver   => 'apache',
 	virtualhost => $fqdn,
+	
+	#tady v te casti je modul velmi osklivy
+	#jak s konfigurakem sem nevycetl ale meni mu prava na default 664
+	file_mode => "0644",
 }
 $kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200'
 file { "/opt/kibana/config.js":
