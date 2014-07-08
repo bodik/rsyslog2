@@ -14,7 +14,10 @@ class { 'elasticsearch':
 		###'index.number_of_shards' => '8',
 	 }
 }
-elasticsearch::instance { 'es01': }
+elasticsearch::instance { 
+	'es01': 
+	before => Class["logstash"],
+}
 elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 	module_dir => 'kopf',
 	instances  => 'es01'
@@ -35,7 +38,6 @@ elasticsearch::plugin{'bleskes/sense':
 class { 'logstash':
 	manage_repo  => true,
 	repo_version => '1.4',
-	require => Class["elasticsearch"],
 }
 logstash::configfile { 'simple':
 	content => template("/puppet/templates/etc/logstash/conf.d/simple.conf"),
@@ -54,7 +56,6 @@ class { 'kibana':
 	#jak s konfigurakem sem nevycetl ale meni mu prava na default 664
 	file_mode => "0644",
 
-	require => Class["elasticsearch"],
 }
 $kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200'
 file { "/opt/kibana/config.js":
