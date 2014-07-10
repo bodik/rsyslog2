@@ -8,7 +8,7 @@ puppet apply -dv elk_esd.pp
 
 #LOGSTASH
 puppet module install elasticsearch-logstash
-puppet apply -dv elk_logstash.pp
+puppet apply -dv elk_lsl.pp
 
 
 #KIBANA
