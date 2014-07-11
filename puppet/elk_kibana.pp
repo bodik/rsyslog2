@@ -19,4 +19,9 @@ file { "/etc/apache2/sites-enabled/000-default":
 	require => Package["apache2"],
 	notify => Service["apache2"],
 }
-
+file { "/opt/kibana/dash.html":
+	source => "/puppet/templates/opt/kibana/dash.html",
+	owner => "root", group => "root", mode => "0644",
+	require => Class["kibana::install"],
+	
+}

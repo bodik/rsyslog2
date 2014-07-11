@@ -1,0 +1,14 @@
+input {
+  redis {
+    data_type => "list"
+    host => "<%= rediser_server %>"
+    key => "syslog"
+    port => 16379
+    type => "syslog"
+    threads => 1
+    batch_count => 1000
+    format => "plain"
+  }
+
+}
+
