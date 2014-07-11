@@ -1,0 +1,59 @@
+#!/bin/sh
+
+. /puppet/tests/lib.sh
+
+BASE=/puppet/rediser
+
+cd /tmp || exit 1
+
+killwaitpids() {
+        PID="$@"
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+case "$1" in
+
+	start)
+        	echo -n "Starting rediser: "
+
+		$0 status 1>/dev/null
+		if [ $? -eq 0 ]; then
+			rreturn 1 "already running"
+		fi
+	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-syslog-filter.sh" 0.0.0.0 49558 &
+	        echo $! > /var/run/rediser.pid
+
+
+#		pgrep -f rediser-mongo-ssh-filter.sh 1>/dev/null
+#		if [ $? -eq 0 ]; then
+#			rreturn 1 "already running"
+#		fi
+#	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-mongo-ssh-filter.sh" 0.0.0.0 39555 &
+#	        echo $! >> /var/run/rediser.pid
+	        echo "done"
+	;;
+	stop)
+	        echo -n "Stopping rediser: "
+	        killwaitpids `cat /var/run/rediser.pid`
+	        rm /var/run/rediser.pid
+	        echo "done"
+	;;
+	status)
+                pgrep -f rediser-syslog-filter.sh 1>/dev/null
+                if [ $? -eq 0 ]; then
+                        rreturn 0 "running"
+                fi
+		rreturn 1 "not running"
+	;;
+	*)
+		ps faxu | grep redis
+		exit 1
+	;;
+esac
+

@@ -15,3 +15,13 @@ rreturn() {
 	exit 1
 }
 
+count() {
+	TIMER=$1
+	while [ $TIMER -gt 0 ]; do
+        	echo -n $TIMER;
+	        sleep 1
+	        echo -n $'\b\b\b';
+		TIMER=$(($TIMER-1))
+	done
+	echo "INFO: counter finished"
+}
