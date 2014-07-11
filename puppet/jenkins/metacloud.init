@@ -194,6 +194,9 @@ case "$1" in
 	sshc)
 		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
+	sshe)
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+	;;
 	update)
 		metacloud_update
 	;;
