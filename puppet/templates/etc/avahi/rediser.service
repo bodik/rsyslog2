@@ -1,0 +1,20 @@
+<?xml version="1.0" standalone='no'?><!--*-nxml-*-->
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+
+<!-- See avahi.service(5) for more information about this configuration file -->
+
+<service-group>
+
+  <name replace-wildcards="yes">%h</name>
+
+  <service>
+    <type>_rediser._tcp</type>
+    <port>16377</port>
+  </service>
+
+  <service>
+    <type>_redis._tcp</type>
+    <port>16379</port>
+  </service>
+
+</service-group>
