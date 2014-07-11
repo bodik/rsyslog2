@@ -1,5 +1,7 @@
 #!/usr/bin/puppet apply
 
+import '/puppet/lib.pp'
+
 package { "redis-server":
 	ensure => installed,
 }
