@@ -2,6 +2,7 @@ $WorkDirectory /var/spool/rsyslog
 *.* action(type="omfwd"
         target="<%= rediser_server %>"
         port="49558"
+	protocol="tcp"
         queue.FileName="omfwdrediser"
         queue.Type="LinkedList"
         queue.MaxDiskSpace="10m"
