@@ -8,6 +8,11 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 redis-server check_procs"
 fi
 
+redis-cli -p 16379 script load "return 1"
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 redis-server version not sufficient"
+fi
+
 
 echo "rpush test_rediser.sh test_rediser.sh-$$" | redis-cli -p 16379 1>/dev/null
 echo "lpop test_rediser.sh" | redis-cli -p 16379 | grep "test_rediser.sh-$$" 1>/dev/null
