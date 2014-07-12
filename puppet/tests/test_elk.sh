@@ -10,8 +10,8 @@ fi
 
 ESDAGE=$(ps h -o etimes $(pgrep -f org.elasticsearch.bootstrap.Elasticsearch))
 if [ $ESDAGE -lt 60 ] ; then
-	"INFO: ESD warming up"
-	count 60
+	echo "INFO: ESD warming up"
+	sleep 60
 fi
 
 netstat -nlpa | grep " $(pgrep -f org.elasticsearch.bootstrap.Elasticsearch)/java" | grep LISTEN | grep ":39200"
@@ -39,9 +39,8 @@ fi
 
 LSLAGE=$(ps h -o etimes $(pgrep -f /opt/logstash/lib/logstash/runner.rb))
 if [ $LSLAGE -lt 60 ] ; then
-	"INFO: LSL warming up"
-	count 60
-
+	echo "INFO: LSL warming up"
+	sleep 60
 fi
 
 netstat -nlpa | grep " $(pgrep -f /opt/logstash/lib/logstash/runner.rb)/java" | egrep "(LISTEN|ESTABLISHED)"
