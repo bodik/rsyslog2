@@ -1,0 +1,34 @@
+#nechci ji mit v message aby mi kibana udelala hezky trendy i pres tyhle hlasky
+KERNSTAMP [0-9]+\.[0-9]+
+
+FAIL2BANP (?:fail2ban[\w._/\- ]+)
+FAIL2BANPROG %{FAIL2BANP:program}
+
+FAIL2BANACT (?:Ban|Unban)
+FAIL2BANACTION %{WORD:loglevel} \[%{WORD:jail}\] %{FAIL2BANACT:action} %{IP:remote}
+
+SYSLOGLINETEST %{GREEDYDATA:message}
+
+SYSLOGBASEMETA1 (%{TIMESTAMP_ISO8601} (%{IP:coll} )?%{SYSLOGHOST:logsource} )?%{TIMESTAMP_ISO8601:timestamp} (%{SYSLOGHOST} )?(?:%{SYSLOGPROG}|%{FAIL2BANPROG}):( \[%{KERNSTAMP:kernstamp}\])?
+
+SYSLOGLINEMETA1 %{SYSLOGBASEMETA1} %{GREEDYDATA:message}
+
+# tohle se nam trosku dost zasmodrchava !
+AAARESULT (?:Accepted|Failed|Authorized|identification|Invalid|disconnect|tried|refused|Postponed)
+METHOD (?:[a-z\-/]+|correct key)
+#TODO: principal bude i v SYSLOGBASE2
+PRINCIPAL [a-zA-Z0-9_/\-]+@%{HOSTNAME}
+
+AUTHN %{AAARESULT:result} %{METHOD:method} for (invalid user )?%{USER:user} from %{IPORHOST:remote} port %{POSINT} ssh2
+AUTHZ %{AAARESULT:result} to %{USER:user}, krb5 principal %{PRINCIPAL:principal} \(krb5_kuserok\)
+SCAN Did not receive %{AAARESULT:result} string from %{IPORHOST:remote}
+INVALID %{AAARESULT:result} user %{USER:user} from %{IPORHOST:remote}
+DISCONNECT Received %{AAARESULT:result} from %{IPORHOST:remote}: 11: disconnected by user
+WRONGKEY Authentication %{AAARESULT:result} for %{USER:user} with %{METHOD:method} but not from a permitted host \(host=%{IPORHOST:remote}, ip=%{IPORHOST}\)
+REFUSED %{AAARESULT:result} connect from %{IPORHOST:remote} \(%{IPORHOST:remote}\)
+
+SSHATTEMPT (?:%{AUTHN}|%{AUTHZ}|%{SCAN}|%{INVALID}|%{DISCONNECT}|%{WRONGKEY}|%{REFUSED})
+
+#TODO vyhodit program name pro mongo v lsl filtru
+SSHLINE %{SYSLOGBASEMETA1} %{SSHATTEMPT:message}
+
