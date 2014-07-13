@@ -68,15 +68,30 @@
 							"src_tos": { "index": "not_analyzed", "type": "integer" },
 							"tcp_flags": { "index": "not_analyzed", "type": "integer" },
 							"protocol": { "index": "not_analyzed", "type": "integer" },
-							"ipv4_next_hop1": { "index": "analyzed", "type": "string" },
+							"ipv4_next_hop": {
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
 							"in_bytes": { "index": "not_analyzed", "type": "long" },
 							"in_pkts": { "index": "not_analyzed", "type": "long" },
 							"out_bytes": { "index": "not_analyzed", "type": "long" },
 							"out_pkts": { "index": "not_analyzed", "type": "long" },
 							"input_snmp": { "index": "not_analyzed", "type": "long" },
 							"output_snmp": { "index": "not_analyzed", "type": "long" },
-							"ipv4_dst_addr1": { "index": "analyzed", "type": "string" },
-							"ipv4_src_addr1": { "index": "analyzed", "type": "string" },
+							"ipv4_dst_addr": { 
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
+							"ipv4_src_addr": { 
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
 							"dst_mask": { "index": "analyzed", "type": "integer" },
 							"src_mask": { "index": "analyzed", "type": "integer" },
 							"dst_as": { "index": "analyzed", "type": "integer" },
