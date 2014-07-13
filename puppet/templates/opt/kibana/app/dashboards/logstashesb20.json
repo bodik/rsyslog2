@@ -236,7 +236,7 @@
           },
           "field_list": true,
           "status": "Stable",
-          "trimFactor": 400,
+          "trimFactor": 600,
           "normTimes": true,
           "all_fields": false
         }
