@@ -25,9 +25,11 @@ file { "/opt/kibana/dash.html":
 	require => Class["kibana::install"],
 	
 }
-file { "/opt/kibana/app/dashboards/logstashesb20.json":
-	source => "/puppet/templates/opt/kibana/app/dashboards/logstashesb20.json",
+file { "/opt/kibana/app/dashboards":
+	source => "/puppet/templates/opt/kibana/app/dashboards",
+	recurse => true,
 	owner => "root", group => "root", mode => "0644",
 	require => Class["kibana::install"],
 	
 }
+

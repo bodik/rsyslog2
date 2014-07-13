@@ -9,7 +9,7 @@
 
   <service>
     <type>_rediser._tcp</type>
-    <port>16377</port>
+    <port>49558</port>
   </service>
 
   <service>
