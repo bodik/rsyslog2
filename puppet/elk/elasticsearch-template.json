@@ -1,0 +1,106 @@
+{
+	"template" : "logstash-*",
+		"settings" : {
+			"index.refresh_interval" : "5s",
+			"index.number_of_replicas" : "1",
+			"index.number_of_shards" : "8",
+			"index.cache.field.type": "soft"
+		},
+		"mappings" : {
+
+			"_default_" : {
+				"_all" : {"enabled" : true},
+				"dynamic_templates" : [ {
+					"string_fields" : {
+						"match" : "*",
+						"match_mapping_type" : "string",
+						"mapping" : {
+							"type" : "string", "index" : "analyzed", "omit_norms" : true,
+							"fields" : {
+								"raw" : {"type": "string", "index" : "not_analyzed", "ignore_above" : 256}
+							}
+						}
+					}
+				} ],
+				"properties" : {
+					"@version": { "type": "string", "index": "not_analyzed" },
+					"geoip"  : {
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"location" : { "type" : "geo_point" }
+						}
+					}
+				}
+			},
+
+
+			"warden" : {
+				"_all" : { "enabled" : true },
+				"properties" : {
+					"attack_scale" : { "type" : "integer" },
+					"target_port" : { "type" : "integer" }           
+				}
+			},
+
+
+			"nf": {
+				"_all" : { "enabled" : true },
+				"properties": {
+					"netflow" : {
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"version": { "index": "analyzed", "type": "integer" },
+							"engine_id": { "index": "analyzed", "type": "integer" },
+							"engine_type": { "index": "analyzed", "type": "integer" },
+							"first_switched": { "index": "not_analyzed", "type": "date" },
+							"last_switched": { "index": "not_analyzed", "type": "date" },
+							"direction": { "index": "not_analyzed", "type": "integer" },
+							"flowset_id": { "index": "not_analyzed", "type": "integer" },
+							"flow_sampler_id": { "index": "not_analyzed", "type": "integer" },
+							"flow_records": { "index": "not_analyzed", "type": "long" },
+							"flow_seq_num": { "index": "not_analyzed", "type": "long" },
+							"sampling_algorithm": { "index": "not_analyzed", "type": "integer" },
+							"sampling_interval": { "index": "not_analyzed", "type": "integer" },
+							"src_tos": { "index": "not_analyzed", "type": "integer" },
+							"tcp_flags": { "index": "not_analyzed", "type": "integer" },
+							"protocol": { "index": "not_analyzed", "type": "integer" },
+							"ipv4_next_hop": {
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
+							"in_bytes": { "index": "not_analyzed", "type": "long" },
+							"in_pkts": { "index": "not_analyzed", "type": "long" },
+							"out_bytes": { "index": "not_analyzed", "type": "long" },
+							"out_pkts": { "index": "not_analyzed", "type": "long" },
+							"input_snmp": { "index": "not_analyzed", "type": "long" },
+							"output_snmp": { "index": "not_analyzed", "type": "long" },
+							"ipv4_dst_addr": { 
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
+							"ipv4_src_addr": { 
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							},
+							"dst_mask": { "index": "analyzed", "type": "integer" },
+							"src_mask": { "index": "analyzed", "type": "integer" },
+							"dst_as": { "index": "analyzed", "type": "integer" },
+							"src_as": { "index": "analyzed", "type": "integer" },
+							"l4_dst_port": { "index": "not_analyzed", "type": "long" },
+							"l4_src_port": { "index": "not_analyzed", "type": "long" }
+						}
+					}
+				}
+			}
+		}
+}
