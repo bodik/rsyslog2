@@ -38,6 +38,15 @@ if ( $rediser_server ) {
 	notify { "input rediser passive": }
 }
 
+
+
+logstash::configfile { 'netflow':
+	content => template("/puppet/templates/etc/logstash/conf.d/input-netflow.conf"),
+	order => 10,
+}
+
+
+
 logstash::configfile { 'filter-syslog':
 	content => template("/puppet/templates/etc/logstash/conf.d/filter-syslog.conf"),
 	order => 30,
