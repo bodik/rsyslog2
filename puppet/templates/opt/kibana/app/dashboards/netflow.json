@@ -1,5 +1,5 @@
 {
-  "title": "logstashesb20",
+  "title": "netflow2",
   "services": {
     "query": {
       "list": {
@@ -22,7 +22,7 @@
         "0": {
           "type": "time",
           "field": "@timestamp",
-          "from": "now-6h",
+          "from": "now-15m",
           "to": "now",
           "mandate": "must",
           "active": true,
@@ -55,7 +55,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "5m",
+          "interval": "10s",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -125,7 +125,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "netflow.ipv4_src_addr.raw",
+          "field": "netflow.ipv4_src_addr",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -189,6 +189,162 @@
       "notice": false
     },
     {
+      "title": "Stats",
+      "height": "150px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "span": 4,
+          "editable": true,
+          "type": "histogram",
+          "loadingEditor": false,
+          "mode": "total",
+          "time_field": "@timestamp",
+          "value_field": "netflow.in_pkts",
+          "x-axis": true,
+          "y-axis": true,
+          "scale": 1,
+          "y_format": "none",
+          "grid": {
+            "max": null,
+            "min": 0
+          },
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "annotate": {
+            "enable": false,
+            "query": "*",
+            "size": 20,
+            "field": "_type",
+            "sort": [
+              "_score",
+              "desc"
+            ]
+          },
+          "auto_int": true,
+          "resolution": 100,
+          "interval": "10s",
+          "intervals": [
+            "auto",
+            "1s",
+            "1m",
+            "5m",
+            "10m",
+            "30m",
+            "1h",
+            "3h",
+            "12h",
+            "1d",
+            "1w",
+            "1y"
+          ],
+          "lines": true,
+          "fill": 0,
+          "linewidth": 1,
+          "points": false,
+          "pointradius": 5,
+          "bars": false,
+          "stack": false,
+          "spyable": true,
+          "zoomlinks": true,
+          "options": true,
+          "legend": true,
+          "show_query": true,
+          "interactive": true,
+          "legend_counts": true,
+          "timezone": "browser",
+          "percentage": false,
+          "zerofill": true,
+          "derivative": false,
+          "tooltip": {
+            "value_type": "individual",
+            "query_as_alias": true
+          },
+          "title": "Packets"
+        },
+        {
+          "span": 4,
+          "editable": true,
+          "type": "histogram",
+          "loadingEditor": false,
+          "mode": "total",
+          "time_field": "@timestamp",
+          "value_field": "netflow.in_bytes",
+          "x-axis": true,
+          "y-axis": true,
+          "scale": 1,
+          "y_format": "bytes",
+          "grid": {
+            "max": null,
+            "min": 0
+          },
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "annotate": {
+            "enable": false,
+            "query": "*",
+            "size": 20,
+            "field": "_type",
+            "sort": [
+              "_score",
+              "desc"
+            ]
+          },
+          "auto_int": true,
+          "resolution": 100,
+          "interval": "10s",
+          "intervals": [
+            "auto",
+            "1s",
+            "1m",
+            "5m",
+            "10m",
+            "30m",
+            "1h",
+            "3h",
+            "12h",
+            "1d",
+            "1w",
+            "1y"
+          ],
+          "lines": true,
+          "fill": 0,
+          "linewidth": 1,
+          "points": false,
+          "pointradius": 5,
+          "bars": false,
+          "stack": false,
+          "spyable": true,
+          "zoomlinks": true,
+          "options": true,
+          "legend": true,
+          "show_query": true,
+          "interactive": true,
+          "legend_counts": true,
+          "timezone": "browser",
+          "percentage": false,
+          "zerofill": true,
+          "derivative": false,
+          "tooltip": {
+            "value_type": "cumulative",
+            "query_as_alias": true
+          },
+          "title": "Bytes"
+        }
+      ],
+      "notice": false
+    },
+    {
       "title": "Events",
       "height": "350px",
       "editable": true,
@@ -208,7 +364,7 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "@timestamp",
+            "netflow.first_switched",
             "desc"
           ],
           "style": {
@@ -224,7 +380,8 @@
             "netflow.ipv4_dst_addr",
             "netflow.l4_src_port",
             "netflow.l4_dst_port",
-            "netflow.protocol"
+            "netflow.protocol",
+            "netflow.tcp_flags"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -243,7 +400,7 @@
           "status": "Stable",
           "trimFactor": 600,
           "normTimes": true,
-          "all_fields": false
+          "all_fields": true
         }
       ],
       "notice": false
@@ -262,13 +419,21 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": false,
+      "collapse": true,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
         "_type:\"nf\"",
-        "_type:\"syslog\""
+        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10. TO 10.4.]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10. TO 10.4.]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.3]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.36]",
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.25 TO 10.4.1.36]"
       ],
       "remember": 10,
       "enable": true
