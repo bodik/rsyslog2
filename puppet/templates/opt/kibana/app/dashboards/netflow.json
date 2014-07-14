@@ -1,5 +1,5 @@
 {
-  "title": "netflow4",
+  "title": "netflow5",
   "services": {
     "query": {
       "list": {
@@ -22,7 +22,7 @@
         "0": {
           "type": "time",
           "field": "@timestamp",
-          "from": "now-15m",
+          "from": "now-24h",
           "to": "now",
           "mandate": "must",
           "active": true,
@@ -55,7 +55,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "10m",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -201,7 +201,7 @@
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
-          "time_field": "netflow.first_switched",
+          "time_field": "@timestamp",
           "value_field": "netflow.in_pkts",
           "x-axis": true,
           "y-axis": true,
@@ -229,7 +229,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "10m",
           "intervals": [
             "auto",
             "1s",
@@ -274,7 +274,7 @@
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
-          "time_field": "netflow.first_switched",
+          "time_field": "@timestamp",
           "value_field": "netflow.in_bytes",
           "x-axis": true,
           "y-axis": true,
@@ -302,7 +302,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "10m",
           "intervals": [
             "auto",
             "1s",
@@ -507,7 +507,7 @@
     {
       "type": "filtering",
       "collapse": true,
-      "notice": false,
+      "notice": true,
       "enable": true
     }
   ],
