@@ -28,6 +28,10 @@ elasticsearch::plugin{'bleskes/sense':
 	module_dir => 'sense',
 	instances  => 'es01'
 }
+elasticsearch::plugin{'karmi/elasticsearch-paramedic':
+	module_dir => 'paramedic',
+	instances  => 'es01'
+}
 
 package { ["curl", "python-requests"]:
 	ensure => installed,
