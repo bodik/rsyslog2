@@ -67,6 +67,12 @@ vm_ssh() {
 }
 
 vm_start() {
+	if [ -z $1 ]; then
+		TEMPLATE="bodik-wheezy-metacloud"
+	else
+		TEMPLATE=$1
+	fi
+
 	#/puppet/jenkins/metacloud.init status | grep $VMNAME
 	onevm list -v -f NAME=$VMNAME | grep $ONEUSERNAME
 	if [ $? -eq 0 ]; then
@@ -74,7 +80,7 @@ vm_start() {
 	fi
 
 	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $VMNAME
-	onetemplate instantiate bodik-wheezy-metacloud --name $VMNAME
+	onetemplate instantiate $TEMPLATE --name $VMNAME
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
@@ -168,7 +174,7 @@ case "$1" in
 		vm_build
 	;;
 	start)
-		vm_start
+		vm_start "$2"
 	;;
 	status)
 		vm_status
