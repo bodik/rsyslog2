@@ -1,5 +1,5 @@
 {
-  "title": "netflow2",
+  "title": "netflow4",
   "services": {
     "query": {
       "list": {
@@ -196,12 +196,12 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 4,
+          "span": 3,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
-          "time_field": "@timestamp",
+          "time_field": "netflow.first_switched",
           "value_field": "netflow.in_pkts",
           "x-axis": true,
           "y-axis": true,
@@ -269,12 +269,12 @@
           "title": "Packets"
         },
         {
-          "span": 4,
+          "span": 3,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
-          "time_field": "@timestamp",
+          "time_field": "netflow.first_switched",
           "value_field": "netflow.in_bytes",
           "x-axis": true,
           "y-axis": true,
@@ -340,6 +340,72 @@
             "query_as_alias": true
           },
           "title": "Bytes"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "netflow.l4_dst_port",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "bar",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Dst ports"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "netflow.l4_src_port",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "bar",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Src ports"
         }
       ],
       "notice": false
@@ -364,7 +430,7 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "netflow.first_switched",
+            "netflow.in_pkts",
             "desc"
           ],
           "style": {
@@ -441,7 +507,7 @@
     {
       "type": "filtering",
       "collapse": true,
-      "notice": true,
+      "notice": false,
       "enable": true
     }
   ],
@@ -494,5 +560,5 @@
     "load_local": true,
     "hide": false
   },
-  "refresh": "1m"
+  "refresh": "30s"
 }
