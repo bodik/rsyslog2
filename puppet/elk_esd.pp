@@ -17,17 +17,19 @@ class { 'elasticsearch':
 	 }
 }
 elasticsearch::instance { 'es01': }
+
 #docasne vypnuto, nepouziva se a nejak spatne se dela instalace (github fuckoff)
 #elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 #	module_dir => 'kopf',
 #	instances  => 'es01'
 #}
+#elasticsearch::plugin{'bleskes/sense':
+#	module_dir => 'sense',
+#	instances  => 'es01'
+#}
+
 elasticsearch::plugin{'mobz/elasticsearch-head':
 	module_dir => 'head',
-	instances  => 'es01'
-}
-elasticsearch::plugin{'bleskes/sense':
-	module_dir => 'sense',
 	instances  => 'es01'
 }
 elasticsearch::plugin{'karmi/elasticsearch-paramedic':

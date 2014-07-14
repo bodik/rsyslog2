@@ -98,7 +98,7 @@ vm_start() {
 	rm /etc/apt/sources.list.d/meta_depot.list;
 	apt-get clean;
 	apt-get update;
-	apt-get purge -y rsyslog rsyslog-gssapi puppet;
+	apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;
 	rm -r /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*
 	'
 
@@ -222,6 +222,9 @@ case "$1" in
 	;;
 	sshc)
 		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+	;;
+	sshe)
+		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
 	;;
 	update)
 		magrathea_update

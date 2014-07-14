@@ -76,5 +76,9 @@ file { "/usr/local/bin/metacloud.init":
 	ensure => link,
 	target => "/puppet/jenkins/metacloud.init",
 }
+file { "/usr/local/bin/magrathea.init":
+	ensure => link,
+	target => "/puppet/jenkins/magrathea.init",
+}
 
 
