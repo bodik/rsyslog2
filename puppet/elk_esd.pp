@@ -6,6 +6,7 @@ class { 'elasticsearch':
 	manage_repo  => true,
 	repo_version => '1.2',
 	java_install => true,
+	datadir => '/scratch',
 	config => { 
 		'cluster.name' => 'mrx',
 		'transport.tcp.port' => '39300-39400',
