@@ -29,6 +29,6 @@ elasticsearch::plugin{'bleskes/sense':
 	instances  => 'es01'
 }
 
-package { "curl":
+package { ["curl", "python-requests"]:
 	ensure => installed,
 }
