@@ -16,12 +16,12 @@ fi
 
 netstat -nlpa | grep " $(pgrep -f org.elasticsearch.bootstrap.Elasticsearch)/java" | grep LISTEN | grep ":39200"
 if [ $? -ne 0 ]; then
-	rreturn 1 "$0 rsyslogd http listener"
+	rreturn 1 "$0 esd http listener"
 fi
 
 wget "http://$(facter fqdn):39200" -q -O /dev/null
 if [ $? -ne 0 ]; then
-	rreturn 1 "$0 rsyslogd http interface"
+	rreturn 1 "$0 esd http interface"
 fi
 
 
