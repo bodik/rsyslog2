@@ -22,13 +22,16 @@ case "$1" in
 	start)
         	echo -n "Starting rediser: "
 
-		$0 status 1>/dev/null
-		if [ $? -eq 0 ]; then
-			rreturn 1 "already running"
-		fi
+#		TODO: nefunguje, vylepsit
+#		$0 status 1>/dev/null
+#		if [ $? -eq 0 ]; then
+#			rreturn 1 "already running"
+#		fi
 	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-syslog-filter.sh" 0.0.0.0 49558 &
 	        echo $! > /var/run/rediser.pid
 
+	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-netflow-filter.sh" 0.0.0.0 49559 &
+	        echo $! >> /var/run/rediser.pid
 
 #		pgrep -f rediser-mongo-ssh-filter.sh 1>/dev/null
 #		if [ $? -eq 0 ]; then
@@ -45,7 +48,7 @@ case "$1" in
 	        echo "done"
 	;;
 	status)
-                pgrep -f rediser-syslog-filter.sh 1>/dev/null
+                pgrep -f rediser 1>/dev/null
                 if [ $? -eq 0 ]; then
                         rreturn 0 "running"
                 fi
