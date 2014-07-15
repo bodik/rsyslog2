@@ -25,7 +25,7 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rediser check_procs"
 fi
 
-netstat -nlpa | grep "$(pidof ncat)/nca" | grep LISTEN | grep :49558
+netstat -nlpa | grep "/ncat " | grep LISTEN | grep :49558
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rediser listener"
 fi
