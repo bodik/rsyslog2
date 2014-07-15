@@ -20,14 +20,21 @@ file { '/etc/logstash/patterns/metacentrum':
 }
 
 
+
+
 if ( $rediser_server ) {
 	logstash::configfile { 'input-rediser-syslog':
         	content => template("/puppet/templates/etc/logstash/conf.d/input-rediser-syslog.conf.erb"),
 		order => 10,
 		notify => Service["logstash"],
 	}
+	logstash::configfile { 'input-rediser-netflow':
+        	content => template("/puppet/templates/etc/logstash/conf.d/input-rediser-netflow.conf.erb"),
+		order => 10,
+		notify => Service["logstash"],
+	}
 	notify { "input rediser active":
-		require => Logstash::Configfile['input-rediser-syslog'],
+		require => [Logstash::Configfile['input-rediser-syslog'], Logstash::Configfile['input-rediser-netflow']],
 	}
 } else {
 	logstash::configfile { 'input-rediser-syslog':
@@ -35,10 +42,13 @@ if ( $rediser_server ) {
 		order => 10,
 		notify => Service["logstash"],
 	}
+	logstash::configfile { 'input-rediser-netflow':
+        	content => "#input-rediser-netflow passive\n",
+		order => 10,
+		notify => Service["logstash"],
+	}
 	notify { "input rediser passive": }
 }
-
-
 
 logstash::configfile { 'netflow':
 	content => template("/puppet/templates/etc/logstash/conf.d/input-netflow.conf"),
@@ -47,11 +57,24 @@ logstash::configfile { 'netflow':
 
 
 
+
+
 logstash::configfile { 'filter-syslog':
 	content => template("/puppet/templates/etc/logstash/conf.d/filter-syslog.conf"),
 	order => 30,
 	notify => Service["logstash"],
 }
+logstash::configfile { 'filter-netflow':
+	content => template("/puppet/templates/etc/logstash/conf.d/filter-netflow.conf"),
+	order => 30,
+	notify => Service["logstash"],
+}
+
+
+
+
+
+
 
 logstash::configfile { 'output-esh-local':
 	content => template("/puppet/templates/etc/logstash/conf.d/output-esh-local.conf"),
