@@ -47,8 +47,8 @@
 			"nz" : {
 				"_all" : { "enabled" : true },
 				"properties" : {
-					"ts": { "index": "not_analyzed", "type": "date" },
-					"te": { "index": "not_analyzed", "type": "date" },
+					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
+					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
 					"td": { "index": "not_analyzed", "type": "float" },
 					"sa": {
 						"type": "ip", "index": "analyzed",
@@ -64,9 +64,9 @@
 					},
 					"sp": { "index": "not_analyzed", "type": "integer" },
 					"dp": { "index": "not_analyzed", "type": "integer" },
-					"pr": { "index": "not_analyzed", "type": "integer" },
+					"pr": { "index": "not_analyzed", "type": "string" },
 					"flg": { 
-						"index": "not_analyzed", "type": "string" 
+						"index": "not_analyzed", "type": "string",
 						"fields": {
 							"raw": {"type": "string","index": "not_analyzed"}
 						}
@@ -76,7 +76,6 @@
 					"in": { "index": "not_analyzed", "type": "integer" }
 				}
 			},
-
 
 			"nf": {
 				"_all" : { "enabled" : true },
