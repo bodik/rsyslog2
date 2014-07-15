@@ -2,9 +2,9 @@ input {
 	redis {
 		data_type => "list"
 		host => "<%= rediser_server %>"
-		key => "netflow"
+		key => "nz"
 		port => 16379
-		type => "netflow"
+		type => "nz"
 		threads => 1
 		batch_count => 1000
 		codec => line {}
