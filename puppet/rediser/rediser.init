@@ -43,6 +43,9 @@ case "$1" in
                 fi
 		rreturn 1 "not running"
 	;;
+	cli)
+		redis-cli -p 16379
+	;;
 	*)
 		ps faxu | grep redis
 		exit 1

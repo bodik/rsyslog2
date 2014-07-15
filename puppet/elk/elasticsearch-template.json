@@ -51,8 +51,30 @@
 					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
 					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
 					"td": { "index": "not_analyzed", "type": "float" },
-					"sa": { "index": "not_analyzed", "type": "string" },
-					"da": { "index": "not_analyzed", "type": "string" },
+					"sa": {
+						"type": "ip", "index": "analyzed",
+						"fields": {
+							"raw": {"type": "string","index": "not_analyzed"}
+						}
+					},
+					"da": {
+						"type": "ip", "index": "analyzed",
+						"fields": {
+							"raw": {"type": "string","index": "not_analyzed"}
+						}
+					},
+					"sa6": { 
+						"index": "analyzed", "type": "string",  "omit_norms" : true,
+						"fields" : {
+							"raw" : {"type": "string", "index" : "not_analyzed"}
+						}
+					},
+					"da6": { 
+						"index": "analyzed", "type": "string", "omit_norms" : true,
+						"fields" : {
+							"raw" : {"type": "string", "index" : "not_analyzed"}
+						}
+					},
 					"sp": { "index": "not_analyzed", "type": "integer" },
 					"dp": { "index": "not_analyzed", "type": "integer" },
 					"pr": { "index": "not_analyzed", "type": "string" },
