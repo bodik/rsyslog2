@@ -1,5 +1,5 @@
 {
-  "title": "nz3",
+  "title": "nz4",
   "services": {
     "query": {
       "list": {
@@ -287,72 +287,6 @@
       "panels": [
         {
           "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "sa",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 5,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": true,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Sources4"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "da",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 5,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": true,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Destinations4"
-        },
-        {
-          "error": false,
           "span": 3,
           "editable": true,
           "type": "terms",
@@ -382,7 +316,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Dst ports"
+          "title": "top Dst ports"
         },
         {
           "error": false,
@@ -415,7 +349,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "Src ports"
+          "title": "top Src ports"
         },
         {
           "error": false,
@@ -425,8 +359,8 @@
           "loadingEditor": false,
           "field": "pf",
           "exclude": [],
-          "missing": true,
-          "other": true,
+          "missing": false,
+          "other": false,
           "size": 2,
           "order": "count",
           "style": {
@@ -449,6 +383,181 @@
           "tstat": "total",
           "valuefield": "",
           "title": "PF"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "pr",
+          "exclude": [],
+          "missing": false,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "top pr"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "Hosts",
+      "height": "150px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "sa",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 8,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "top Sources4"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "da",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 8,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "top Destinations4"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "sa6",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 8,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "top Sources6"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "da6",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 8,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "top Destinations6"
         }
       ],
       "notice": false
@@ -609,5 +718,5 @@
     "load_local": true,
     "hide": false
   },
-  "refresh": "30s"
+  "refresh": false
 }
