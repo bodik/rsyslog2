@@ -8,7 +8,7 @@ puppet apply -dv elk_esd.pp
 
 #LOGSTASH
 puppet module install elasticsearch-logstash
-export FACTER_rediser_server=$(/puppet/avahi.findservice.sh _rediser._tcp)
+export FACTER_rediser_server=$(/puppet/avahi/avahi.findservice.sh _rediser._tcp)
 puppet apply -dv elk_lsl.pp
 
 

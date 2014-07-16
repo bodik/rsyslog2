@@ -1,6 +1,6 @@
 puppet apply -vd avahi.pp
 
-export FACTER_rediser_server=$(/puppet/avahi.findservice.sh _rediser._tcp)
+export FACTER_rediser_server=$(/puppet/avahi/avahi.findservice.sh _rediser._tcp)
 
 puppet apply fprobe.pp
 
