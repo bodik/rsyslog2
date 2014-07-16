@@ -2,11 +2,21 @@
 
 import '/puppet/avahi.pp'
 
+
+$m = split($::memorytotal, " ")
+if ( $m[1] == "GB" ) {
+	$half = floor($m[0] / 2)
+	$config_hash = {
+	  'ES_HEAP_SIZE' => "${half}g",
+	}
+}
+
 class { 'elasticsearch':
 	manage_repo  => true,
 	repo_version => '1.2',
 	java_install => true,
 	datadir => '/scratch',
+	init_defaults => $config_hash,
 	config => { 
 		'cluster.name' => 'mrx',
 		'transport.tcp.port' => '39300-39400',
