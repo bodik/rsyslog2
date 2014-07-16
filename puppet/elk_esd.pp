@@ -29,7 +29,7 @@ elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 	instances  => 'es01'
 }
 elasticsearch::plugin{'royrusso/elasticsearch-HQ':
-	module_dir => 'elasticsearch-HQ',
+	module_dir => 'HQ',
 	instances  => 'es01'
 }
 elasticsearch::plugin{'lukas-vlcek/bigdesk':

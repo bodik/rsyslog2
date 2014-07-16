@@ -8,10 +8,6 @@ class { 'logstash':
 	manage_repo  => true,
 	repo_version => '1.4',
 }
-logstash::configfile { 'simple':
-	content => template("/puppet/templates/etc/logstash/conf.d/simple.conf"),
-#	order => 10,
-}
 file { '/etc/logstash/patterns/metacentrum':
 	source => '/puppet/templates/etc/logstash/patterns/metacentrum',
 	owner => "root", group => "root", mode => "0644",
@@ -19,7 +15,26 @@ file { '/etc/logstash/patterns/metacentrum':
 	notify => Service["logstash"],
 }
 
+if $processorcount < 6 {
+	$lsl_workers = 2
+} else {
+	$lsl_workers = 4
+}
+augeas { "/etc/default/logstash" :
+	context => "/files/etc/default/logstash",
+	changes => [
+		"set LS_OPTS \"'-w $lsl_workers'\""
+	],
+	require => Package["logstash"],
+	notify => Service["logstash"],
+}
 
+
+
+logstash::configfile { 'simple':
+	content => template("/puppet/templates/etc/logstash/conf.d/simple.conf"),
+#	order => 10,
+}
 
 
 if ( $rediser_server ) {
