@@ -91,8 +91,9 @@ logstash::configfile { 'filter-nz':
 
 
 
-logstash::configfile { 'output-esh-local':
-	content => template("/puppet/templates/etc/logstash/conf.d/output-esh-local.conf"),
+logstash::configfile { 'output-es':
+	content => template("/puppet/templates/etc/logstash/conf.d/output-es-node.conf"),
+	#content => template("/puppet/templates/etc/logstash/conf.d/output-esh-local.conf"),
 	order => 50,
 	notify => Service["logstash"],
 }
