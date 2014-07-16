@@ -28,20 +28,10 @@
           "active": true,
           "alias": "",
           "id": 0
-        },
-        "1": {
-          "type": "field",
-          "field": "flg",
-          "query": "\".AP.SF\"",
-          "mandate": "must",
-          "active": true,
-          "alias": "",
-          "id": 1
         }
       },
       "ids": [
-        0,
-        1
+        0
       ]
     }
   },
@@ -433,7 +423,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "sa",
+          "field": "sa.raw",
           "exclude": [],
           "missing": false,
           "other": false,
@@ -466,7 +456,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "da",
+          "field": "da.raw",
           "exclude": [],
           "missing": false,
           "other": false,
@@ -499,7 +489,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "sa6",
+          "field": "sa6.raw",
           "exclude": [],
           "missing": false,
           "other": false,
@@ -532,7 +522,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "da6",
+          "field": "da6.raw",
           "exclude": [],
           "missing": false,
           "other": false,
