@@ -68,7 +68,7 @@ vm_ssh() {
 
 vm_start() {
 	if [ -z $1 ]; then
-		TEMPLATE="bodik-wheezy-metacloud"
+		TEMPLATE="rsyslog2-wheezy-metacloud"
 	else
 		TEMPLATE=$1
 	fi
@@ -79,7 +79,6 @@ vm_start() {
 		rreturn $? "metacloud vm already running"
 	fi
 
-	#onetemplate instantiate METACLOUD-Debian-7.0-x86_64-PV --name $VMNAME
 	onetemplate instantiate $TEMPLATE --name $VMNAME
 	RET=1
 	for i in `seq 1 600`; do
@@ -145,9 +144,20 @@ metacloud_login() {
 }
 
 metacloud_creds() {
-	echo "transfer credentials to /dev/shm"
+	echo "transfer credentials to /dev/shm and then login"
 	rm $ONE_AUTH
 	su jenkins
+	echo "try metacloud.init templates to sync vm templates"
+	
+}
+
+metacloud_templates() {
+	onetemplate delete rsyslog2-wheezy-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/template.rsyslog2-wheezy-metacloud
+	onetemplate delete rsyslog2-wheezy-metacloud-zcu 1>/dev/null
+	onetemplate create /puppet/jenkins/template.rsyslog2-wheezy-metacloud-zcu
+	onetemplate delete rsyslog2-wheezy-cerit-XL 1>/dev/null
+	onetemplate create /puppet/jenkins/template.rsyslog2-wheezy-cerit-XL
 }
 
 vm_list() {
@@ -163,6 +173,9 @@ metacloud_update() {
 case "$1" in
 	creds)
 		metacloud_creds
+	;;
+	templates)
+		metacloud_templates
 	;;
 	login)
 		metacloud_login
