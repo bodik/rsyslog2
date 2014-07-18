@@ -19,7 +19,7 @@
 /puppet/jenkins/magrathea.init start
 
 #vm image fixup
-/puppet/jenkins/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -r /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
+/puppet/jenkins/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
 
 /puppet/jenkins/magrathea.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ####/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
