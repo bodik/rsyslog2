@@ -17,8 +17,11 @@
 /puppet/jenkins/metacloud.init login
 /puppet/jenkins/metacloud.init build
 /puppet/jenkins/metacloud.init start rsyslog2-wheezy-cerit-XL
+
+#vm image fixup
 sleep 60
 /puppet/jenkins/metacloud.init ssh &apos;rm /etc/apt/sources.list.d/puppetlabs.list; apt-get update&apos;
+
 /puppet/jenkins/metacloud.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ####/puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
 ################

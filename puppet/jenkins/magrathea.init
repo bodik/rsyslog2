@@ -92,28 +92,7 @@ vm_start() {
 		rreturn $RET "$0 start failed $VMNAME"
 	fi
 
-	#meta_depot bez rsyslog-relp fixup
-	#TODO TODOTODO
-	/puppet/jenkins/magrathea.init ssh '
-	rm /etc/apt/sources.list.d/meta_depot.list;
-	apt-get clean;
-	apt-get update;
-	apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;
-	rm -r /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*
-	'
-
 	rreturn 0 "$0 start"
-#	sleep 10
-#	for i in `seq 1 60`; do
-#		#toto dela cloudinit na svem konci pres template::user_data::runcmd
-#		/puppet/jenkins/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
-#		if [ $? -eq 0 ]; then
-#			rreturn 0 "$0 start"
-#		fi
-#		echo "INFO: waiting for cloud-init to finnish"
-#		sleep 1
-#	done
-#	rreturn 1 "$0 start failed"
 }
 
 vm_status() {
