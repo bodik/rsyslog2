@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export MUSERNAME="bodik"
+export MUSERNAME=$(cat /dev/shm/username)
 export MKTAB="/dev/shm/user.keytab"
 export MADMKTAB="/dev/shm/useradmin.keytab"
 export FRONT="minos.zcu.cz"

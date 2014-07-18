@@ -7,10 +7,10 @@ export ONE_HOST="https://cloud.metacentrum.cz"
 export ONE_AUTH="/dev/shm/one_x509"
 touch $ONE_AUTH
 export ONE_XMLRPC="$ONE_HOST:6443/RPC2"
-export ONEUSERNAME="bodik"
+export ONEUSERNAME=$(cat /dev/shm/username)
 export ONECRT="/dev/shm/usercert.pem"
 export ONEKEY="/dev/shm/userkey.pem"
-export ONERSA="/dev/shm/vmes1"
+export ONERSA="/dev/shm/sshkey"
 
 
 
@@ -145,7 +145,7 @@ metacloud_login() {
 }
 
 metacloud_creds() {
-	echo "scp bodik@bodik.zcu.cz:~/meta/certs/* /dev/shm/"
+	echo "transfer credentials to /dev/shm"
 	rm $ONE_AUTH
 	su jenkins
 }
