@@ -2,7 +2,7 @@ rsyslog2
 
 * masterless puppet + bash automatizace cloudu
 
-* sudo (wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh)
+* wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
 * cd /puppet && ls -l
 
 komponenta.install.sh - nainstaluje/opravi
@@ -21,15 +21,12 @@ komponenty:
 * elk - elasticsearch,logstash,kibana
 * fprobe - testovaci netflow sonda
 
-
 * jenkins
   system pro automatizaci ukonu, pouziva rozhrani pro ruzne cloudy
 
 	* metacloud.init - dev/ops prostredi
-
 	* kvm.init - pouze lokalni testy, spatne sitovani
-	* magrathea.init - neni vhodne vyzaduje specialni kredence
-		(ops metacentrum.cz)
+	* magrathea.init - vyzaduje specialni prava (ops metacentrum.cz)
 
 
 usecases:
