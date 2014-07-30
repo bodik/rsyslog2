@@ -21,6 +21,7 @@ class { 'elasticsearch':
 		'cluster.name' => 'mrx',
 		'transport.tcp.port' => '39300-39400',
 		'http.port' => '39200-39300',
+		'script.disable_dynamic' => false,
 		###'discovery.zen.minimum_master_nodes' => '2',
 		###'index.number_of_replicas' => '1',
 		###'index.number_of_shards' => '8',
