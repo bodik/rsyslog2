@@ -9,6 +9,11 @@ file { "/etc/apt/sources.list.d/wheezy-backports.list":
         owner => "root", group => "root", mode => "0644",
         notify => Exec["apt-get update"],
 }
+file { "/etc/apt/sources.list.d/sid.list":
+        source => "/puppet/templates/etc/apt/sources.list.d/sid.list",
+        owner => "root", group => "root", mode => "0644",
+        notify => Exec["apt-get update"],
+}
 
 # v7.6 build deps
 package { 
