@@ -9,7 +9,7 @@ class rsyslog {
 	}
 
 
-	file { "/etc/apt/sources.list.d/sit.list":
+	file { "/etc/apt/sources.list.d/sid.list":
 	        source => "/puppet/templates/etc/apt/sources.list.d/sid.list",
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
