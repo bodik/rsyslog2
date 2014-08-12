@@ -1,0 +1,82 @@
+diff -rua rsyslog-5.8.6.orig/debian/rsyslog.init rsyslog-5.8.6/debian/rsyslog.init
+--- rsyslog-5.8.6.orig/debian/rsyslog.init	2011-11-02 23:31:54.000000000 +0100
++++ rsyslog-5.8.6/debian/rsyslog.init	2013-06-19 10:55:26.000000000 +0200
+@@ -14,6 +14,7 @@
+ 
+ #
+ # Author: Michael Biebl <biebl@debian.org>
++# bodik@civ.zcu.cz
+ #
+ 
+ # PATH should only include /usr/* if it runs after the mountnfs.sh script
+@@ -37,8 +38,45 @@
+ # Define LSB log_* functions.
+ . /lib/lsb/init-functions
+ 
++RSYSLOG_CCFILE="/tmp/krb5cc_rsyslog"
++
++do_refreshcc()
++{
++	export KRB5CCNAME="FILE:$RSYSLOG_CCFILE"
++	#MIT
++	klist --version 1>/dev/null 2>&1
++	if [ $? -eq 0 ]; then
++		#Heimdal
++		PRINC=`ktutil -k /etc/krb5.keytab list | grep "host/" | head -1 | awk '{print $3}'`
++		OUT=`kinit --no-afslog -k $PRINC 2>&1`
++	else
++		#MIT ;)
++		PRINC=`klist -k | grep "host/" | head -1 | awk '{print $2}'`
++		OUT=`kinit -k $PRINC 2>&1`
++	fi
++	RET=$?
++	if [ $RET -ne 0 ]; then 
++		#echo "DEBUG: kinit ret $RET"
++		logger -s -p syslog.error -t "rsyslog.init[$$]" "refreshcc failed: $OUT"
++		rm -f $RSYSLOG_CCFILE
++		RJOBS=`grep -shc refreshcc /var/spool/cron/atjobs/* | awk 'BEGIN{sum=0}{sum+=$1}END{print sum}'`
++		if [ $RJOBS -le 1 ]; then #pokud bezim a odfailoval sem stejne se chci naplanovat
++			logger -s -p syslog.info -t "rsyslog.init[$$]" "refreshcc scheduling fast refresh"
++		        echo "$0 refreshcc &>/dev/null" | at "now + 19 minutes"
++		fi
++	else 
++		logger -p syslog.info -t "rsyslog.init[$$]" "refreshcc ok"
++	fi
++}
++
+ do_start()
+ {
++
++#	export RSYSLOG_DEBUGLOG="/var/log/rsyslogd"
++#	export RSYSLOG_DEBUG="Debug NoStdOut"
++	do_refreshcc
++	ulimit -c unlimited
++
+ 	DAEMON="$RSYSLOGD_BIN"
+ 	DAEMON_ARGS="$RSYSLOGD_OPTIONS"
+ 	PIDFILE="$RSYSLOGD_PIDFILE"
+@@ -60,6 +98,14 @@
+ 	#   1 if daemon was already stopped
+ 	#   other if daemon could not be stopped or a failure occurred
+ 	start-stop-daemon --stop --quiet --retry=TERM/30/KILL/5 --pidfile $PIDFILE --name $NAME
++
++	pidof rsyslogd 1>/dev/null 2>&1
++	if [ $? -eq 1 ]; then
++		#nebezi
++		rm -f $RSYSLOG_CCFILE
++	fi
++
++	#TODO: tady je poskozena navratova hodnota start-stop-daemon
+ }
+ 
+ #
+@@ -128,6 +174,9 @@
+   status)
+ 	status_of_proc -p $RSYSLOGD_PIDFILE $RSYSLOGD_BIN $RSYSLOGD && exit 0 || exit $?
+ 	;;
++  refreshcc)
++	do_refreshcc
++	;;
+   *)
+ 	echo "Usage: $SCRIPTNAME {start|stop|rotate|restart|force-reload|status}" >&2
+ 	exit 3
