@@ -1,8 +1,5 @@
 import '/puppet/lib.pp'
 
-package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper", "dh-autoreconf", "dh-systemd", "bison", "pkg-config"]:
-	ensure => installed,
-}
 
 file { "/etc/apt/sources.list.d/wheezy-backports.list":
         source => "/puppet/templates/etc/apt/sources.list.d/wheezy-backports.list",
@@ -13,6 +10,11 @@ file { "/etc/apt/sources.list.d/jessie.list":
         source => "/puppet/templates/etc/apt/sources.list.d/jessie.list",
         owner => "root", group => "root", mode => "0644",
         notify => Exec["apt-get update"],
+}
+
+package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper", "dh-autoreconf", "dh-systemd", "bison", "pkg-config"]:
+	ensure => installed,
+	require => [File["/etc/apt/sources.list.d/jessie.list"],Exec["apt-get update"]],
 }
 
 # v8.2 build deps
