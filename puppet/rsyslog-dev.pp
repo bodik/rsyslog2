@@ -1,6 +1,6 @@
 import '/puppet/lib.pp'
 
-package { ["dpkg-dev", "gcc", "make", "fakeroot"]:
+package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper", "dh-autoreconf", "dh-systemd", "bison", "pkg-config"]:
 	ensure => installed,
 }
 
@@ -17,10 +17,10 @@ file { "/etc/apt/sources.list.d/jessie.list":
 
 # v8.2 build deps
 package { 
-	[ "debhelper", "dh-autoreconf", "dh-systemd", "zlib1g-dev", "libmysqlclient-dev", "libpq-dev", "libmongo-client-dev", 
-	"libcurl4-gnutls-dev", "libkrb5-dev", "libgnutls-dev", "librelp-dev", "libestr-dev", "libee-dev",
- 	"liblognorm-dev", "liblogging-stdlog-dev", "libjson-c-dev", "uuid-dev", "pkg-config", "bison",
-	"libgcrypt-dev", "flex", "libgnutls28-dev"]:
+	[ "zlib1g-dev", "libmysqlclient-dev", "libpq-dev", "libmongo-client-dev", "libcurl4-gnutls-dev", 
+	  "libkrb5-dev", "libgnutls-dev", "librelp-dev", "libestr-dev", "libee-dev", "liblognorm-dev", 
+	  "liblogging-stdlog-dev", "libjson-c-dev", "uuid-dev", "libgcrypt-dev", "flex", "libgnutls28-dev"
+	]:
 	ensure => installed,
 	require => [File["/etc/apt/sources.list.d/jessie.list"],Exec["apt-get update"]],
 }
