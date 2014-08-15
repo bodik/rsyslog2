@@ -1,0 +1,16 @@
+#vzdalene logovani
+
+module(load="omgssapi")
+*.* action(type="omgssapi"
+        target="<%= rsyslog_server %>"
+        port="515"
+        queue.FileName="omfwd3"
+        queue.Type="LinkedList"
+        queue.MaxDiskSpace="100m"
+        queue.SaveOnShutdown="on"
+        queue.TimeoutEnqueue="100"
+        action.ResumeRetryCount="-1"
+)
+
+
+
