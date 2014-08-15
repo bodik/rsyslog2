@@ -8,6 +8,11 @@ class rsyslog {
 		ensure => running,
 	}
 
+	file { "/etc/apt/sources.list.d/meta-rsyslog.list":
+	        source => "/puppet/templates/etc/apt/sources.list.d/meta-rsyslog.list",
+	        owner => "root", group => "root", mode => "0644",
+	        notify => Exec["apt-get update"],
+	}
 
 	file { "/etc/apt/sources.list.d/jessie.list":
 	        source => "/puppet/templates/etc/apt/sources.list.d/jessie.list",

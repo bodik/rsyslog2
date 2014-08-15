@@ -21,12 +21,6 @@ file { "/etc/apt/sources.list.d/wheezy.list":
         notify => Exec["apt-get update"],
 }
 
-#file { "/etc/apt/preferences.d/00wheezy-all":
-#        source => "/puppet/templates/etc/apt/preferences.d/00wheezy-all",
-#        owner => "root", group => "root", mode => "0644",
-#        notify => Exec["apt-get update"],
-#}
-
 cron { "apt":
   command => "/usr/bin/aptitude update 1>/dev/null",
   user    => root,
@@ -46,5 +40,14 @@ case $hostname {
 file { "/etc/hosts":
         content => template($tmp_file),
         owner => "root", group => "root", mode => "0644",
+}
+
+file { [ "/etc/puppet/modules/customfacts/", "/etc/puppet/modules/customfacts/lib/", "/etc/puppet/modules/customfacts/lib/facter/" ]:
+	ensure => "directory",
+}
+file { "/etc/puppet/modules/customfacts/lib/facter/file_exists.rb":
+	source => "templates/etc/puppet/modules/customfacts/lib/facter/file_exists.rb",
+	owner => "root", group => "root", mode => "0644",
+	require => File["/etc/puppet/modules/customfacts/lib/facter/"],
 }
 

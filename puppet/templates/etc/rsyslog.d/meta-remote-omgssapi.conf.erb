@@ -1,16 +1,26 @@
 #vzdalene logovani
+$ModLoad omgssapi
+$GSSForwardServiceName host
 
-module(load="omgssapi")
-*.* action(type="omgssapi"
-        target="<%= rsyslog_server %>"
-        port="515"
-        queue.FileName="omfwd3"
-        queue.Type="LinkedList"
-        queue.MaxDiskSpace="100m"
-        queue.SaveOnShutdown="on"
-        queue.TimeoutEnqueue="100"
-        action.ResumeRetryCount="-1"
-)
+$ActionQueueType LinkedList        # use asynchronous processing
+$ActionQueueFileName omgssapi1      # set file name, also enables disk mode
+$ActionResumeRetryCount -1         # infinite retries on insert failure
+$ActionQueueSaveOnShutdown on      # save in-memory data if rsyslog shuts down
+$ActionQueueMaxDiskSpace 100m      # limit disk cache
+$ActionQueueTimeoutEnqueue 100     # dont block worker indefinitely when cache fills up
+*.* :omgssapi:<%= rsyslog_server %>:515
+
+#module(load="omgssapi")
+#*.* action(type="omgssapi"
+#        target="<%= rsyslog_server %>"
+#        port="515"
+#        queue.FileName="omgssapi1"
+#        queue.Type="LinkedList"
+#        queue.MaxDiskSpace="100m"
+#        queue.SaveOnShutdown="on"
+#        queue.TimeoutEnqueue="100"
+#        action.ResumeRetryCount="-1"
+#)
 
 
 

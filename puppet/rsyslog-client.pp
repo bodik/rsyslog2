@@ -18,9 +18,15 @@ class rsyslog-client (
 		notify => Service["rsyslog"],
 		
 	}
+
+	if file_exists ("/etc/krb5.keytab") == 0 {
+		$forward_template = "/puppet/templates/etc/rsyslog.d/meta-remote-omrelp.conf.erb"
+	} else {
+		$forward_template = "/puppet/templates/etc/rsyslog.d/meta-remote-omgssapi.conf.erb"
+	}
 	file { "/etc/rsyslog.d/meta-remote.conf":
-		#content => template("/puppet/templates/etc/rsyslog.d/meta-remote-tcp.conf.erb"),
-		content => template("/puppet/templates/etc/rsyslog.d/meta-remote-relp.conf.erb"),
+		#content => template("/puppet/templates/etc/rsyslog.d/meta-remote-omfwd.conf.erb"),
+		content => template($forward_template),
 		owner => "root", group=> "root", mode=>"0644",
 		require => [Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"], Service["avahi-daemon"]],
 		notify => Service["rsyslog"],
