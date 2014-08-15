@@ -46,7 +46,7 @@ file { [ "/etc/puppet/modules/customfacts/", "/etc/puppet/modules/customfacts/li
 	ensure => "directory",
 }
 file { "/etc/puppet/modules/customfacts/lib/facter/file_exists.rb":
-	source => "templates/etc/puppet/modules/customfacts/lib/facter/file_exists.rb",
+	source => "/puppet/templates/etc/puppet/modules/customfacts/lib/facter/file_exists.rb",
 	owner => "root", group => "root", mode => "0644",
 	require => File["/etc/puppet/modules/customfacts/lib/facter/"],
 }
