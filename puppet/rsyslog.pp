@@ -19,5 +19,7 @@ class rsyslog {
 		timeout => 600,
 		unless => "/usr/bin/dpkg -l rsyslog | grep ' 8\\.[0-9]'",
 		require => [File["/etc/apt/sources.list.d/jessie.list"], Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]],
+
 	}
+}
 
