@@ -159,7 +159,7 @@ magrathea_update() {
 }
 
 magrathea_login() {
-		echo "WARN: NOT IMPLEMENTED"
+	echo "INFO: no login for magrathea"
 }
 
 case "$1" in
