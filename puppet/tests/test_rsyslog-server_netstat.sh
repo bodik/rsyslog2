@@ -12,13 +12,15 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rsyslogd tcp listener"
 fi
 
-echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
-echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
-echo "WARN: RSYSLOG-SERVET GSSAPI LISTENER SKIPPED #################################"
-#netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :515
-#if [ $? -ne 0 ]; then
-#	rreturn 1 "$0 rsyslogd gssapi listener"
-#fi
+#TODO: facter::file_exists vs FACTER/bash
+if [ -f /etc/krb5.keytab ]; then
+	netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :515
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 rsyslogd gssapi listener"
+	fi
+else
+	echo "WARN: rsyslog-server gssapi listener SKIPPED"
+fi
 
 netstat -nlpa | grep "$(pidof rsyslogd)/rsy" | grep LISTEN | grep :516
 if [ $? -ne 0 ]; then
