@@ -16,7 +16,7 @@ package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper
 package { 
 	[ 
 	"zlib1g-dev", "libmysqlclient-dev", "libpq-dev", "libmongo-client-dev", "libcurl4-gnutls-dev", "libkrb5-dev", 
-	"libgnutls28-dev", "librelp-dev", "libestr-dev", "libee-dev", "liblognorm-dev", 
+	"libgnutls-dev", "librelp-dev", "libestr-dev", "libee-dev", "liblognorm-dev", 
 	"liblogging-stdlog-dev", "libjson-c-dev", "uuid-dev"
 	]:
 	ensure => installed,
