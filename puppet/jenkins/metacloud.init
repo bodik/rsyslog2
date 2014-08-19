@@ -216,6 +216,9 @@ case "$1" in
 	sshe)
 		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
+	sshdev)
+		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+	;;
 	update)
 		metacloud_update
 	;;
