@@ -1,15 +1,17 @@
 import '/puppet/lib.pp'
 
 class rsyslog {
-	package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
-		ensure => installed,
-	}
 	service { "rsyslog":
 		ensure => running,
 	}
 
 	file { "/etc/apt/sources.list.d/meta-rsyslog.list":
 	        source => "/puppet/templates/etc/apt/sources.list.d/meta-rsyslog.list",
+	        owner => "root", group => "root", mode => "0644",
+	        notify => Exec["apt-get update"],
+	}
+	file { "/etc/apt/preferences.d/meta-rsyslog.pref":
+	        source => "/puppet/templates/etc/apt/preferences.d/meta-rsyslog.pref",
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
 	}
@@ -20,19 +22,9 @@ class rsyslog {
 	        notify => Exec["apt-get update"],
 	}
 
-#	file { "/etc/apt/sources.list.d/jessie.list":
-#	        source => "/puppet/templates/etc/apt/sources.list.d/jessie.list",
-#	        owner => "root", group => "root", mode => "0644",
-#	        notify => Exec["apt-get update"],
-#	}
-	exec { "install_rsyslog":
-		#command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confold  -t jessie rsyslog rsyslog-gssapi rsyslog-relp",
-		#command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confnew --force-yes rsyslog=8.2.2-3.rb20 rsyslog-gssapi=8.2.2-3.rb20 rsyslog-relp=8.2.2-3.rb20",
-		command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confnew --force-yes rsyslog=7.6.3-3.rb20 rsyslog-gssapi=7.6.3-3.rb20 rsyslog-relp=7.6.3-3.rb20",
-		timeout => 600,
-		unless => "/usr/bin/dpkg -l rsyslog | grep ' 8\\.[0-9]'",
-		require => [File["/etc/apt/sources.list.d/wheezy-backports.list", "/etc/apt/sources.list.d/meta-rsyslog.list"], Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]],
-
+	package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
+		ensure => installed,
+		require => [File["/etc/apt/sources.list.d/wheezy-backports.list", "/etc/apt/sources.list.d/meta-rsyslog.list", "/etc/apt/preferences.d/meta-rsyslog.pref"]],
 	}
 }
 
