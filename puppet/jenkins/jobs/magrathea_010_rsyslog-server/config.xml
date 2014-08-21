@@ -26,7 +26,7 @@
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-server.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog8_installed.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog7_installed.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog-server_netstat.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog-server_avahi.sh&apos;</command>
     </hudson.tasks.Shell>
