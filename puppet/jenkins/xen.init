@@ -1,0 +1,200 @@
+#!/bin/sh
+
+export JUSERNAME=$(cat /dev/shm/username)
+export JKEY="/dev/shm/sshkey"
+export FRONT="jstag.civ.zcu.cz"
+
+if [ -z $VMNAME ]; then
+	VMNAME="JSTAGX"
+fi
+if [ "x$VMNAME" = "x$FRONT" -o "x$VMNAME" = "xjstag" ]; then
+	echo "ERROR: cannt manage dom0"
+	exit 1
+fi
+cd /tmp || exit 1
+
+
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+xen_id() {
+	echo "ERROR: not implemented"
+	exit 1
+#	/puppet/jenkins/xen.init list | grep "^$VMNAME " | awk '{print $1}'
+}
+
+xen_destroy() {
+	front_ssh "xm destroy $VMNAME"
+	for i in `seq 1 120`; do
+		/puppet/jenkins/xen.init status 
+		if [ $? = 1 ]; then
+			front_ssh "sh /puppet/jenkins/xen-destroy-image.sh $VMNAME"
+			rreturn $? "destroy"
+		fi
+		sleep 1
+	done
+	rreturn 1 "$0 destroy failed"
+}
+
+xen_destroy_cache() {
+	rreturn 0 "$0 destroy_cache $@"
+}
+xen_make_cache() {
+	rreturn 0 "$0 make_cache $@"
+}
+
+vm_ssh() {
+	ssh -i $JKEY -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' -o 'NumberOfPasswordPrompts=0' root@$VMNAME "$1"
+	RET=$?
+	rreturn $RET "$0 ssh $@"
+}
+
+vm_start() {
+	/puppet/jenkins/xen.init list | grep "^$VMNAME "
+	if [ $? -eq 0 ]; then
+		rreturn $? "magrathea vm already running"
+	fi
+
+        front_ssh "xm create boot/$VMNAME"
+	RET=1
+	for i in `seq 1 600`; do
+		/puppet/jenkins/xen.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/xen.init status
+		sleep 1
+	done
+	if [ $RET -ne 0 ]; then
+		rreturn $RET "$0 start failed $VMNAME"
+	fi
+
+	rreturn 0 "$0 start"
+}
+
+vm_status() {
+	/puppet/jenkins/xen.init list | grep "^$VMNAME "
+	rreturn $? "$0 status"
+}
+
+vm_shutdown() {
+	/puppet/jenkins/xen.init ssh /bin/true
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown vm not running"
+	fi
+
+	echo "INFO: sending halt"
+	/puppet/jenkins/xen.init ssh halt
+	if [ $? -ne 0 ]; then
+		rreturn $? "shutdown cannot shutdown vm"
+	fi
+
+	RET=1
+	for i in `seq 1 60`; do
+		/puppet/jenkins/xen.init ssh /bin/true 1>/dev/null
+		if [ $? = 1 ]; then
+			rreturn $? "shutdown"
+		fi
+		sleep 1
+	done
+
+	rreturn 1 "shutdown did not finished in time"
+}
+
+xen_build() {
+	/puppet/jenkins/xen.init shutdown
+	/puppet/jenkins/xen.init destroy
+	sleep 5
+	
+	front_ssh "sh /puppet/jenkins/xen-debian-create-image.sh $VMNAME wheezy"
+	rreturn $? "$0"
+}
+
+xen_creds() {
+	echo "transfer credentials to /dev/shm"
+	su jenkins
+}
+
+front_ssh() {
+	ssh -i $JKEY -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' -o 'NumberOfPasswordPrompts=0' $JUSERNAME@$FRONT "$1"
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 cannt reach xen frontent"
+	fi
+}
+
+xen_list() {
+	front_ssh "xm list"
+}
+
+xen_update() {
+	rreturn 1 "$0 NOT IMPLEMENTED"
+	#for all in $(/puppet/jenkins/xen.init list| awk '{print $1}'); do
+	#	VMNAME=$all /puppet/jenkins/xen.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	#done
+}
+
+xen_login() {
+	echo "WARN: NOT IMPLEMENTED"
+}
+
+case "$1" in
+	creds)
+		xen_creds
+	;;
+	login)
+		xen_login
+	;;
+	list)
+		xen_list
+	;;
+	build)
+		xen_build
+	;;
+	start)
+		vm_start
+	;;
+	status)
+		vm_status
+	;;
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		xen_destroy
+	;;
+	destroy_cache)
+		vm_destroy_cache
+	;;
+	make_cache)
+		vm_make_cache
+	;;
+	ssh)
+		vm_ssh "$2"
+	;;
+#	sshe)
+#		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+#	;;
+#	update)
+#		magrathea_update
+#	;;
+	id)
+		xen_id
+	;;
+	front)
+		front_ssh "$2"
+	;;
+	*)
+		rreturn 1 "$0 wrong command"
+	;;
+esac
+
