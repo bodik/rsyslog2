@@ -12,6 +12,12 @@ package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper
 	require => [File["/etc/apt/sources.list.d/wheezy-backports.list"],Exec["apt-get update"]],
 }
 
+#nevim jak jinak vypnout stripovani binarek v rules/buildpackage...
+file { "/usr/bin/strip":
+	ensure => link,
+	target => "/bin/true",
+}
+
 # v7.6 build deps
 package { 
 	[ 
