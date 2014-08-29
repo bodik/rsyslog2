@@ -7,7 +7,7 @@ file { "/etc/apt/sources.list.d/wheezy-backports.list":
         notify => Exec["apt-get update"],
 }
 
-package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper", "dh-autoreconf", "dh-systemd", "bison", "pkg-config"]:
+package { ["dpkg-dev", "gcc", "make", "fakeroot", "git-buildpackage", "debhelper", "dh-autoreconf", "dh-systemd", "bison", "pkg-config", "dh-exec"]:
 	ensure => installed,
 	require => [File["/etc/apt/sources.list.d/wheezy-backports.list"],Exec["apt-get update"]],
 }
