@@ -9,7 +9,10 @@ backport() {
 	if [ $? = 1 ]; then
 		apt-get source ${PKG}
 		cd $(find . -maxdepth 1 -type d -name "${DIR}*") || exit 1
-		sed -i '1 s/)/.rb20)/' debian/changelog
+		grep ".rb20" debian/changelog 1>/dev/null 2>/dev/null
+		if [ $? -eq 1 ]; then
+			sed -i '1 s/)/.rb20)/' debian/changelog
+		fi
 		dpkg-buildpackage -rfakeroot
 		cd ..
 		ls -l 
