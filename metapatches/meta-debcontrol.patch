@@ -1,0 +1,37 @@
+diff --git a/debian/changelog b/debian/changelog
+index 795e477..b203a93 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,3 +1,10 @@
++rsyslog (7.6.3-3.rb20) unstable; urgency=medium
++
++  * Non maintainer upload
++  * metacentrum.cz specific changes
++
++ -- Radoslav Bodo <bodik@cesnet.cz>  Mon, 23 Jun 2014 13:44:55 +0200
++
+ rsyslog (7.6.3-3) unstable; urgency=medium
+ 
+   * Build against libgnutls28-dev. (Closes: #752304)
+diff --git a/debian/control b/debian/control
+index f3dade7..7e927ca 100644
+--- a/debian/control
++++ b/debian/control
+@@ -1,7 +1,7 @@
+ Source: rsyslog
+ Section: admin
+ Priority: important
+-Maintainer: Michael Biebl <biebl@debian.org>
++Maintainer: Radoslav Bodo <bodik@cesnet.cz>
+ Build-Depends: debhelper (>= 8),
+                dpkg-dev (>= 1.16.1),
+                dh-autoreconf,
+@@ -12,7 +12,7 @@ Build-Depends: debhelper (>= 8),
+                libmongo-client-dev (>= 0.1.4),
+                libcurl4-gnutls-dev,
+                libkrb5-dev,
+-               libgnutls28-dev,
++               libgnutls-dev,
+                librelp-dev (>= 1.2.5),
+                libestr-dev (>= 0.1.9),
+                libee-dev (>= 0.4.0),
