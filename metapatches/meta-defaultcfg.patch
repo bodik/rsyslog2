@@ -1,0 +1,30 @@
+diff --git a/debian/rsyslog.conf b/debian/rsyslog.conf
+index 0e33f48..136256e 100644
+--- a/debian/rsyslog.conf
++++ b/debian/rsyslog.conf
+@@ -3,6 +3,7 @@
+ #			For more information see
+ #			/usr/share/doc/rsyslog-doc/html/rsyslog_conf.html
+ 
++$PreserveFQDN on
+ 
+ #################
+ #### MODULES ####
+@@ -10,7 +11,16 @@
+ 
+ $ModLoad imuxsock # provides support for local system logging
+ $ModLoad imklog   # provides kernel logging support
+-#$ModLoad immark  # provides --MARK-- message capability
++$ModLoad immark  # provides --MARK-- message capability
++
++$ModLoad impstats
++$PStatInterval 600
++$PStatSeverity 7
++$PStatJSON on
++ 
++$IMUXSockRateLimitInterval 3600
++$IMUXSockRateLimitBurst 100000
++$RepeatedMsgReduction on
+ 
+ # provides UDP syslog reception
+ #$ModLoad imudp
