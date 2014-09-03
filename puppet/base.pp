@@ -21,18 +21,18 @@ file { "/etc/apt/sources.list.d/wheezy.list":
         notify => Exec["apt-get update"],
 }
 
-cron { "apt":
-  command => "/usr/bin/aptitude update 1>/dev/null",
-  user    => root,
-  hour    => 0,
-  minute  => 0
-}
-cron { "check_apt":
-  command => "/usr/lib/nagios/plugins/check_apt | /bin/grep -v 'APT OK'",
-  user    => root,
-  hour    => 1,
-  minute  => 0
-}
+#cron { "apt":
+#  command => "/usr/bin/aptitude update 1>/dev/null",
+#  user    => root,
+#  hour    => 0,
+#  minute  => 0
+#}
+#cron { "check_apt":
+#  command => "/usr/lib/nagios/plugins/check_apt | /bin/grep -v 'APT OK'",
+#  user    => root,
+#  hour    => 1,
+#  minute  => 0
+#}
 
 case $hostname {
         default: { $tmp_file = "/puppet/templates/etc/hosts.erb" }
