@@ -36,6 +36,22 @@ for all in $VMLIST; do
 	VMCOUNT=$(($VMCOUNT+1))
 done
 
+#reconnect all clients
+/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
+/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog start'
+for all in $VMLIST; do
+	echo "INFO: client $all restart"
+	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
+done
+CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | wc -l' | head -n1)
+if [ $CONNS -ne $VMCOUNT ]; then
+	rreturn 1 "$0 missing clients on startup"
+fi
+
+
+
+
+
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
 	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
@@ -116,7 +132,7 @@ count $WAITRECOVERY
 # VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
 	CLIENT=$( VMNAME=$all /puppet/jenkins/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
-	/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/test_results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
+	/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
 echo =============
 

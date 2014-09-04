@@ -21,11 +21,10 @@ for all in $VMLIST; do
 	VMCOUNT=$(($VMCOUNT+1))
 done
 
-
-
+#nastaveni kratkeho KA
+/puppet/jenkins/$CLOUD.init sshs 'echo "60" > /proc/sys/net/ipv4/tcp_keepalive_time;echo "1" > /proc/sys/net/ipv4/tcp_keepalive_intvl;echo "1"> /proc/sys/net/ipv4/tcp_keepalive_probes'
 
 #reconnect all clients
-/puppet/jenkins/$CLOUD.init sshs 'echo "60" > /proc/sys/net/ipv4/tcp_keepalive_time;echo "1" > /proc/sys/net/ipv4/tcp_keepalive_intvl;echo "1"> /proc/sys/net/ipv4/tcp_keepalive_probes'
 /puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
 /puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog start'
 for all in $VMLIST; do
@@ -36,6 +35,9 @@ CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ES
 if [ $CONNS -ne $VMCOUNT ]; then
 	rreturn 1 "$0 missing clients on startup"
 fi
+
+
+
 
 #failing sockets
 /puppet/jenkins/$CLOUD.init sshs 'iptables -I INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
