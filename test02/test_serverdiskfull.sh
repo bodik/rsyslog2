@@ -48,7 +48,7 @@ fi
 
 
 #fill server's local disk
-echo "INFO: client $all server disk filling"
+echo "INFO: server disk filling"
 /puppet/jenkins/$CLOUD.init sshs "(time dd if=/dev/zero of=/vyplndisku bs=8M)" &
 echo "INFO: waiting for server to finish disk filling"
 wait
@@ -62,7 +62,7 @@ echo "INFO: waiting for clients to finish testi"
 wait
 
 # cleanup
-echo "INFO: client $all server disk full cleanup"
+echo "INFO: server disk full cleanup"
 /puppet/jenkins/$CLOUD.init sshs "(rm /vyplndisku)"
 
 
