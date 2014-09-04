@@ -47,12 +47,10 @@ fi
 
 
 
-#fill client local disk
-for all in $VMLIST; do
-	echo "INFO: client $all init disk filling"
-	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(time dd if=/dev/zero of=/vyplndisku bs=8M)" &
-done
-echo "INFO: waiting for clients to finish disk filling"
+#fill server's local disk
+echo "INFO: client $all server disk filling"
+/puppet/jenkins/$CLOUD.init sshs "(time dd if=/dev/zero of=/vyplndisku bs=8M)" &
+echo "INFO: waiting for server to finish disk filling"
 wait
 
 #run the test
@@ -64,10 +62,8 @@ echo "INFO: waiting for clients to finish testi"
 wait
 
 # cleanup
-for all in $VMLIST; do
-	echo "INFO: client $all disk full cleanup"
-	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(rm /vyplndisku)"
-done
+echo "INFO: client $all server disk full cleanup"
+/puppet/jenkins/$CLOUD.init sshs "(rm /vyplndisku)"
 
 
 
@@ -78,7 +74,7 @@ done
 # VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
 CLIENT=$( VMNAME=$all /puppet/jenkins/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
-/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
+VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "sh /rsyslog2/test02/results_client_local.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
 echo =============
 
