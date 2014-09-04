@@ -43,7 +43,7 @@ for all in $VMLIST; do
 	echo "INFO: client $all restart"
 	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
 done
-CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | wc -l' | head -n1)
+CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
 if [ $CONNS -ne $VMCOUNT ]; then
 	rreturn 1 "$0 missing clients on startup"
 fi

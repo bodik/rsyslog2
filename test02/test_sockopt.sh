@@ -32,7 +32,7 @@ for all in $VMLIST; do
 	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
 done
 sleep 10
-CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk '{print $4}' | grep "51[456]" | wc -l' | head -n1)
+CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
 if [ $CONNS -ne $VMCOUNT ]; then
 	rreturn 1 "$0 missing clients on startup"
 fi
@@ -50,7 +50,7 @@ done
 
 sleep 120
 
-CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | wc -l' | head -n1)
+CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
 
 /puppet/jenkins/$CLOUD.init sshs 'iptables -D INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
 /puppet/jenkins/$CLOUD.init sshs 'echo "7200" > /proc/sys/net/ipv4/tcp_keepalive_time;echo "75" > /proc/sys/net/ipv4/tcp_keepalive_intvl;echo "9" > /proc/sys/net/ipv4/tcp_keepalive_probes'
