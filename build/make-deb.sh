@@ -19,7 +19,7 @@ else
 fi
 #git remote set-url origin bodik@bodik.zcu.cz:/afs/zcu.cz/users/b/bodik/public/meta/git/collab-maint-rsyslog
 
-if [ -z RB_VERSION ]; then
+if [ -z $RB_VERSION ]; then
 	git checkout debian/7.6.3-3.rb20
 	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=debian/7.6.3-3.rb20
 else 
