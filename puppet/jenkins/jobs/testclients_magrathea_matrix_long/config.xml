@@ -26,6 +26,8 @@
       <name>DISRUPT</name>
       <values>
         <string>none</string>
+        <string>restart</string>
+        <string>killserver</string>
         <string>tcpkill</string>
       </values>
     </hudson.matrix.TextAxis>
