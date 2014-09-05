@@ -7,15 +7,9 @@ set -e
 TESTID="ti$(date +%s)"
 
 if [ -z $1 ]; then
-    LEN=4
+    LEN=4000
 else
     LEN=$1
-fi
-
-if [ -z $2 ]; then
-    DISRUPT="none"
-else
-    DISRUPT=$2
 fi
 
 if [ -z $CLOUD ]; then
@@ -53,78 +47,30 @@ fi
 
 
 
+
+#fill client local disk
+for all in $VMLIST; do
+	echo "INFO: client $all init disk filling"
+	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(time dd if=/dev/zero of=/vyplndisku bs=8M)" &
+done
+echo "INFO: waiting for clients to finish disk filling"
+wait
+
+#run the test
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
 	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 done
-
-
-
-# VYNUCOVANI CHYB
-WAITRECOVERY=60
-
-case $DISRUPT in
-	tcpkill)
-(
-sleep 10;
-TIMER=120
-echo "INFO: tcpkill begin $TIMER";
-/puppet/jenkins/$CLOUD.init sshs "cd /rsyslog2/test02;
-./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
-PPP=\$!; 
-sleep $TIMER;
-kill \$PPP;
-"
-echo "INFO: tcpkill end $TIMER";
-)
-WAITRECOVERY=230
-;;
-	restart)
-(
-sleep 10; 
-echo "INFO: restart begin";
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
-echo "INFO: restart end";
-)
-WAITRECOVERY=230
-;;
-	killserver)
-(
-sleep 10; 
-echo "INFO: killserver begin";
-/puppet/jenkins/$CLOUD.init sshs 'kill -9 `pidof rsyslogd`'
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
-echo "INFO: killserver end";
-)
-WAITRECOVERY=230
-;;
-
-	manual)
-(
-sleep 10;
-TIMER=120
-echo "INFO: manual begin $TIMER";
-count $TIMER
-echo "INFO: manual end $TIMER";
-)
-WAITRECOVERY=230
-;;
-
-esac
-
-echo "INFO: waiting for clients to finish"
+echo "INFO: waiting for clients to finish testi"
 wait
-echo "INFO: test finished"
+
+# cleanup
+for all in $VMLIST; do
+	echo "INFO: client $all disk full cleanup"
+	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(rm /vyplndisku)"
+done
 
 
-
-
-
-
-# CEKANI NA DOTECENI VYSLEDKU
-#nemusi to dotect vsechno, interval je lepsi prodlouzit, ale ted nechci cekat
-echo "INFO: waiting to sync for $WAITRECOVERY secs"
-count $WAITRECOVERY
 
 
 
@@ -132,8 +78,8 @@ count $WAITRECOVERY
 
 # VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
-	CLIENT=$( VMNAME=$all /puppet/jenkins/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
-	/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
+CLIENT=$( VMNAME=$all /puppet/jenkins/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
+/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
 echo =============
 
@@ -144,8 +90,8 @@ BEGIN {
 	TOTALLEN=LEN*VMCOUNT;
 }
 //{
-	DELIVERED = DELIVERED + $10;
-	DELIVEREDUNIQ = DELIVEREDUNIQ + $14;
+DELIVERED = DELIVERED + $10;
+DELIVEREDUNIQ = DELIVEREDUNIQ + $14;
 }
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
@@ -165,4 +111,5 @@ RET=$?
 rm /tmp/test_results.$TESTID.log
 
 rreturn $RET "$0"
+
 
