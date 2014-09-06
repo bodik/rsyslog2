@@ -17,7 +17,7 @@
 /puppet/jenkins/magrathea.init update 1&gt;/dev/null
 cd /rsyslog2/test02
 export CLOUD=&quot;magrathea&quot;
-sh test_clientdiskfull.sh</command>
+sh test_diskfull_server.sh</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

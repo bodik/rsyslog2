@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<matrix-project>
+<matrix-project plugin="matrix-project@1.2">
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
@@ -19,22 +19,25 @@
         <string>40000</string>
         <string>100000</string>
         <string>200000</string>
-        <string>1000000</string>
+        <string>400000</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
       <name>DISRUPT</name>
       <values>
         <string>none</string>
+        <string>restart</string>
+        <string>killserver</string>
         <string>tcpkill</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
   <builders>
     <hudson.tasks.Shell>
-      <command>/puppet/jenkins/metacloud.init login
-/puppet/jenkins/metacloud.init update 1&gt;/dev/null
+      <command>/puppet/jenkins/magrathea.init login
+/puppet/jenkins/magrathea.init update 1&gt;/dev/null
 cd /rsyslog2/test02
+export CLOUD=&quot;magrathea&quot;
 sh test_clients.sh $LEN $DISRUPT</command>
     </hudson.tasks.Shell>
   </builders>
