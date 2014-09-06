@@ -67,7 +67,7 @@ case $DISRUPT in
 	tcpkill)
 (
 sleep 10;
-TIMER=120
+TIMER=240
 echo "INFO: tcpkill begin $TIMER";
 /puppet/jenkins/$CLOUD.init sshs "cd /rsyslog2/test02;
 ./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
