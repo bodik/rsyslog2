@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<matrix-project>
+<matrix-project plugin="matrix-project@1.2">
   <actions/>
   <description></description>
   <keepDependencies>false</keepDependencies>
@@ -18,14 +18,14 @@
         <string>10000</string>
         <string>40000</string>
         <string>100000</string>
+        <string>200000</string>
+        <string>1000000</string>
       </values>
     </hudson.matrix.TextAxis>
     <hudson.matrix.TextAxis>
       <name>DISRUPT</name>
       <values>
         <string>none</string>
-        <string>restart</string>
-        <string>killserver</string>
         <string>tcpkill</string>
       </values>
     </hudson.matrix.TextAxis>
