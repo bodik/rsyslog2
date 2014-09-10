@@ -1,0 +1,83 @@
+<h1>rsyslog metacentrum.cz</h1>
+
+<p>This software suite is designed to aid creating and maintaining data processing<br>
+cloud within a realm of cesnet.cz and beyond. It is based on masterless puppet <br>
+and bash.</p>
+
+<h2>rsyslog</h2>
+
+<h2>logstash</h2>
+
+<h2>elasticsearch</h2>
+
+<h2>mongodb</h2>
+
+<h2>mongomine</h2>
+
+<h2>puppet</h2>
+
+<p>Creating and maintaining component of this suite is managed by masterless<br>
+puppet.  Each major component should provide a puppet module and set of<br>
+install/check and other scripts within itself. Whole suite is bootsrapped from<br>
+git.</p>
+
+<pre><code>wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+cd /puppet &amp;&amp; ls -l
+</code></pre>
+
+<hr>
+
+<p>komponenta.install.sh - nainstaluje/opravi<br>
+komponenta.check.sh - zkontroluje (--noop --show_diff)<br>
+komponenta/ doprovodne soubory, nekdy templaty pro puppet</p>
+
+<p>templates/ -- vetsina templates a souboru se kterymi operuje puppet</p>
+
+<p>tests/ -- testy komponent</p>
+
+<hr>
+
+<p>komponenty:</p>
+
+<ul>
+<li>rsyslog-server, rsyslog-client</li>
+<li>rediser</li>
+<li>elk - elasticsearch,logstash,kibana</li>
+<li><p>fprobe - testovaci netflow sonda</p></li>
+<li><p>jenkins<br>
+system pro automatizaci ukonu, pouziva rozhrani pro ruzne cloudy</p>
+
+<ul>
+<li>metacloud.init - dev/ops prostredi</li>
+<li>kvm.init - pouze lokalni testy, spatne sitovani</li>
+<li>magrathea.init - vyzaduje specialni prava (ops metacentrum.cz)</li>
+</ul></li>
+</ul>
+
+<p>usecases:<br>
+    * jenkins -- lokalni vm debian wheezy, NAT<br>
+        * sh bootstrap.install.sh<br>
+        * sh jenkins.install.sh<br>
+        * metacloud.init creds<br>
+            $ ### jako jenkins vyrobit kredence<br>
+            $ scp odkudsi:tajnyadresar/* /dev/shm/<br>
+            $ ### vyrobit oneauth susenku<br>
+            $ metacloud.init login<br>
+            $ exit</p>
+
+<pre><code>        /dev/shm/username   - 
+        /dev/shm/usercert.pem   - metacloudi certifikat
+        /dev/shm/one_x509   - metacloudi susenka
+
+    * metacloud.init templates  - instalace templates
+    * browser debian.localdomain:8081
+        * spousteni scenaru pres jenkins, vysledky v jobs console output
+    * rucni prace VMNAME=XXX metacloud.init start, ssh, ...
+
+
+* ops/dev
+    * sh bootstrap.install.sh -- update repo
+    * sh check_stddev.sh -- kontrola zmen
+    * sh .install.sh / puppet apply -- provedeni zmen
+    * sh tests/ testy
+</code></pre>
