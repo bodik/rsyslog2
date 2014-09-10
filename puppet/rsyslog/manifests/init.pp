@@ -34,16 +34,11 @@
 class rsyslog (
 	$version = "meta",
 ) {
-
-	case $version {
-		"jessie": { include rsyslog::install-jessie }
-		"bpo": { include rsyslog::install-bpo }
-		"meta": { include rsyslog::install-meta }
-		default: { include rsyslog::install }
-	} 
-
         service { "rsyslog":
                 ensure => running,
         }
+	class { "rsyslog::install":
+		version => $version,
+	}
 
 }
