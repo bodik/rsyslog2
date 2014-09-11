@@ -2,7 +2,7 @@
 
 class rsyslog::server ( 
 	$version = "meta",
-	$redis_server = undef,
+	$rediser_server = undef,
 ) {
 
 	class { "rsyslog::install": 
