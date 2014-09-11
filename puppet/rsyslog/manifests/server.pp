@@ -2,7 +2,7 @@
 
 class rsyslog::server ( 
 	$version = "meta",
-	$redis_server = undef,	
+	$redis_server = undef,
 ) {
 
 	class { "rsyslog::install": 
@@ -17,7 +17,7 @@ class rsyslog::server (
 	}
 	#tcp + relp + gssapi
 	file { "/etc/rsyslog.conf":
-		source => "/puppet/templates/etc/rsyslog-server.conf",
+		source => "puppet:///modules/rsyslog/etc/rsyslog-server.conf",
 		owner => "root", group=> "root", mode=>"0644",
 		require => [Class["rsyslog::install"], File["/etc/rsyslog.d.cloud"]],
 		notify => Service["rsyslog"],
@@ -25,7 +25,7 @@ class rsyslog::server (
 	#TODO: toto neni hezke ale vyrovnava to rozdil mezi metacloudem a magratheou ve smyslu provisioningu keytabu
 	if file_exists ("/etc/krb5.keytab") == 1 {
 		file { "/etc/rsyslog.d.cloud/00-imgssapi.conf":
-			content => template("/puppet/templates/etc/rsyslog.d.cloud/00-imgssapi.conf"),
+			content => template("puppet:///modules/rsyslog/etc/rsyslog.d.cloud/00-imgssapi.conf"),
 			owner => "root", group=> "root", mode=>"0644",
 			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
 			notify => Service["rsyslog"],
@@ -37,7 +37,7 @@ class rsyslog::server (
 
 	if ( $rediser_server ) {
 		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf":
-			content => template("/puppet/templates/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf.erb"),
+			content => template("puppet:///modules/rsyslog/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf.erb"),
 			owner => "root", group=> "root", mode=>"0644",
 			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
 			notify => Service["rsyslog"],
@@ -54,11 +54,11 @@ class rsyslog::server (
 	}
 
 	#autoconfig
-	import '/puppet/avahi.pp'
+	include avahi
 	file { "/etc/avahi/services/sysel.service":
-		source => "/puppet/templates/etc/avahi/sysel.service",
+		source => "puppet:///modules/rsyslog/etc/avahi/sysel.service",
 		owner => "root", group => "root", mode => "0644",
-		require => Package["avahi-daemon"],
+		require => Class["avahi"],
 		notify => Service["avahi-daemon"],
 	}
 }

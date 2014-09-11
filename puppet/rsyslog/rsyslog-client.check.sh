@@ -3,8 +3,8 @@ if [ $? -eq 0 ]; then
         echo "INFO: RSYSLOGCLINETCHECK ======================="
 
 	export FACTER_rsyslog_server=$(/puppet/avahi/avahi.findservice.sh _syseltcp._tcp)
-        for all in avahi rsyslog-client; do
-                echo "INFO: puppet apply -v --noop --show_diff $all.pp"
-                puppet apply -v --noop --show_diff $all.pp
+        for all in rsyslog-client; do
+                echo "INFO: puppet apply --modulepath=/puppet -v --noop --show_diff $all.pp"
+                puppet apply -v --modulepath=/puppet --noop --show_diff $all.pp
         done
 fi

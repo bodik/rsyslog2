@@ -1,3 +1,4 @@
+#!/usr/bin/puppet apply
 
 class rsyslog::install ( $version = "meta" ) { 
 	exec {"apt-get update":

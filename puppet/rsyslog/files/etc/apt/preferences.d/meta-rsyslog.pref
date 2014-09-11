@@ -1,3 +1,0 @@
-Package: rsyslog rsyslog-gssapi rsyslog-relp libestr0 librelp0
-Pin: version *rb20
-Pin-Priority: 950
