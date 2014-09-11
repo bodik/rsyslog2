@@ -4,7 +4,9 @@ if [ -z $1 ]; then
 	echo "ERROR: no service specified"
 	exit 1
 fi
-if [ ! -f $(which avahi-browse) ]; then
+
+which avahi-browse 1>/dev/null 2>/dev/null
+if [ $? -ne 0 ]; then
 	puppet apply --modulepath=/puppet -e 'include avahi'
 fi
 
