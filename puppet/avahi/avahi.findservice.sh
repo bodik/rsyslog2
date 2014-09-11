@@ -7,7 +7,7 @@ fi
 
 which avahi-browse 1>/dev/null 2>/dev/null
 if [ $? -ne 0 ]; then
-	puppet apply --modulepath=/puppet -e 'include avahi'
+	puppet apply --modulepath=/puppet -e 'include avahi' 1>/dev/null 2>/dev/null
 fi
 
 avahi-browse -t $1 --resolve -p | grep "=;.*;IPv4;" | awk -F";" '{print $8}' | sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | tail -1 | xargs host -t A | rev | awk '{print $1}' | rev | sed 's/\.$//'
