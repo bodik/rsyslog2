@@ -15,9 +15,9 @@ class metalib::avahi {
 	package { ["avahi-daemon", "avahi-utils"]:
 	        ensure => installed,
 	}
-	service { "avahi-daemon":
-	        ensure => running,
-	}
+	#service { "avahi-daemon":
+	#        ensure => running,
+	#}
 	file { "/usr/local/bin/avahi.findservice.sh":
 	        ensure => link,
         	target => "/puppet/metalib/avahi.findservice.sh",
