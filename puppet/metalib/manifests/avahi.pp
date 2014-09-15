@@ -11,7 +11,7 @@
 #
 # bodik@cesnet.cz
 #
-class avahi {
+class metalib::avahi {
 	package { ["avahi-daemon", "avahi-utils"]:
 	        ensure => installed,
 	}

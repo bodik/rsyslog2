@@ -2,14 +2,15 @@
 
 class rsyslog::client (
 	$version = "meta",
-	$rsyslog_server = "sysel.metacentrum.cz"
+	$rsyslog_server_auto = true,
+	$rsyslog_server_service = "_syselgss._tcp",
+	$rsyslog_server = undef
 ) {
-	class { "rsyslog::install": 
-		version => $version,
-	}
-        service { "rsyslog":
-                ensure => running,
-        }
+	class { "rsyslog::install": version => $version, }
+	service { "rsyslog": ensure => running, }
+	include metalib::avahi
+
+
 
 	#tcp + relp - gssapi
 	file { "/etc/rsyslog.conf":
@@ -20,17 +21,27 @@ class rsyslog::client (
 		
 	}
 
-	if file_exists ("/etc/krb5.keytab") == 0 {
-		$forward_template = "/puppet/templates/etc/rsyslog.d/meta-remote-omrelp.conf.erb"
-		#content => template("/puppet/templates/etc/rsyslog.d/meta-remote-omfwd.conf.erb"),
-	} else {
-		$forward_template = "/puppet/templates/etc/rsyslog.d/meta-remote-omgssapi.conf.erb"
+
+
+
+	if ( ($rsyslog_server_auto == true) ) {
+		$rsyslog_server_real = avahi_findservice($rsyslog_server_service)
+	} elsif ($rediser_server) {
+		$rsyslog_server_real = $rsyslog_server
 	}
-	file { "/etc/rsyslog.d/meta-remote.conf":
-		content => template($forward_template),
-		owner => "root", group=> "root", mode=>"0644",
-		require => [Class["rsyslog::install"], Class["avahi"]],
-		notify => Service["rsyslog"],
+
+	if ( $rsyslog_server_real ) {
+		if file_exists ("/etc/krb5.keytab") == 0 {
+			$forward_template = "${module_name}/etc/rsyslog.d/meta-remote-omrelp.conf.erb"
+		} else {
+			$forward_template = "${module_name}/etc/rsyslog.d/meta-remote-omgssapi.conf.erb"
+		}
+		file { "/etc/rsyslog.d/meta-remote.conf":
+			content => template($forward_template),
+			owner => "root", group=> "root", mode=>"0644",
+			require => Class["rsyslog::install"],
+			notify => Service["rsyslog"],
+		}
 	}
 }
 

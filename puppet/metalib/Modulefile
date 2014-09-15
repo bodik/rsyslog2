@@ -1,4 +1,4 @@
-name    'rsyslog2-avahi'
+name    'rsyslog2-metalib'
 version '0.0.1'
 source 'UNKNOWN'
 author 'rsyslog2'

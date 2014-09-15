@@ -51,3 +51,9 @@ file { "/etc/puppet/modules/customfacts/lib/facter/file_exists.rb":
 	require => File["/etc/puppet/modules/customfacts/lib/facter/"],
 }
 
+
+file { "/usr/local/bin/avahi.findservice.sh":
+	ensure => link,
+	target => "/puppet/metalib/avahi.findservice.sh",
+}
+

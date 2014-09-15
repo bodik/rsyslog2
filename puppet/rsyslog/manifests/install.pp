@@ -1,6 +1,8 @@
 #!/usr/bin/puppet apply
 
-class rsyslog::install ( $version = "meta" ) { 
+class rsyslog::install ( 
+	$version = "meta" 
+) { 
 	exec {"apt-get update":
 	        command => "/usr/bin/apt-get update",
 	        refreshonly => true,
@@ -50,6 +52,5 @@ class rsyslog::install ( $version = "meta" ) {
 	package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
 		ensure => installed,
 	}
-
 }
 
