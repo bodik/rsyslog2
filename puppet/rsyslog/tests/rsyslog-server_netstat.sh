@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/tests/lib.sh
+. /puppet/metalib/lib.sh
 
 /usr/lib/nagios/plugins/check_procs -C rsyslogd -c 1:1
 if [ $? -ne 0 ]; then

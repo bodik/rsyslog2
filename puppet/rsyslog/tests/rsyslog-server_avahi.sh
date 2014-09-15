@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/tests/lib.sh
+. /puppet/metalib/lib.sh
 
 /usr/lib/nagios/plugins/check_procs -C avahi-daemon -c 2:2
 if [ $? -ne 0 ]; then
