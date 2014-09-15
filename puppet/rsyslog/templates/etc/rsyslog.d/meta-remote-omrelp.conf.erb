@@ -4,7 +4,7 @@ $WorkDirectory /var/spool/rsyslog  # default location for work (spool) files
 
 module(load="omrelp")
 *.* action(type="omrelp"
-        target="<%= rsyslog_server %>"
+        target="<%= rsyslog_server_real %>"
         port="516"
         queue.FileName="omrelp1"
         queue.Type="LinkedList"
