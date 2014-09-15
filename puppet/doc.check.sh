@@ -3,7 +3,7 @@ if [ $? -eq 0 ]; then
 
         echo "INFO: DOCCHECK ======================="
 
-        for all in doc; do
+        for all in metalib::doc; do
                 echo "INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include $all\""
 		puppet apply -v --noop --show_diff --modulepath=/puppet -e "include $all"
         done
