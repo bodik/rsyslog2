@@ -1,6 +1,9 @@
 #!/usr/bin/puppet
 
-import '/puppet/lib.pp'
+exec {"apt-get update":
+        command => "/usr/bin/apt-get update",
+        refreshonly => true,
+}
 
 package { ["debootstrap", "qemu-kvm", "qemu-utils", "grub-pc"]:
 	ensure => installed,

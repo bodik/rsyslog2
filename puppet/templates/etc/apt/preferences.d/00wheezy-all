@@ -1,4 +1,0 @@
-Package: *
-Pin: release o=Debian,n=wheezy
-Pin-Priority: 900
-
