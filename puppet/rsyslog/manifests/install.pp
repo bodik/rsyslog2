@@ -36,7 +36,7 @@ class rsyslog::install (
 				owner => "root", group => "root", mode => "0644",
 		 	}
 			exec { "install_rsyslog":
-				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=7.6.3-3.rb20 rsyslog-gssapi=7.6.3-3.rb20 rsyslog-relp=7.6.3-3.rb20",
+				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=7.6.3-3.rb20 rsyslog-gssapi=7.6.3-3.rb20 rsyslog-relp=7.6.3-3.rb20 libestr0=0.1.9-1~bpo70+1.rb20 librelp0=1.2.7-1~bpo70+1.rb20",
 				timeout => 600,
 				unless => "/usr/bin/dpkg -l rsyslog | grep ' 7.6.3-3.rb20'",
 				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
@@ -49,8 +49,11 @@ class rsyslog::install (
 	        notify => Exec["apt-get update"],
 	}
 
-	package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
+	#relp. dela velke trable instalaci z meta repozitare kde relp neni
+	#package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
+	package { ["rsyslog", "rsyslog-gssapi"]:
 		ensure => installed,
+		require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
 	}
 }
 
