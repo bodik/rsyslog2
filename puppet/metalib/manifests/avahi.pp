@@ -4,8 +4,7 @@
 #
 # === Examples
 #
-#  class { avahi:
-#  }
+#  class { avahi:  }
 #
 # === Authors
 #
@@ -18,9 +17,4 @@ class metalib::avahi (
 	        ensure => installed,
 	}
 	service { "avahi-daemon": ensure => $daemon_ensure, }
-
-	file { "/usr/local/bin/avahi.findservice.sh":
-	        ensure => link,
-        	target => "/puppet/metalib/avahi.findservice.sh",
-	}
 }
