@@ -26,6 +26,7 @@ class rsyslog::client (
 
 	if ( ($rsyslog_server_auto == true) ) {
 		$rsyslog_server_real = avahi_findservice($rsyslog_server_service)
+		notice("rsyslog_server_real discovered as ${rsyslog_server_real}")
 	} elsif ($rediser_server) {
 		$rsyslog_server_real = $rsyslog_server
 	}
