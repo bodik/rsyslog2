@@ -71,8 +71,7 @@ class rsyslog::server (
 	file { "/etc/avahi/services/sysel.service":
 		source => "puppet:///modules/${module_name}/etc/avahi/sysel.service",
 		owner => "root", group => "root", mode => "0644",
-		require => Class["metalib::avahi"],
+		#require => Class["metalib::avahi"], -- vytvari kruh
 		notify => Service["avahi-daemon"],
 	}
-	service { "avahi-daemon": ensure => running, }
 }
