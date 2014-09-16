@@ -19,16 +19,16 @@
 /puppet/jenkins/magrathea.init start
 
 #vm image fixup
-/puppet/jenkins/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list; rm /etc/apt/preferences; rm /etc/apt/preferences.d/90_fallback.pref; apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
+/puppet/jenkins/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list; rm /etc/apt/preferences; rm /etc/apt/preferences.d/90_fallback.pref; apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/rsyslog.d /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
 
 /puppet/jenkins/magrathea.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ################
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-server.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog7_installed.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog-server_netstat.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_rsyslog-server_avahi.sh&apos;</command>
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-server_netstat.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-server_avahi.sh&apos;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
