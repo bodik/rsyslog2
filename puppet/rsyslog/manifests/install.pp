@@ -53,7 +53,6 @@ class rsyslog::install (
 	#package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
 	package { ["rsyslog", "rsyslog-gssapi"]:
 		ensure => installed,
-		require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
 	}
 }
 
