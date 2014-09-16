@@ -8,7 +8,6 @@ class rsyslog::client (
 ) {
 	class { "rsyslog::install": version => $version, }
 	service { "rsyslog": ensure => running, }
-	include metalib::avahi
 
 
 
@@ -25,6 +24,7 @@ class rsyslog::client (
 
 
 	if ( ($rsyslog_server_auto == true) ) {
+		include metalib::avahi
 		$rsyslog_server_real = avahi_findservice($rsyslog_server_service)
 		notice("rsyslog_server_real discovered as ${rsyslog_server_real}")
 	} elsif ($rediser_server) {
