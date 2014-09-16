@@ -1,9 +1,9 @@
 #!/usr/bin/puppet apply
 
-class fprobe (
+class metalib::fprobe (
+	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
-	$rediser_server = undef,
 ) {
 	include metalib::avahi
 
@@ -12,13 +12,16 @@ class fprobe (
 	}
 	service { "fprobe":
 		ensure => running,
+		hasstatus => false,
+		hasrestart => false,
+		stop => "/etc/init.d/fprobe stop; sleep 5",
 	}
 
-	if ( ($rediser_auto == true) ) {
+	if ($rediser_server) {
+		$rediser_server_real = $rediser_server
+	elsif ( $rediser_auto == true ) {
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
-	} elsif ($rediser_server) {
-		$rediser_server_real = $rediser_server
 	}
 
 	if ( $rediser_server_real ) {
