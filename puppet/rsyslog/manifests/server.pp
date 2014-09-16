@@ -2,9 +2,9 @@
 
 class rsyslog::server ( 
 	$version = "meta",
+	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
-	$rediser_server = undef,
 ) {
 
 	class { "rsyslog::install": version => $version, }
@@ -40,11 +40,11 @@ class rsyslog::server (
 
 
 
-	if ( ($rediser_auto == true) ) {
+	if ($rediser_server) {
+		$rediser_server_real = $rediser_server
+	} elsif ( $rediser_auto == true ) {
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
-	} elsif ($rediser_server) {
-		$rediser_server_real = $rediser_server
 	}
 
 	if ( $rediser_server_real ) {
