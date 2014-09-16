@@ -1,8 +1,5 @@
 #!/usr/bin/puppet apply
 
-import '/puppet/avahi.pp'
-
-
 $m = split($::memorytotal, " ")
 if ( $m[1] == "GB" ) {
 	$half = floor($m[0] / 2)
@@ -28,12 +25,6 @@ class { 'elasticsearch':
 	 }
 }
 elasticsearch::instance { 'es01': }
-
-#docasne vypnuto, nepouziva se a nejak spatne se dela instalace (github fuckoff)
-#elasticsearch::plugin{'bleskes/sense':
-#	module_dir => 'sense',
-#	instances  => 'es01'
-#}
 
 elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 	module_dir => 'kopf',
