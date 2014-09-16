@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/tests/lib.sh
+. /puppet/metalib/lib.sh
 
 BASE=/puppet/rediser
 

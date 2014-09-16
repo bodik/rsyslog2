@@ -1,4 +1,3 @@
-
-puppet apply -dv rediser.pp
+puppet apply --modulepath=/puppet -e 'include rediser'
 
 
