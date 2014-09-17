@@ -23,7 +23,7 @@
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser.install.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rediser/tests/rediser.sh&apos;
-/puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x tests/test_elk.sh&apos;
+/puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;
 </command>
     </hudson.tasks.Shell>
   </builders>
