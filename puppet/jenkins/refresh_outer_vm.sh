@@ -1,3 +1,10 @@
+#!/bin/sh
+
+if [ ! -d bob ]; then
+	echo "ERROR: no Robert Jenkins found in cwd"
+	exit 1
+fi
+
 rm -r bob
 7z x debian-wheezy.7z
 mv debian-wheezy bob
