@@ -19,7 +19,7 @@ class metalib::fprobe (
 
 	if ($rediser_server) {
 		$rediser_server_real = $rediser_server
-	elsif ( $rediser_auto == true ) {
+	} elsif ( $rediser_auto == true ) {
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
 	}
