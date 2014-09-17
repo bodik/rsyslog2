@@ -1,10 +1,10 @@
 input {
 	redis {
 		data_type => "list"
-		host => "<%= rediser_server %>"
-		key => "nz"
+		host => "<%= rediser_server_real %>"
+		key => "syslog"
 		port => 16379
-		type => "nz"
+		type => "syslog"
 		threads => 1
 		batch_count => 1000
 		codec => line {}
