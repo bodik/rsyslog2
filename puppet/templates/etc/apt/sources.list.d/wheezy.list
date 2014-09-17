@@ -1,8 +1,0 @@
-# wheezy
-deb http://ftp.zcu.cz/pub/linux/debian wheezy main contrib non-free
-deb http://ftp.zcu.cz/pub/linux/debian wheezy-proposed-updates main contrib non-free
-deb http://ftp.zcu.cz/pub/linux/debian-security wheezy/updates main contrib non-free
-deb-src http://ftp.zcu.cz/pub/linux/debian wheezy main contrib non-free
-deb-src http://ftp.zcu.cz/pub/linux/debian wheezy-proposed-updates main contrib non-free
-deb-src http://ftp.zcu.cz/pub/linux/debian-security wheezy/updates main contrib non-free
-
