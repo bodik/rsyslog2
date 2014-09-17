@@ -54,7 +54,7 @@ class jenkins() {
 		ensure => directory,
 		source => "puppet:///modules/${module_name}/jobs",
 		recurse => true,
-		owner => "jenkins", group=> "nogroup", mode=>"0644",
+		owner => "jenkins", group=> "jenkins", mode=>"0644",
 		notify => Service["jenkins"],
 		require => User["jenkins"],
 	}
