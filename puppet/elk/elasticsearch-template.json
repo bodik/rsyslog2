@@ -88,7 +88,7 @@
 			"nf": {
 				"_all" : { "enabled" : true },
 				"properties": {
-					"netflow" : {
+					"nf" : {
 						"type" : "object",
 						"dynamic": true,
 						"path": "full",
