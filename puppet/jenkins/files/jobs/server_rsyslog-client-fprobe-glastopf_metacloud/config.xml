@@ -27,7 +27,7 @@
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x metalib/tests/fprobe.sh&apos;
-/puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf/test/glastopf.sh&apos;
+/puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf/tests/glastopf.sh&apos;
 </command>
     </hudson.tasks.Shell>
   </builders>
