@@ -99,6 +99,11 @@ class elk::lsl (
 		order => 30,
 		notify => Service["logstash"],
 	}
+	logstash::configfile { 'filter-nf':
+		content => template("${module_name}/etc/logstash/conf.d/filter-nf.conf"),
+		order => 30,
+		notify => Service["logstash"],
+	}
 
 
 
