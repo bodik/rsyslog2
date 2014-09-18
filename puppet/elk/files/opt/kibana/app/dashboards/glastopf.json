@@ -129,6 +129,40 @@
           "legend_counts": true,
           "zerofill": true,
           "derivative": false
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "source.raw",
+          "exclude": [],
+          "missing": false,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0,
+              1
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Sources"
         }
       ],
       "notice": false
@@ -167,7 +201,8 @@
             "host",
             "pattern",
             "source",
-            "request_raw"
+            "request_raw",
+            "port"
           ],
           "localTime": true,
           "timeField": "@timestamp",
