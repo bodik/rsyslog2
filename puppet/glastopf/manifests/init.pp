@@ -15,7 +15,7 @@ class glastopf {
 	package { 
 		["python", "python-openssl", "python-gevent", "libevent-dev", "python-dev", "build-essential", "make",
 		"python-argparse", "python-chardet", "python-requests", "python-sqlalchemy", "python-lxml",
-		"python-beautifulsoup", "mongodb", "python-pip", "python-setuptools",
+		"python-beautifulsoup", "python-pip", "python-setuptools",
 		"g++", "git", "php5", "php5-dev", "liblapack-dev", "gfortran",
 		"libxml2-dev", "libxslt1-dev",
 		"libmysqlclient-dev",
