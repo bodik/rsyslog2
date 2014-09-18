@@ -53,13 +53,12 @@ class glastopf {
 		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"]],
 	}
 
+
 	#perun mi ji krade
-	group { "glastopf":
-		ensure => present,
-	}
+ 	package { ["perun-slave", "perun-slave-meta"]: ensure => absent }	
 	user { "glastopf":
 		ensure => present,
-		require => Group["glastopf"],
+		require => Package["perun-slave", "perun-slave-meta"],
 	}
 	file { "/opt/glastopf":
 		ensure => directory,
@@ -97,5 +96,8 @@ class glastopf {
 		ensure => running,
 		require => [File["/opt/glastopf/glastopf.cfg"], File["/etc/init.d/glastopf"], Package["glastopf"], Service["apache2"], Exec["python cap_net"]],
 	}
-
+	
+	class { "glastopf::lsl":
+		require => Service["glastopf"],
+	}
 }
