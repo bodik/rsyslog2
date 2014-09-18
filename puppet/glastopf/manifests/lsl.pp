@@ -36,10 +36,6 @@ class glastopf::lsl (
 		notify => Service["logstash"],
 	}
 
-	user { "logstash":
-		groups => "glastopf",
-	}
-
 	logstash::configfile { 'glastopf':
 		content => template("${module_name}/glastopf-logstash.conf"),
 	#	order => 10,
