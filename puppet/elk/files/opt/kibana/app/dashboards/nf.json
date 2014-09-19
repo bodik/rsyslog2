@@ -447,7 +447,7 @@
             "nf.l4_src_port",
             "nf.l4_dst_port",
             "nf.pr",
-            "nf.tf",
+            "nf.flg",
             "sg.cc",
             "dg.cc"
           ],
