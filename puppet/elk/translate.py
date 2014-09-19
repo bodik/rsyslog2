@@ -23,7 +23,7 @@ def d(i):
 
 print("translate {\n\tfield => \"[nf][tf]\"\n\tdictionary => [")
 
-for i in range(0,255):
+for i in range(0,256):
 	print "\"%d\",\"%s\"," % (i,d(i))
 
 print("]\n\t}\n")
