@@ -447,7 +447,7 @@
             "nf.l4_src_port",
             "nf.l4_dst_port",
             "nf.protocol",
-            "nf.tcp_flags"
+            "nf.tf"
           ],
           "localTime": true,
           "timeField": "@timestamp",
