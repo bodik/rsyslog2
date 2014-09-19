@@ -111,6 +111,11 @@ class elk::lsl (
 		order => 41,
 		notify => Service["logstash"],
 	}
+	logstash::configfile { 'filter-nf-proto':
+		content => template("${module_name}/etc/logstash/conf.d/filter-nf-proto.conf"),
+		order => 41,
+		notify => Service["logstash"],
+	}
 
 
 

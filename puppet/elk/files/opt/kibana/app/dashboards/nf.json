@@ -446,7 +446,7 @@
             "nf.ipv4_dst_addr",
             "nf.l4_src_port",
             "nf.l4_dst_port",
-            "nf.protocol",
+            "nf.pr",
             "nf.tf",
             "sg.cc",
             "dg.cc"

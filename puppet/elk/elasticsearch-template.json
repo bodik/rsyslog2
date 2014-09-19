@@ -109,6 +109,7 @@
 							"tcp_flags": { "index": "not_analyzed", "type": "integer" },
 							"tf": { "index": "not_analyzed", "type": "string" },
 							"protocol": { "index": "not_analyzed", "type": "integer" },
+							"pr": { "index": "not_analyzed", "type": "string" },
 							"ipv4_next_hop": {
 								"type": "ip", "index": "analyzed",
 								"fields": {
