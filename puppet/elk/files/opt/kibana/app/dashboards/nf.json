@@ -1,5 +1,5 @@
 {
-  "title": "netflow5",
+  "title": "netflow6",
   "services": {
     "query": {
       "list": {
@@ -55,7 +55,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -196,7 +196,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
@@ -229,7 +229,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -269,7 +269,7 @@
           "title": "Packets"
         },
         {
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
@@ -302,7 +302,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -406,6 +406,39 @@
           "tstat": "total",
           "valuefield": "",
           "title": "Src ports"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "nf.pr",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "8pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "table",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Protos"
         }
       ],
       "notice": false
