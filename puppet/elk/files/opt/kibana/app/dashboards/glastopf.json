@@ -11,20 +11,10 @@
           "pin": false,
           "type": "lucene",
           "enable": true
-        },
-        "1": {
-          "id": 1,
-          "color": "#EAB839",
-          "alias": "",
-          "pin": false,
-          "type": "lucene",
-          "enable": true,
-          "query": "(_type:\"syslog\" AND program:\"Glaspot\")"
         }
       },
       "ids": [
-        0,
-        1
+        0
       ]
     },
     "filter": {
@@ -83,8 +73,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1
+              0
             ]
           },
           "title": "Events over time",
@@ -155,8 +144,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1
+              0
             ]
           },
           "tmode": "terms",
@@ -196,13 +184,11 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
-            "logsource",
-            "message",
             "host",
             "pattern",
             "source",
-            "request_raw",
-            "port"
+            "port",
+            "request_raw"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -214,13 +200,12 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1
+              0
             ]
           },
           "field_list": false,
           "status": "Stable",
-          "trimFactor": 400,
+          "trimFactor": 1000,
           "normTimes": true,
           "all_fields": false
         }
@@ -241,13 +226,13 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": true,
+      "collapse": false,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
-        "(_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\"",
+        "(_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:Glaspot)",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:Glas*)",
