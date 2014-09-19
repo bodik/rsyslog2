@@ -447,7 +447,9 @@
             "nf.l4_src_port",
             "nf.l4_dst_port",
             "nf.protocol",
-            "nf.tf"
+            "nf.tf",
+            "sg.cc",
+            "dg.cc"
           ],
           "localTime": true,
           "timeField": "@timestamp",
