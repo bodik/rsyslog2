@@ -47,9 +47,9 @@
 			"nz" : {
 				"_all" : { "enabled" : true },
 				"properties" : {
-					"tr": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
-					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
-					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
+					"tr": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
+					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
+					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
 					"td": { "index": "not_analyzed", "type": "float" },
 					"sa": {
 						"type": "ip", "index": "analyzed",
