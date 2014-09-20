@@ -1,1 +1,1 @@
-tail -f /var/log/elasticsearch/*/* /var/log/logstash/*
+tail -f /var/log/elasticsearch/*/*log /var/log/logstash/*log
