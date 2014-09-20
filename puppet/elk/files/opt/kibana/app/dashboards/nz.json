@@ -1,5 +1,5 @@
 {
-  "title": "nz4",
+  "title": "nz5",
   "services": {
     "query": {
       "list": {
@@ -20,10 +20,10 @@
     "filter": {
       "list": {
         "0": {
-          "from": "2014-06-10T01:16:40.108Z",
-          "to": "2014-06-14T01:30:22.080Z",
           "type": "time",
           "field": "@timestamp",
+          "from": "now-15m",
+          "to": "now",
           "mandate": "must",
           "active": true,
           "alias": "",
@@ -55,10 +55,10 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "fill": 3,
           "linewidth": 3,
-          "timezone": "utc",
+          "timezone": "browser",
           "spyable": true,
           "zoomlinks": true,
           "bars": true,
@@ -153,7 +153,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -182,7 +182,7 @@
           "show_query": true,
           "interactive": true,
           "legend_counts": true,
-          "timezone": "utc",
+          "timezone": "browser",
           "percentage": false,
           "zerofill": true,
           "derivative": false,
@@ -226,7 +226,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -255,7 +255,7 @@
           "show_query": true,
           "interactive": true,
           "legend_counts": true,
-          "timezone": "utc",
+          "timezone": "browser",
           "percentage": false,
           "zerofill": true,
           "derivative": false,
@@ -597,7 +597,7 @@
             "sa6",
             "da6"
           ],
-          "localTime": false,
+          "localTime": true,
           "timeField": "@timestamp",
           "highlight": [],
           "sortable": true,
@@ -689,7 +689,7 @@
         "1d"
       ],
       "timefield": "@timestamp",
-      "now": false,
+      "now": true,
       "filter_id": 0,
       "enable": true
     }
