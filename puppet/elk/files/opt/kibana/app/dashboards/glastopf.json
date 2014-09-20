@@ -11,20 +11,10 @@
           "pin": false,
           "type": "lucene",
           "enable": true
-        },
-        "1": {
-          "id": 1,
-          "color": "#EAB839",
-          "alias": "",
-          "pin": false,
-          "type": "lucene",
-          "enable": true,
-          "query": "(_type:\"syslog\" AND program:\"Glaspot\")"
         }
       },
       "ids": [
-        0,
-        1
+        0
       ]
     },
     "filter": {
@@ -83,8 +73,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1
+              0
             ]
           },
           "title": "Events over time",
@@ -129,6 +118,39 @@
           "legend_counts": true,
           "zerofill": true,
           "derivative": false
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "source.raw",
+          "exclude": [],
+          "missing": false,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Sources"
         }
       ],
       "notice": false
@@ -162,11 +184,10 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
-            "logsource",
-            "message",
             "host",
             "pattern",
             "source",
+            "port",
             "request_raw"
           ],
           "localTime": true,
@@ -179,13 +200,12 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1
+              0
             ]
           },
           "field_list": false,
           "status": "Stable",
-          "trimFactor": 400,
+          "trimFactor": 1000,
           "normTimes": true,
           "all_fields": false
         }
@@ -206,13 +226,13 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": true,
+      "collapse": false,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
-        "(_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\"",
+        "(_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:\"Glaspot\")",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:Glaspot)",
         "_type:\"glastopf\" OR (_type:\"syslog\" AND program:Glas*)",

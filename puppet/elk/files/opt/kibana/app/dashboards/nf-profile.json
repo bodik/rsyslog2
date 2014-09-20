@@ -1,10 +1,10 @@
 {
-  "title": "nz5",
+  "title": "netflow6",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"nz\"",
+          "query": "_type:\"nf\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
@@ -22,29 +22,49 @@
         "0": {
           "type": "time",
           "field": "@timestamp",
-          "from": "now-15m",
+          "from": "now-12h",
           "to": "now",
           "mandate": "must",
           "active": true,
           "alias": "",
           "id": 0
+        },
+        "1": {
+          "type": "field",
+          "field": "nf.ipv4_dst_addr",
+          "query": "\"{{ARGS.remote}}\"",
+          "mandate": "either",
+          "active": true,
+          "alias": "",
+          "id": 1
+        },
+        "2": {
+          "type": "field",
+          "field": "nf.ipv4_src_addr",
+          "query": "\"{{ARGS.remote}}\"",
+          "mandate": "either",
+          "active": true,
+          "alias": "",
+          "id": 2
         }
       },
       "ids": [
-        0
+        0,
+        1,
+        2
       ]
     }
   },
   "rows": [
     {
       "title": "Graph",
-      "height": "150px",
+      "height": "100px",
       "editable": true,
       "collapse": false,
       "collapsable": true,
       "panels": [
         {
-          "span": 4,
+          "span": 6,
           "editable": true,
           "group": [
             "default"
@@ -55,7 +75,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "5m",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -120,13 +140,89 @@
           "derivative": false
         },
         {
-          "span": 4,
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "nf.ipv4_src_addr",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Sources"
+        },
+        {
+          "error": false,
+          "span": 3,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "nf.ipv4_dst_addr.raw",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": true,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Destinations"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "Stats",
+      "height": "150px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
           "time_field": "@timestamp",
-          "value_field": "ipkt",
+          "value_field": "nf.in_pkts",
           "x-axis": true,
           "y-axis": true,
           "scale": 1,
@@ -153,7 +249,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "5m",
           "intervals": [
             "auto",
             "1s",
@@ -193,13 +289,13 @@
           "title": "Packets"
         },
         {
-          "span": 4,
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
           "time_field": "@timestamp",
-          "value_field": "ibyt",
+          "value_field": "nf.in_bytes",
           "x-axis": true,
           "y-axis": true,
           "scale": 1,
@@ -226,7 +322,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10s",
+          "interval": "5m",
           "intervals": [
             "auto",
             "1s",
@@ -264,49 +360,6 @@
             "query_as_alias": true
           },
           "title": "Bytes"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Stats",
-      "height": "150px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 3,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "dp",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "top Dst ports"
         },
         {
           "error": false,
@@ -314,75 +367,9 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "sp",
+          "field": "nf.l4_dst_port",
           "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "bar",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "top Src ports"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "pf",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 2,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "PF"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "pr",
-          "exclude": [],
-          "missing": false,
+          "missing": true,
           "other": true,
           "size": 10,
           "order": "count",
@@ -393,7 +380,7 @@
           "tilt": false,
           "labels": true,
           "arrangement": "horizontal",
-          "chart": "pie",
+          "chart": "bar",
           "counter_pos": "above",
           "spyable": true,
           "queries": {
@@ -405,50 +392,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "top pr"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Hosts",
-      "height": "150px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "error": false,
-          "span": 3,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "sa.raw",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 8,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": true,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "top Sources4"
+          "title": "Dst ports"
         },
         {
           "error": false,
@@ -456,44 +400,11 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "da.raw",
+          "field": "nf.l4_src_port",
           "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 8,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": true,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "top Destinations4"
-        },
-        {
-          "error": false,
-          "span": 3,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "sa6.raw",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 8,
+          "missing": true,
+          "other": true,
+          "size": 10,
           "order": "count",
           "style": {
             "font-size": "10pt"
@@ -502,7 +413,7 @@
           "tilt": false,
           "labels": true,
           "arrangement": "horizontal",
-          "chart": "pie",
+          "chart": "bar",
           "counter_pos": "above",
           "spyable": true,
           "queries": {
@@ -514,28 +425,28 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "top Sources6"
+          "title": "Src ports"
         },
         {
           "error": false,
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "da6.raw",
+          "field": "nf.pr",
           "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 8,
+          "missing": true,
+          "other": true,
+          "size": 10,
           "order": "count",
           "style": {
-            "font-size": "10pt"
+            "font-size": "8pt"
           },
           "donut": false,
           "tilt": false,
           "labels": true,
           "arrangement": "horizontal",
-          "chart": "pie",
+          "chart": "table",
           "counter_pos": "above",
           "spyable": true,
           "queries": {
@@ -547,7 +458,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "top Destinations6"
+          "title": "Protos"
         }
       ],
       "notice": false
@@ -572,30 +483,26 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "@timestamp",
-            "desc"
+            "nf.first_switched",
+            "asc"
           ],
           "style": {
             "font-size": "9pt"
           },
           "overflow": "min-height",
           "fields": [
-            "@timestamp",
-            "ts",
-            "te",
-            "td",
-            "ipkt",
-            "ibyt",
-            "sa",
-            "da",
-            "sp",
-            "dp",
-            "pr",
-            "flg",
-            "in",
-            "pf",
-            "sa6",
-            "da6"
+            "nf.first_switched",
+            "nf.last_switched",
+            "nf.in_pkts",
+            "nf.in_bytes",
+            "nf.ipv4_src_addr",
+            "nf.ipv4_dst_addr",
+            "nf.l4_src_port",
+            "nf.l4_dst_port",
+            "nf.pr",
+            "nf.flg",
+            "sg.cc",
+            "dg.cc"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -633,28 +540,28 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": true,
+      "collapse": false,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
-        "_type:\"nz\"",
-        "_type:\"nz\" AND da:\"42.71.234.29\"",
-        "_type:\"nz\" AND da:\"42.71.234.2\"",
         "_type:\"nf\"",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10. TO 10.4.]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10. TO 10.4.]"
+        "_type:\"nf\" AND (nf.ipv4_src_addr:\"119.81.61.195\" OR nf.ipv4_dst_addr:\"119.81.61.195\")",
+        "_type:\"nf\" ",
+        "_type:\"nf\" AND nf.pr:\"TCP\" AND NOT nf.flg:\"SFAPR\" AND NOT nf.flg:\"AP\"",
+        "_type:\"nf\" AND nf.pr:\"TCP\" AND NOT nf.flg:\"SFAPR\"",
+        "_type:\"nf\" AND nf.pr:\"TCP\" AND nf.flg:\"S\"",
+        "_type:\"nf\" AND nf.pr:\"TCP\"",
+        "_type:\"nf\" AND nf.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]"
       ],
       "remember": 10,
       "enable": true
     },
     {
       "type": "filtering",
-      "collapse": true,
+      "collapse": false,
       "notice": true,
       "enable": true
     }
@@ -708,5 +615,5 @@
     "load_local": true,
     "hide": false
   },
-  "refresh": false
+  "refresh": "30s"
 }

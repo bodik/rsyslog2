@@ -47,9 +47,9 @@
 			"nz" : {
 				"_all" : { "enabled" : true },
 				"properties" : {
-					"tr": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
-					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
-					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ss" },
+					"tr": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
+					"ts": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
+					"te": { "index": "not_analyzed", "type": "date", "format":"yyyy-MM-dd HH:mm:ssZ" },
 					"td": { "index": "not_analyzed", "type": "float" },
 					"sa": {
 						"type": "ip", "index": "analyzed",
@@ -88,7 +88,7 @@
 			"nf": {
 				"_all" : { "enabled" : true },
 				"properties": {
-					"netflow" : {
+					"nf" : {
 						"type" : "object",
 						"dynamic": true,
 						"path": "full",
@@ -107,7 +107,9 @@
 							"sampling_interval": { "index": "not_analyzed", "type": "integer" },
 							"src_tos": { "index": "not_analyzed", "type": "integer" },
 							"tcp_flags": { "index": "not_analyzed", "type": "integer" },
+							"flg": { "index": "not_analyzed", "type": "string" },
 							"protocol": { "index": "not_analyzed", "type": "integer" },
+							"pr": { "index": "not_analyzed", "type": "string" },
 							"ipv4_next_hop": {
 								"type": "ip", "index": "analyzed",
 								"fields": {
@@ -139,7 +141,30 @@
 							"l4_dst_port": { "index": "not_analyzed", "type": "long" },
 							"l4_src_port": { "index": "not_analyzed", "type": "long" }
 						}
+					},
+					"sg" : {
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"country_code2": { "index": "not_analyzed", "type": "string" },
+							"cc": { "index": "not_analyzed", "type": "string" },
+							"country_name": { "index": "not_analyzed", "type": "string" },
+							"cn": { "index": "not_analyzed", "type": "string" }
+						}
+					},
+					"dg" : {
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"country_code2": { "index": "not_analyzed", "type": "string" },
+							"cc": { "index": "not_analyzed", "type": "string" },
+							"country_name": { "index": "not_analyzed", "type": "string" },
+							"cn": { "index": "not_analyzed", "type": "string" }
+						}
 					}
+
 				}
 			}
 		}

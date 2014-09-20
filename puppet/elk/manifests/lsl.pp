@@ -13,6 +13,7 @@ class elk::lsl (
 	class { 'logstash':
 		manage_repo  => true,
 		repo_version => '1.4',
+		install_contrib => true,
 	}
 	file { '/etc/logstash/patterns/metacentrum':
 		source => "puppet:///modules/${module_name}/etc/logstash/patterns/metacentrum",
@@ -97,6 +98,22 @@ class elk::lsl (
 	logstash::configfile { 'filter-nz':
 		content => template("${module_name}/etc/logstash/conf.d/filter-nz.conf"),
 		order => 30,
+		notify => Service["logstash"],
+	}
+
+	logstash::configfile { 'filter-nf':
+		content => template("${module_name}/etc/logstash/conf.d/filter-nf.conf"),
+		order => 40,
+		notify => Service["logstash"],
+	}
+	logstash::configfile { 'filter-nf-tcpflags':
+		content => template("${module_name}/etc/logstash/conf.d/filter-nf-tcpflags.conf"),
+		order => 41,
+		notify => Service["logstash"],
+	}
+	logstash::configfile { 'filter-nf-proto':
+		content => template("${module_name}/etc/logstash/conf.d/filter-nf-proto.conf"),
+		order => 41,
 		notify => Service["logstash"],
 	}
 

@@ -1,3 +1,3 @@
-puppet apply --modulepath=/puppet -e 'include metalib::fprobe'
+puppet apply --modulepath=/puppet -e 'include netflow::fprobe'
 
 

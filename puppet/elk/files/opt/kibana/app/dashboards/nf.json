@@ -1,5 +1,5 @@
 {
-  "title": "netflow5",
+  "title": "netflow6",
   "services": {
     "query": {
       "list": {
@@ -22,7 +22,7 @@
         "0": {
           "type": "time",
           "field": "@timestamp",
-          "from": "now-24h",
+          "from": "now-15m",
           "to": "now",
           "mandate": "must",
           "active": true,
@@ -55,7 +55,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -125,7 +125,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "netflow.ipv4_src_addr",
+          "field": "nf.ipv4_src_addr",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -158,7 +158,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "netflow.ipv4_dst_addr.raw",
+          "field": "nf.ipv4_dst_addr.raw",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -196,13 +196,13 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
           "time_field": "@timestamp",
-          "value_field": "netflow.in_pkts",
+          "value_field": "nf.in_pkts",
           "x-axis": true,
           "y-axis": true,
           "scale": 1,
@@ -229,7 +229,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -269,13 +269,13 @@
           "title": "Packets"
         },
         {
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "histogram",
           "loadingEditor": false,
           "mode": "total",
           "time_field": "@timestamp",
-          "value_field": "netflow.in_bytes",
+          "value_field": "nf.in_bytes",
           "x-axis": true,
           "y-axis": true,
           "scale": 1,
@@ -302,7 +302,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "10m",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -347,7 +347,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "netflow.l4_dst_port",
+          "field": "nf.l4_dst_port",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -380,7 +380,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "netflow.l4_src_port",
+          "field": "nf.l4_src_port",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -406,6 +406,39 @@
           "tstat": "total",
           "valuefield": "",
           "title": "Src ports"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "nf.pr",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "8pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "table",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Protos"
         }
       ],
       "notice": false
@@ -430,7 +463,7 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "netflow.in_pkts",
+            "nf.last_switched",
             "desc"
           ],
           "style": {
@@ -438,16 +471,18 @@
           },
           "overflow": "min-height",
           "fields": [
-            "netflow.first_switched",
-            "netflow.last_switched",
-            "netflow.in_pkts",
-            "netflow.in_bytes",
-            "netflow.ipv4_src_addr",
-            "netflow.ipv4_dst_addr",
-            "netflow.l4_src_port",
-            "netflow.l4_dst_port",
-            "netflow.protocol",
-            "netflow.tcp_flags"
+            "nf.first_switched",
+            "nf.last_switched",
+            "nf.in_pkts",
+            "nf.in_bytes",
+            "nf.ipv4_src_addr",
+            "nf.ipv4_dst_addr",
+            "nf.l4_src_port",
+            "nf.l4_dst_port",
+            "nf.pr",
+            "nf.flg",
+            "sg.cc",
+            "dg.cc"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -491,15 +526,15 @@
       "pinned": true,
       "history": [
         "_type:\"nf\"",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10. TO 10.4.]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10. TO 10.4.]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.3]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.36]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.25 TO 10.4.1.36]"
+        "_type:\"nf\" AND nf.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10. TO 10.4.]",
+        "_type:\"nf\" AND nf.ipv4_src_addr.raw:[10. TO 10.4.]",
+        "_type:\"nf\" AND nf.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.3]",
+        "_type:\"nf\" AND nf.ipv4_src_addr.raw:[10.4.1.25 TO 10.4.1.36]",
+        "_type:\"nf\" AND nf.ipv4_src_addr:[10.4.1.25 TO 10.4.1.36]"
       ],
       "remember": 10,
       "enable": true
