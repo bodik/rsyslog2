@@ -11,6 +11,7 @@ class netflow::pmacct (
 	}
 	service { "pmacct":
 		ensure => running,
+		hasstatus => false,
 	}
 
 
