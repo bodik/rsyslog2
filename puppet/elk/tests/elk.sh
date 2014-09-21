@@ -64,6 +64,10 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 kibana not found on webserver"
 fi
 
+wget "http://$(facter fqdn)/dash.html" -q -O - | grep "dashboard/file/logstashesb" 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 dashboar not found on webserver"
+fi
 
 
 
