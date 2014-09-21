@@ -169,9 +169,9 @@
           "type": "text",
           "loadingEditor": false,
           "mode": "text",
-          "content": "## HIVE:\nbasic aggreggation 1 -- hive> SELECT COUNT(*) FROM flowdata;\nbasic aggreggation 2 -- hive> SELECT count(*), sum(a.ipkt), sum(a.ibyt) FROM flowdata a;\nbasic aggreggation 3 -- hive> SELECT count(*) FROM flowdata a WHERE a.dp = 53;\nbasic aggreggation 4  viz netflow/elk_basicagg4.sh -- hive> SELECT ts, pr, sa, da, sp, dp, ipkt, ibyt FROM flowdata WHERE dp = 53 AND pr = \"TCP\";\ncannt do -- basic aggreggation 5 -- hive> SELECT sa, sum(ipkt), sum(ibyt) as bytes, count(*) FROM flowdata WHERE pr = \"TCP\" GROUP BY sa ORDER BY bytes;\ncannt do -- basic aggreggation 6 -- hive> SELECT pr, sa, da, sp, dp, sum(ipkt), sum(ibyt), count(*) FROM flowdata GROUP BY pr, sa, da, sp, dp;",
+          "content": "## HIVE:\nbq 1 -- hive> SELECT COUNT(*) FROM flowdata;\nbq 2 -- hive> SELECT count(*), sum(a.ipkt), sum(a.ibyt) FROM flowdata a;\nbq 3 -- hive> SELECT count(*) FROM flowdata a WHERE a.dp = 53;\nbq 4  -- hive> SELECT ts, pr, sa, da, sp, dp, ipkt, ibyt FROM flowdata WHERE dp = 53 AND pr = \"TCP\";\nbq 5 -- neni jednoduche (netflow/elk_basicquery4.sh) -- hive> SELECT sa, sum(ipkt), sum(ibyt) as bytes, count(*) FROM flowdata WHERE pr = \"TCP\" GROUP BY sa ORDER BY bytes;\ncannt do -- bq 6 -- hive> SELECT pr, sa, da, sp, dp, sum(ipkt), sum(ibyt), count(*) FROM flowdata GROUP BY pr, sa, da, sp, dp;",
           "style": {
-            "font-size": "10pt"
+            "font-size": "14pt"
           },
           "title": "Basic queries"
         }
@@ -211,7 +211,7 @@
           "label_name": "Query",
           "value_name": "Value",
           "spyable": true,
-          "title": "count(*)",
+          "title": "bq1, bq3",
           "field": "sa"
         },
         {
@@ -241,7 +241,7 @@
           "value_name": "Value",
           "spyable": true,
           "field": "ipkt",
-          "title": "sum(ipkt)"
+          "title": "bq2 - sum(ipkt)"
         },
         {
           "error": false,
@@ -269,7 +269,7 @@
           "label_name": "Query",
           "value_name": "Value",
           "spyable": true,
-          "title": "sum(ibyt)",
+          "title": "bq2 - sum(ibyt)",
           "field": "ibyt"
         }
       ],
@@ -326,7 +326,7 @@
             "font-size": "9pt"
           },
           "normTimes": true,
-          "title": "SELECT ts, pr, sa, da, sp, dp, ipkt, ibyt FROM flowdata WHERE dp = 53 AND pr = \"TCP\";"
+          "title": "bq4"
         },
         {
           "error": false,
