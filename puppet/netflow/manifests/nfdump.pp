@@ -9,7 +9,7 @@ class netflow::nfdump (
 	$period_exec = "\'/bin/sh /puppet/netflow/send.sh -f /var/cache/nfdump/%f\'",
 	$interval = "60",
 ) {
-	class { "netflow::fprobe":
+	class { "netflow::pmacct":
 		collector_server => "localhost",
 		collector_port => $collector_port,
 	}
