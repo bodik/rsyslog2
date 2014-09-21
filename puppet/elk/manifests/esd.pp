@@ -4,7 +4,7 @@ class elk::esd () {
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {
-		$half = floor($m[0] / 2)
+		$half = max(floor($m[0] / 2), 1)
 		$config_hash = {
 		  'ES_HEAP_SIZE' => "${half}g",
 		}
