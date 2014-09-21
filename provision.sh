@@ -5,4 +5,5 @@ cd /puppet
 sh rediser.install.sh
 sh elk.install.sh
 sh fprobe.install.sh
+sh elk/tests/elk.sh
 
