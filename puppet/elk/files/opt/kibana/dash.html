@@ -10,7 +10,22 @@ document.write("<li> <a href=\"http://"+window.location.hostname+"/index.html#/d
 
 document.write("<li> <a href=\"http://"+window.location.hostname+"/index.html#/dashboard/file/nf.json\">kibana3 nf</a></li>");
 document.write("<li> <a href=\"http://"+window.location.hostname+"/index.html#/dashboard/file/nz.json\">kibana3 nz</a></li>");
+</script>
 
+<script>
+function nzhostprofile(){
+        document.location.href = 'http://'+window.location.hostname+'/index.html#/dashboard/file/nz-hostprofile.json?host='+document.getElementById('nzhostprofilehost').value;
+}
+</script>
+kibana3 nz-hostprofile: <form style=" display:inline!important;" action="javascript:void(0);">
+        <input id="nzhostprofilehost" type="text" name="host" value="">
+        <input type="button" name="profile" value="profile" onclick="nzhostprofile();">
+        </form></br>
+
+<p>
+
+
+<script>
 document.write("<li> <a href=\"http://"+window.location.hostname+"/index.html#/dashboard/file/glastopf.json\">kibana3 glastopf</a></li>");
 
 document.write("<li> <a href=\"http://"+window.location.hostname+":39200\">http://"+window.location.hostname+":39200</a> </li>");
@@ -23,5 +38,7 @@ document.write("<li> <a href=\"http://"+window.location.hostname+":39200/_plugin
 document.write("<li> <a href=\"http://"+window.location.hostname+":39200/_plugin/HQ\">http://"+window.location.hostname+":39200/_plugin/HQ</a> </li>");
 document.write("<ul>");
 </script>
+
+
 </body>
 </html>
