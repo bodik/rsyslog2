@@ -2,13 +2,13 @@
 
 . /puppet/metalib/lib.sh
 
-#sw collector
-/usr/lib/nagios/plugins/check_procs -C fprobe -c 1:1
+#sw emitor
+/usr/lib/nagios/plugins/check_procs -C pmacctd
 if [ $? -ne 0 ]; then
-	rreturn 1 "$0 fprobe check_procs"
+	rreturn 1 "$0 pmacctd check_procs"
 fi
 
-
+#collector
 /usr/lib/nagios/plugins/check_procs -C nfcapd
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 nfcapd check_procs"
