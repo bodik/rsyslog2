@@ -2,6 +2,7 @@
 apt-get update
 apt-get install -y git puppet
 cd /puppet
+sh phase2.install.sh
 sh rediser.install.sh
 sh elk.install.sh
 sh fprobe.install.sh
