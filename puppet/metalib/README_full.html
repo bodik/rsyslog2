@@ -1,6 +1,6 @@
 <h1>metalib</h1>
 
-<p>A set of support classes and helpers used within rsyslog2 puppet ecosystem.</p>
+<p>A set of support classes and helpers used within rsyslog2 puppet ecosystem. Classes are documented within themselves see [README_full.html]</p>
 
 <h2>avahi.findservice.sh</h2>
 
@@ -8,11 +8,13 @@
 Ensures installation of avahi-daemon on execution to aid lib/facter/avahi_findservice.rb
 at bootstrap time.</p>
 
-<p>Examples:
-$&gt; avahi.findservice.sh _service1._tcp
+<h3>Examples</h3>
+
+<pre><code>$&gt; avahi.findservice.sh _service1._tcp
 hostnamex.domain.tld
 $&gt; avahi.findservice.sh _notpresent._tcp
-$&gt;</p>
+$&gt;
+</code></pre>
 
 <h2>lib.sh</h2>
 
