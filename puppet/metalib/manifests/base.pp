@@ -7,10 +7,6 @@
 #
 # include metalib::base
 #
-# === Authors
-#
-# bodik@cesnet.cz
-#
 class metalib::base {
 
 	# globals

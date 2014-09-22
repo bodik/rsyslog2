@@ -7,10 +7,6 @@
 #
 # include metalib::doc
 #
-# === Authors
-#
-# bodik@cesnet.cz
-#
 class metalib::doc {
 	package { "ruby-dev":
 		ensure => installed,

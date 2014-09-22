@@ -1,6 +1,8 @@
 # metalib
 
 A set of support classes and helpers used within rsyslog2 puppet ecosystem.
+Classes are documenten within themselves, see [README_full.html](README_full.html) for more
+documentation.
 
 
 ## avahi.findservice.sh

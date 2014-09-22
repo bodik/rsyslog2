@@ -7,10 +7,6 @@
 #
 # include metalib::fail2ban
 #
-# === Authors
-#
-# bodik@cesnet.cz
-#
 class metalib::fail2ban () {
 	package { "fail2ban":
 		ensure => installed,

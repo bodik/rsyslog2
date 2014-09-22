@@ -7,10 +7,6 @@
 #
 # include metalib::avahi
 #
-# === Authors
-#
-# bodik@cesnet.cz
-#
 class metalib::avahi ( ) {
 	package { ["avahi-daemon", "avahi-utils"]:
 	        ensure => installed,
