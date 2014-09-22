@@ -1,10 +1,11 @@
-# == Class: doc
+# == Class: metalib::doc
 #
-# Class will ensure presence of all needed software for rendering rsyslog2 documentation
+# Class for installingall software needed for rendering rsyslog2 documentation.
+# Used manually.
 #
 # === Examples
 #
-#  class { doc: }
+# include metalib::doc
 #
 # === Authors
 #
@@ -14,7 +15,7 @@ class metalib::doc {
 	package { "ruby-dev":
 		ensure => installed,
 	}
-	package { ['github-markdown','redcarpet']:
+	package { ['redcarpet' ,'rdoc', 'github-markup']:
 		ensure   => 'installed',
 		provider => 'gem',
 		require => Package["ruby-dev"],

@@ -1,0 +1,84 @@
+<h1>metalib</h1>
+
+<p>A set of support classes and helpers used within rsyslog2 puppet ecosystem.</p>
+
+<h2>avahi.findservice.sh</h2>
+
+<p>Discover service by name using Avahi mDNS. Prints resolved hostname or IPv4 address.
+Ensures installation of avahi-daemon on execution to aid lib/facter/avahi_findservice.rb
+at bootstrap time.</p>
+
+<p>Examples:
+$&gt; avahi.findservice.sh _service1._tcp
+hostnamex.domain.tld
+$&gt; avahi.findservice.sh _notpresent._tcp
+$&gt;</p>
+
+<h2>lib.sh</h2>
+
+<p>Set of shell subroutines used within rsyslog2 puppet ecosystem.</p>
+
+<h2>Class: metalib::fail2ban</h2>
+
+<p>Class for installling fail2ban. Used during phase2 eg. basic machine
+setting.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::fail2ban</p>
+
+<h3>Authors</h3>
+
+<p>bodik@cesnet.cz</p>
+
+<h2>Class: metalib::dev</h2>
+
+<p>Class for installling set of development and debugging packages. Used
+manually when needed</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::dev</p>
+
+<h3>Authors</h3>
+
+<p>bodik@cesnet.cz</p>
+
+<h2>Class: metalib::doc</h2>
+
+<p>Class for installingall software needed for rendering rsyslog2
+documentation. Used manually.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::doc</p>
+
+<h3>Authors</h3>
+
+<p>bodik@cesnet.cz</p>
+
+<h2>Class: metalib::base</h2>
+
+<p>Class for ensuring basic setting of managed machine such as: editors, git,
+puppet, hostname, krb5 client lib, sources list.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::base</p>
+
+<h3>Authors</h3>
+
+<p>bodik@cesnet.cz</p>
+
+<h2>Class: metalib::avahi</h2>
+
+<p>Class for installling avahi utils and resolving daemon. This class is used
+during dynamic cloud autodiscovery by other classes.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::avahi</p>
+
+<h3>Authors</h3>
+
+<p>bodik@cesnet.cz</p>

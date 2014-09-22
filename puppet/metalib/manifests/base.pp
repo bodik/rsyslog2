@@ -1,5 +1,16 @@
-#!/usr/bin/puppet apply
-
+# == Class: metalib::base
+#
+# Class for ensuring basic setting of managed machine such as: editors, git,
+# puppet, hostname, krb5 client lib, sources list.
+#
+# === Examples
+#
+# include metalib::base
+#
+# === Authors
+#
+# bodik@cesnet.cz
+#
 class metalib::base {
 
 	# globals

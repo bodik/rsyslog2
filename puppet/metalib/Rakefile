@@ -43,6 +43,20 @@ task :lint => :clean do
   fail if linter.errors?
 end
 
+
+desc "Generate documentation from README.md and manifests"
+task :doc do
+  require 'github/markup'
+  require 'puppet'
+  require 'puppet/util/rdoc'
+
+  files = Dir.glob(["manifests/*.pp", "lib/facter/*.rb"])
+  rdocs = `puppet doc #{files.join(' ')}`
+  out = GitHub::Markup.render("README.md", File.read("README.md"))
+  out += GitHub::Markup.render("README.manifests.rdoc", rdocs)
+  File.open("README_full.html", 'w') { |file| file.write(out) }
+end
+
 #require 'rspec/core/rake_task'
 #
 #desc "Run specs check on puppet manifests"

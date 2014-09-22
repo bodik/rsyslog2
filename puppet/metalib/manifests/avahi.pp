@@ -1,6 +1,6 @@
-# == Class: avahi
+# == Class: metalib::avahi
 #
-# Support class for installling avahi utils and resolving daemon. This class is used
+# Class for installling avahi utils and resolving daemon. This class is used
 # during dynamic cloud autodiscovery by other classes.
 #
 # === Examples
