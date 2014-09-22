@@ -1,0 +1,163 @@
+<link href="puppet/metalib/style.css" rel="stylesheet"></link>
+<h1>rsyslog2 - Data processing suite at metacentrum.cz</h1>
+
+<p>This software suite is designed to aid creating and maintaining data
+processing cloud within a realm of CESNET.CZ and beyond. It is based on
+masterless puppet  and bash. Whole suite is bootsrapped from git to the
+clean provisioned  Debian Wheezy VM.</p>
+
+<p>TODO: elaborate on roles, check and check_stddev.sh</p>
+
+<h3>Components</h3>
+
+<p>Each major component should provide a puppet module and set of
+install/check and other scripts within itself.</p>
+
+<pre>component/ 			-- puppet module
+component/fileX			-- additional file (perhaps a script)
+component/tests/componentX.sh	-- simple test checking real state of the service
+				   typically used by jenkins autotests</pre>
+
+<h3>Roles</h3>
+
+<pre>role.install.sh			-- script for masterless installation
+role.check.sh			-- script for state detection (noop show_diff)</pre>
+<hr style="height: 6px">
+
+<h2>Usecases</h2>
+
+<p>The main usecase is for creating and maintaining services for logging and
+log processing at <a
+href="http://www.metacentrum.cz">www.metacentrum.cz</a>. Suite provides
+components for development and testing of rsyslog packages, installing and
+maintaining log processing gateway, and managing private/public cloud for
+data processing based primaliry on ELK stack (<a
+href="http://www.elasticsearch.org">www.elasticsearch.org</a>) and MongodDB
+(<a href="http://www.mongodb.com">www.mongodb.com</a>)</p>
+
+<h3>Ops/Maintenance</h3>
+
+<p>Bootstrap suite from a git repository, subsequent calls would pull from
+master repo.</p>
+
+<pre>wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+cd /puppet &amp;&amp; ls -l
+sh bootstrap.install.sh</pre>
+
+<p>During ops, components/roles can be installed on managed node, or state can
+be cheched against roles.</p>
+
+<pre>#   install a component
+$ sh componentX.install.sh
+#   run a component test to check if installation was successfull
+$ sh component/tests/component.sh
+
+#   use component manually
+$ puppet apply --modulespath=/puppet -i 'class {&quot;rsyslog-client&quot;: rsyslog_server=&gt;&quot;a.b.c.d&quot;}'</pre>
+
+<p>Lately, a state of node can change, perhaps by rutime tuning or more
+development. A <tt>check_stddev.sh</tt> can be used to check changed things
+within the system.</p>
+
+<pre>#   show deviation from desired state, all available components .check.sh will be called
+$ sh check_stddev.sh</pre>
+
+<p>Then, changes can be accepted into repository or node state could be
+reverted to origial state.</p>
+
+<pre>$ cp /etc/fileX component/templates/fileX
+$ vim component/manifests/subclass.pp
+$ check_stddev.sh
+$ git status
+$ git commit</pre>
+
+<h4>Example installation of ELK analytics node</h4>
+
+<p>Commands will ensure installation of basic set of components for data
+analysis (rediser queue, elasticsearch data node, logstash processor,
+kibana frontend).</p>
+
+<pre>$ wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+$ cd /puppet &amp;&amp; ls -l
+$ sh phase2.install.sh
+$ sh rediser.install.sh
+$ sh elk.install.sh
+$ sh rediser/tests/rediser.sh
+$ sh elk/tests/elk.sh
+$ links http://$(facter fqdn)/dash.html</pre>
+
+<h4>Example installation of rsyslog development node</h4>
+
+<p>Commands will ensure installation of basic set of components for rsyslog
+development (compiler, debugger, libs-dev,...)</p>
+
+<pre>$ wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+$ cd /puppet &amp;&amp; ls -l
+$ sh phase2.install.sh
+$ sh rsyslog-dev.install.sh</pre>
+
+<h3>Automating tasks with (Robert) Jenkins</h3>
+
+<p>While maintaining a small site can be done by hand as shown in previous
+chapter, large environment can use modules/components through standard
+puppetmaster, but neither approach is suitable for fast development
+iterations or creating an ad-hoc experiment environment (like performance
+or acceptance testing).</p>
+
+<p>Tasks needed can be automated using shell scripting and automated by
+Jenkins for scheduling, task chaining and result aggregations -- eg.
+creating an rsyslog server, 2 clients, spawning a test and archiving
+outputs and artefacts for latter use. In out usecase Jenkins is mean to be
+running on private VM, equiped with user's credentials and performing tasks
+towards available clouds and provisioned VMs. More documentation can be
+found in separate Jenkins component  documentation.</p>
+<hr style="height: 6px">
+
+<h2>Available components</h2>
+<ul><li>
+<p><a href="puppet/metalib/README_full.html">metalib</a></p>
+</li><li>
+<p>rsyslog</p>
+</li><li>
+<p>rediser</p>
+</li><li>
+<p>elk</p>
+</li><li>
+<p>jenkins</p>
+</li><li>
+<p>netflow (nfdump, frpobe, pmacct)</p>
+</li><li>
+<p>mongodb</p>
+</li><li>
+<p>mongomine</p>
+</li></ul>
+<hr style="height: 6px">
+
+<p>* jenkins -- lokalni vm debian wheezy, NAT 		* sh bootstrap.install.sh 		*
+sh jenkins.install.sh 		* metacloud.init creds 			$ ### jako jenkins
+vyrobit kredence 			$ scp odkudsi:tajnyadresar/* /dev/shm/ 			$ ### vyrobit
+oneauth susenku  			$ metacloud.init login 			$ exit</p>
+
+<p>/dev/shm/username	-  			/dev/shm/usercert.pem	- metacloudi certifikat
+			/dev/shm/one_x509	- metacloudi susenka 	 		* metacloud.init templates	-
+instalace templates 		* browser debian.localdomain:8081 			* spousteni
+scenaru pres jenkins, vysledky v jobs console output 		* rucni prace
+VMNAME=XXX metacloud.init start, ssh, ...</p>
+<hr style="height: 5px">
+
+<p>komponenty:</p>
+<ul><li>
+<p>rsyslog-server, rsyslog-client</p>
+</li><li>
+<p>rediser</p>
+</li><li>
+<p>elk - elasticsearch,logstash,kibana</p>
+</li><li>
+<p>fprobe - testovaci netflow sonda</p>
+</li><li>
+<p>jenkins system pro automatizaci ukonu, pouziva rozhrani pro ruzne cloudy</p>
+</li></ul>
+
+<p>* metacloud.init - dev/ops prostredi 	* kvm.init - pouze lokalni testy,
+spatne sitovani 	* magrathea.init - vyzaduje specialni prava (ops
+metacentrum.cz)</p>
