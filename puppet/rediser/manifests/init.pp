@@ -27,7 +27,7 @@ class rediser {
 
 
 	file { "/etc/apt/sources.list.d/wheezy-backports.list":
-	        source => "puppet:///modules/${module_name}/etc/apt/sources.list.d/wheezy-backports.list",
+	        content => template("${module_name}/etc/apt/sources.list.d/wheezy-backports.list"),
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
 	}
@@ -54,7 +54,7 @@ class rediser {
 
 	include metalib::avahi
 	file { "/etc/avahi/services/rediser.service":
-		source => "puppet:///modules/${module_name}/etc/avahi/rediser.service",
+		content => template("${module_name}/etc/avahi/rediser.service"),
 		owner => "root", group => "root", mode => "0644",
 		require => Package["avahi-daemon"],
 		notify => Service["avahi-daemon"],
