@@ -8,73 +8,6 @@ other tcp line oriented server) for further analysis. Classes supports
 autodiscovery of components by avahi or statically by parameter.</p>
 <hr style="height: 6px">
 
-<h2>Class: rsyslog::client</h2>
-
-<p>Class will ensure installation of rsyslog packages and configures daemon to
-client mode eg. :</p>
-<ul><li>
-<p>forwards all logs to rsyslog server using omrelp or omgssapi on krb5
-enabled nodes</p>
-</li></ul>
-
-<h3>Parameters</h3>
-<dl class="rdoc-list"><dt><b>version</b></dt>
-<dd>
-<p>specific version to install (see rsyslog::install)</p>
-</dd><dt><b>rsyslog_server</b></dt>
-<dd>
-<p>hostname or ip to forward all logs to (default undef)</p>
-</dd><dt><b>rsyslog_auto</b></dt>
-<dd>
-<p>perform rsyslog server autodiscovery by avahi (defult true)</p>
-</dd><dt><b>rsyslog_service</b></dt>
-<dd>
-<p>name of rsyslog server service to discover (default "_syselgss._tcp")</p>
-</dd></dl>
-
-<h3>Examples</h3>
-
-<p>install default version, perform autodiscovery and forward logs to rsyslog
-server</p>
-
-<pre>include rsyslog::client</pre>
-
-<p>install rsyslog from jessie, forwardm logs to designated server node</p>
-
-<pre>class { &quot;rsyslog::client&quot;: 
-  version =&gt; &quot;jessie&quot;, 
-  rsyslog_server =&gt; &quot;1.2.3.4&quot;, 
-}</pre>
-
-<p>install rsyslog client and do not forward gathered log anywhere</p>
-
-<pre>class { &quot;rsyslog::server&quot;: 
-  rsyslog_auto =&gt; false, 
-}</pre>
-
-<h2>Class: rsyslog::install</h2>
-
-<p>Class will ensure installation of rsyslog packages in specific version or
-distribution flavor.</p>
-
-<h3>Parameters</h3>
-<dl class="rdoc-list"><dt><b>version</b></dt>
-<dd>
-<p>specific version to install. Valid values: "meta", "bpo", "jessie"</p>
-</dd></dl>
-
-<h3>Examples</h3>
-
-<p>install default version</p>
-
-<pre>include rsyslog::install</pre>
-
-<p>install rsyslog from jessie, forward logs to designated server node</p>
-
-<pre>class { &quot;rsyslog::install&quot;: 
-  version =&gt; &quot;jessie&quot;, 
-}</pre>
-
 <h2>Class: rsyslog::server</h2>
 
 <p>Class will ensure installation of rsyslog packages and configures daemon to
@@ -85,6 +18,8 @@ server mode eg. :</p>
 <p>stores all incoming logs into IP based directory stucture</p>
 </li><li>
 <p>optionaly forwards all gathered logs to rediser for analytics (omfwd).</p>
+</li><li>
+<p>announce self to others using avahi.</p>
 </li></ul>
 
 <h3>Parameters</h3>
@@ -131,3 +66,70 @@ packages.</p>
 <h3>Examples</h3>
 
 <pre>include rsyslog::dev</pre>
+
+<h2>Class: rsyslog::install</h2>
+
+<p>Class will ensure installation of rsyslog packages in specific version or
+distribution flavor.</p>
+
+<h3>Parameters</h3>
+<dl class="rdoc-list"><dt><b>version</b></dt>
+<dd>
+<p>specific version to install. Valid values: "meta", "bpo", "jessie"</p>
+</dd></dl>
+
+<h3>Examples</h3>
+
+<p>install default version</p>
+
+<pre>include rsyslog::install</pre>
+
+<p>install rsyslog from jessie, forward logs to designated server node</p>
+
+<pre>class { &quot;rsyslog::install&quot;: 
+  version =&gt; &quot;jessie&quot;, 
+}</pre>
+
+<h2>Class: rsyslog::client</h2>
+
+<p>Class will ensure installation of rsyslog packages and configures daemon to
+client mode eg. :</p>
+<ul><li>
+<p>forwards all logs to rsyslog server using omrelp or omgssapi on krb5
+enabled nodes</p>
+</li></ul>
+
+<h3>Parameters</h3>
+<dl class="rdoc-list"><dt><b>version</b></dt>
+<dd>
+<p>specific version to install (see rsyslog::install)</p>
+</dd><dt><b>rsyslog_server</b></dt>
+<dd>
+<p>hostname or ip to forward all logs to (default undef)</p>
+</dd><dt><b>rsyslog_auto</b></dt>
+<dd>
+<p>perform rsyslog server autodiscovery by avahi (defult true)</p>
+</dd><dt><b>rsyslog_service</b></dt>
+<dd>
+<p>name of rsyslog server service to discover (default "_syselgss._tcp")</p>
+</dd></dl>
+
+<h3>Examples</h3>
+
+<p>install default version, perform autodiscovery and forward logs to rsyslog
+server</p>
+
+<pre>include rsyslog::client</pre>
+
+<p>install rsyslog from jessie, forwardm logs to designated server node</p>
+
+<pre>class { &quot;rsyslog::client&quot;: 
+  version =&gt; &quot;jessie&quot;, 
+  rsyslog_server =&gt; &quot;1.2.3.4&quot;, 
+}</pre>
+
+<p>install rsyslog client and do not forward gathered log anywhere</p>
+
+<pre>class { &quot;rsyslog::server&quot;: 
+  rsyslog_auto =&gt; false, 
+}</pre>
