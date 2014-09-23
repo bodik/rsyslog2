@@ -1,0 +1,5 @@
+= elk
+
+Module provides a way to install Elasticsearch data node, logstash processor and kibana3/apache frontend to elasticsearch.
+
+--------

@@ -1,5 +1,34 @@
-#!/usr/bin/puppet apply
-
+# == Class: elk::lsl
+#
+# Class will ensure installation of logstash using puppet-logstash modules 
+# and creates single instance:
+# - with additional custom patterns
+# - input redis for fetching data from specific server or discovered rediser service (queues syslog, nz)
+# - input netflow data using udp codec netflow
+# - filtering/grokking data
+# - output data to elasticsearch using node discovery
+#
+# === Parameters
+#
+# [*lsl_workers*]
+#   logstash number of workers (default 2 or 4)
+#
+# [*rediser_server*]
+#   hostname or ip to fetch data for all queues, has precedence over rediser_auto
+#   (default undef)
+#
+# [*rediser_auto*]
+#   perform rediser autodiscovery by avahi (defult true)
+#
+# [*rediser_service*]
+#   name of rediser service to discover (default "_rediser._tcp")
+# === Examples
+#
+#   class { "elk::lsl": 
+#     lsl_workers => "1",
+#     rediser_server => "1.2.3.4",
+#   }
+#
 class elk::lsl (
 	$lsl_workers = undef,
 	$rediser_server = undef,

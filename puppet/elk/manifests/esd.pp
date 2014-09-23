@@ -1,6 +1,22 @@
-#!/usr/bin/puppet apply
-
-class elk::esd () {
+# == Class: elk::esd
+#
+# Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
+# and creates single instance:
+# - heapsize as memorytotal/2
+# - set of basic plugins
+#
+# === Parameters
+#
+# [*cluster_name*]
+#   set a specific cluster name for node
+#
+# === Examples
+#
+#   class { "elk::esd": cluster_name => "abc", }
+#
+class elk::esd (
+	$cluster_name = "mrx",
+) {
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {
@@ -17,7 +33,7 @@ class elk::esd () {
 		datadir => '/scratch',
 		init_defaults => $config_hash,
 		config => { 
-			'cluster.name' => 'mrx',
+			'cluster.name' => $cluster_name,
 			'transport.tcp.port' => '39300-39400',
 			'http.port' => '39200-39300',
 			'script.disable_dynamic' => false,

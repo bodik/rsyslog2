@@ -114,9 +114,9 @@ documentation.
 == Available components
 
 * metalib[link:puppet/metalib/README_full.html]
-* rsyslog
-* rediser
-* elk
+* rsyslog[link:puppet/rsyslog/README_full.html]
+* rediser[link:puppet/rediser/README_full.html]
+* elk[link:puppet/elk/README_full.html]
 * jenkins
 * netflow (nfdump, frpobe, pmacct)
 * mongodb
