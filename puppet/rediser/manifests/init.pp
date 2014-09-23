@@ -2,7 +2,7 @@
 #
 # Class will install redis server and rediser. Currently is redis installation
 # enforced from wheezy-backports because of scripts support used by logstash
-# input redis.
+# input redis. Rediser will announce itself to others using avahi.
 #
 # === Examples
 #
