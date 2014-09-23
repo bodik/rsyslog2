@@ -4,7 +4,7 @@
 # - imtcp, imrelp, optionally imgssapi on krb5 enabled nodes
 # - stores all incoming logs into IP based directory stucture
 # - optionaly forwards all gathered logs to rediser for analytics (omfwd).
-# - announce self to others using avahi 
+# - announce self to others using avahi.
 #
 # === Parameters
 #
