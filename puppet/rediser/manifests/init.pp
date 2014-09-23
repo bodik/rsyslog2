@@ -1,14 +1,12 @@
 # == Class: rediser
 #
-# rediser installation class
+# Class will install redis server and rediser. Currently is redis installation
+# enforced from wheezy-backports because of scripts support used by logstash
+# input redis.
 #
 # === Examples
 #
 #  class { rediser: }
-#
-# === Authors
-#
-# bodik@cesnet.cz
 #
 class rediser {
 

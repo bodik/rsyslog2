@@ -1,0 +1,16 @@
+<link href="../metalib/style.css" rel="stylesheet"></link>
+<h1>rediser</h1>
+
+<p>Module provides installation of rediser -- small tcp line oriented daemon
+which reads data from network and rpushes them into redis queue.</p>
+<hr style="height: 6px">
+
+<h2>Class: rediser</h2>
+
+<p>Class will install redis server and rediser. Currently is redis
+installation enforced from wheezy-backports because of scripts support used
+by logstash input redis.</p>
+
+<h3>Examples</h3>
+
+<pre>class { rediser: }</pre>
