@@ -42,7 +42,7 @@ class metalib::base {
 	}
 
 	file { "/etc/apt/sources.list.d/wheezy.list":
-	        content => template("${module_name}/etc/apt/sources.list.d/wheezy.list"),
+	        source => "puppet:///modules/metalib/etc/apt/sources.list.d/wheezy.list",
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
 	}
