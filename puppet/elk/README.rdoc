@@ -2,4 +2,6 @@
 
 Module provides a way to install Elasticsearch data node, logstash processor and kibana3/apache frontend to elasticsearch.
 
+BUG: documentation for class elk::esd is not rendered because of bug in puppet 2.7, see class. itself
+
 --------
