@@ -16,7 +16,7 @@ class elk::lsl (
 		install_contrib => true,
 	}
 	file { '/etc/logstash/patterns/metacentrum':
-		source => "puppet:///modules/${module_name}/etc/logstash/patterns/metacentrum",
+		content => templates("${module_name}/etc/logstash/patterns/metacentrum"),
 		owner => "root", group => "root", mode => "0644",
 		require => File["/etc/logstash/patterns"],
 		notify => Service["logstash"],
