@@ -12,9 +12,9 @@ security for Jenkins.</p>
 <h2>Cloud/Virtualization helpers</h2>
 
 <p>Cloud/Virtualization helpers provides unified means for creating VM
-instalnces and shell acces to them.  All helpers take <a
-href="http://'VMNAME'">ENV</a> as instance selector or set a default one.
-All helpers provides basic subset of primitives:</p>
+instalnces and shell acces to them.  All helpers take $VMNAME (environment
+variable) as instance selector or set a default one. All helpers provides
+subset of primitives:</p>
 <ul><li>
 <p>list     -- lists running VMs</p>
 </li><li>
@@ -53,14 +53,12 @@ xen-destroy-image.sh).</p>
 
 <p>Used for hosting VMs in OpenNebula cloud using onetools. Uses static
 templates (templates.*) for VM provisioning. Helper must initialize users
-credentials to /dev/shm:</p>
+credentials to /dev/shm (<tt>/dev/shm/username</tt> and
+<tt>/dev/shm/usercert.pem</tt>)</p>
 
-<pre>/dev/shm/username
-/dev/shm/usercert.pem
-
-# run initializer
+<pre># run initializer
 $ metacloud.init creds
-# transfer or create local credentioals
+# transfer or create local credentials
 jenkins@debian:/tmp$ scp user@remote:secretsdir/* /dev/shm
 # create auth cookie  
 jenkins@debian:/tmp$ metacloud.init login
