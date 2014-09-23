@@ -1,8 +1,17 @@
-
-class rsyslog::dev {
-	exec {"apt-get update":
-	        command => "/usr/bin/apt-get update",
-	        refreshonly => true,
+# == Class: rsyslog::dev
+#
+# Class will ensure installcompilation and debugging rsyslog7. Also disables
+# stripping binaries for whole node because of generation debug enabled
+# packages.
+#
+# === Examples
+#
+#   include rsyslog::dev
+#
+class rsyslog::dev { 
+	exec { "apt-get update": 
+		command => "/usr/bin/apt-get update", 
+		refreshonly => true, 
 	}
 
 	file { "/etc/apt/sources.list.d/wheezy-backports.list":
