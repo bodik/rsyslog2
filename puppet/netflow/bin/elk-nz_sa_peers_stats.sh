@@ -2,17 +2,7 @@
 
 INDEX="logstash-$(date -u +%Y.%m.%d)"
 
-#                    { "query_string": { "query": "_type:\"nz\" pr:\"TCP\" AND sa:[147.228.0.0 TO 147.228.255.255]" } }
-#	"query": {
-#                "bool": {
-#                  "must": [
-#                    { "query_string": { "query": "_type:\"nz\" pr:\"TCP\"" } }
-#                  ]
-#        	}
-#        },
-
-
-# this shows ammount of TCP traffic from given/top source addresses
+# this shows ammount of traffic sa > da stated by ibyt, ipkt, protocol
 curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 {
         "query": { "query_string": { "query": "_type:\"nz\" AND sa:147.228.1.133" } },
