@@ -4,6 +4,9 @@ INDEX="logstash-$(date -u +%Y.%m.%d)"
 
 
 #                    { "query_string": { "query": "_type:\"nz\" pr:\"TCP\" AND sa:[147.228.0.0 TO 147.228.255.255]" } }
+
+
+# this shows ammount of TCP traffic from given/top source addresses
 curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 {
 	"query": {
