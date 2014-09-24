@@ -35,8 +35,8 @@ class glastopf {
 	}
 
 	$api_version = "20100525"
-	exec { "/puppet/glastopf/make-bfr.sh":
-		command => "/bin/sh /puppet/glastopf/make-bfr.sh",
+	exec { "/puppet/glastopf/bin/make-bfr.sh":
+		command => "/bin/sh /puppet/glastopf/bin/make-bfr.sh",
 		creates => "/usr/lib/php5/${api_version}/bfr.so",
 		require => Package["php5-dev"],
 	}
@@ -44,7 +44,7 @@ class glastopf {
 	file { "/etc/php5/conf.d/bfr.ini":
 		content => template("${module_name}/bfr.ini.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => [Package["php5"], Exec["/puppet/glastopf/make-bfr.sh"]],
+		require => [Package["php5"], Exec["/puppet/glastopf/bin/make-bfr.sh"]],
 	}
 
 	package { "glastopf":
