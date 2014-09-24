@@ -20,4 +20,4 @@ if [ -z $DIP ]; then
 	DIP=$(/puppet/metalib/avahi.findservice.sh "_rediser._tcp")
 fi
 
-sh /puppet/netflow/dump.sh -f $FILE | nc -q0 $DIP $DP
+sh /puppet/netflow/bin/dump.sh -f $FILE | nc -q0 $DIP $DP
