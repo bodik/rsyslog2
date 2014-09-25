@@ -12,7 +12,7 @@ curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 	"query": {
                 "bool": {
                   "must": [
-                    { "query_string": { "query": "_type:\"nz\" pr:\"TCP\"" } }
+                    { "query_string": { "query": "_type:\"nz\" AND pr:\"TCP\"" } }
                   ]
         	}
         },

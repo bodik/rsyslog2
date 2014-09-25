@@ -12,11 +12,12 @@ curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 	"size": 0,
 	"aggs": {
 		"group_by_sa": {
-			"terms": { "field": "sa" },
+			"terms": { 
+				"field": "sa",
+				"order": { "sum_ibyt": "desc" }
+			},
 			"aggs": { 
-				"da_count" : {
-			            "cardinality" : { "field" : "da" }
-                                }
+				"sum_ibyt" : { "sum" : { "field" : "ibyt" } }
 			}
 		}
 	}
