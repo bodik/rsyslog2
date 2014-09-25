@@ -1,5 +1,5 @@
 {
-  "title": "nz5",
+  "title": "nz6",
   "services": {
     "query": {
       "list": {
@@ -270,7 +270,7 @@
     },
     {
       "title": "Stats",
-      "height": "150px",
+      "height": "100px",
       "editable": true,
       "collapse": false,
       "collapsable": true,
@@ -347,39 +347,6 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "pf",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 2,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "PF"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
           "field": "pr",
           "exclude": [],
           "missing": false,
@@ -412,7 +379,7 @@
     },
     {
       "title": "Hosts",
-      "height": "150px",
+      "height": "100px",
       "editable": true,
       "collapse": false,
       "collapsable": true,
@@ -485,6 +452,62 @@
         },
         {
           "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "map",
+          "loadingEditor": false,
+          "map": "world",
+          "colors": [
+            "#A0E2E2",
+            "#265656"
+          ],
+          "size": 100,
+          "exclude": [],
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "title": "sa geo(sg)",
+          "field": "sg.cc"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "map",
+          "loadingEditor": false,
+          "map": "world",
+          "colors": [
+            "#A0E2E2",
+            "#265656"
+          ],
+          "size": 100,
+          "exclude": [],
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "title": "da geo (dg)",
+          "field": "dg.cc"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "PF6",
+      "height": "100px",
+      "editable": true,
+      "collapse": true,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
           "span": 3,
           "editable": true,
           "type": "terms",
@@ -548,6 +571,39 @@
           "tstat": "total",
           "valuefield": "",
           "title": "top Destinations6"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "pf",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 2,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "PF"
         }
       ],
       "notice": false
@@ -582,7 +638,6 @@
           "fields": [
             "@timestamp",
             "ts",
-            "te",
             "td",
             "ipkt",
             "ibyt",
@@ -595,7 +650,9 @@
             "in",
             "pf",
             "sa6",
-            "da6"
+            "da6",
+            "sg.cc",
+            "dg.cc"
           ],
           "localTime": true,
           "timeField": "@timestamp",
