@@ -173,7 +173,7 @@
             ]
           },
           "title": "Geo sources",
-          "field": "geo.cc"
+          "field": "geoip.cc"
         },
         {
           "error": false,
@@ -181,7 +181,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "geo.cc",
+          "field": "geoip.cc",
           "exclude": [],
           "missing": true,
           "other": true,
@@ -243,7 +243,7 @@
             "host",
             "pattern",
             "source",
-            "geo.cc",
+            "geoip.cc",
             "port",
             "request_raw"
           ],
