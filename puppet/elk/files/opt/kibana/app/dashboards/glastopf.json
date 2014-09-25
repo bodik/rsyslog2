@@ -44,7 +44,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 6,
+          "span": 4,
           "editable": true,
           "group": [
             "default"
@@ -121,7 +121,7 @@
         },
         {
           "error": false,
-          "span": 3,
+          "span": 2,
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
@@ -135,8 +135,8 @@
             "font-size": "10pt"
           },
           "donut": false,
-          "tilt": true,
-          "labels": true,
+          "tilt": false,
+          "labels": false,
           "arrangement": "horizontal",
           "chart": "pie",
           "counter_pos": "above",
@@ -151,6 +151,62 @@
           "tstat": "total",
           "valuefield": "",
           "title": "Sources"
+        },
+        {
+          "error": false,
+          "span": 4,
+          "editable": true,
+          "type": "map",
+          "loadingEditor": false,
+          "map": "world",
+          "colors": [
+            "#A0E2E2",
+            "#265656"
+          ],
+          "size": 500,
+          "exclude": [],
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "title": "Geo sources",
+          "field": "geo.cc"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "geo.cc",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "bar",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Countries"
         }
       ],
       "notice": false
@@ -187,6 +243,7 @@
             "host",
             "pattern",
             "source",
+            "geo.cc",
             "port",
             "request_raw"
           ],
@@ -247,7 +304,7 @@
     {
       "type": "filtering",
       "collapse": true,
-      "notice": true,
+      "notice": false,
       "enable": true
     }
   ],
