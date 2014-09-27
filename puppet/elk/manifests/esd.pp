@@ -65,7 +65,18 @@ class elk::esd (
 		instances  => 'es01'
 	}
 
+	# needed for elk script queries
 	package { ["curl", "python-requests"]:
 		ensure => installed,
+	}
+
+	#https://tickets.puppetlabs.com/browse/PUP-1073
+	#package { 'elasticsearch':
+        #        ensure   => 'installed',
+        #        provider => 'gem',
+        #}
+	exec { "gem install elasticsearch":
+		command => "/usr/bin/gem install elasticsearch",
+		unless => "/usr/bin/gem list | /bin/grep elasticsearch",
 	}
 }
