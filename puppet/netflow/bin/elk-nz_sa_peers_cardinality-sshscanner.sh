@@ -14,9 +14,9 @@ curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 		"group_by_sa": {
 			"terms": { "field": "sa" },
 			"aggs": { 
-				"da_count" : {
-			            "cardinality" : { "field" : "da" }
-                                }
+				"sum_ibyt" : { "sum" : { "field" : "ibyt" } },
+				"sum_ipkt" : { "sum" : { "field" : "ipkt" } },
+				"da_card_count" : { "cardinality" : { "field" : "da" } }
 			}
 		}
 	}
