@@ -1,5 +1,5 @@
 {
-  "title": "nz6",
+  "title": "nz7",
   "services": {
     "query": {
       "list": {
@@ -76,7 +76,7 @@
               0
             ]
           },
-          "title": "Events over time",
+          "title": "Events over time (Flows)",
           "intervals": [
             "auto",
             "1s",
@@ -628,7 +628,7 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "@timestamp",
+            "ibyt",
             "desc"
           ],
           "style": {
@@ -690,28 +690,28 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": true,
+      "collapse": false,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
         "_type:\"nz\"",
+        "_type:\"nz\" AND da:131.246.123.4",
+        "_type:\"nz\" AND sa:131.246.123.4",
         "_type:\"nz\" AND da:\"42.71.234.29\"",
         "_type:\"nz\" AND da:\"42.71.234.2\"",
         "_type:\"nf\"",
         "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
         "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
         "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10. TO 10.4.]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10. TO 10.4.]"
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]"
       ],
       "remember": 10,
       "enable": true
     },
     {
       "type": "filtering",
-      "collapse": true,
+      "collapse": false,
       "notice": true,
       "enable": true
     }
