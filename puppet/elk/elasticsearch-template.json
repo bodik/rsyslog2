@@ -89,8 +89,6 @@
 						"properties" : {
 							"country_code2": { "index": "not_analyzed", "type": "string" },
 							"cc": { "index": "not_analyzed", "type": "string" },
-							"country_name": { "index": "not_analyzed", "type": "string" },
-							"cn": { "index": "not_analyzed", "type": "string" },
 							"location" : { "type" : "geo_point" }
 						}
 					},
@@ -101,8 +99,6 @@
 						"properties" : {
 							"country_code2": { "index": "not_analyzed", "type": "string" },
 							"cc": { "index": "not_analyzed", "type": "string" },
-							"country_name": { "index": "not_analyzed", "type": "string" },
-							"cn": { "index": "not_analyzed", "type": "string" },
 							"location" : { "type" : "geo_point" }
 						}
 					}
@@ -173,8 +169,6 @@
 						"properties" : {
 							"country_code2": { "index": "not_analyzed", "type": "string" },
 							"cc": { "index": "not_analyzed", "type": "string" },
-							"country_name": { "index": "not_analyzed", "type": "string" },
-							"cn": { "index": "not_analyzed", "type": "string" },
 							"location" : { "type" : "geo_point" }
 						}
 					},
@@ -185,8 +179,6 @@
 						"properties" : {
 							"country_code2": { "index": "not_analyzed", "type": "string" },
 							"cc": { "index": "not_analyzed", "type": "string" },
-							"country_name": { "index": "not_analyzed", "type": "string" },
-							"cn": { "index": "not_analyzed", "type": "string" },
 							"location" : { "type" : "geo_point" }
 						}
 					}
