@@ -23,16 +23,27 @@ class glastopf {
 		ensure => installed,
 	}
 
-	package { "distribute":
-		ensure => latest,
-		provider => "pip",
-		require => Package["python-pip"],
+	#package { "distribute":
+	#	ensure => latest,
+	#	provider => "pip",
+	#	require => Package["python-pip"],
+	#}
+	#package { "greenlet":
+	#	ensure => latest,
+	#	provider => "pip",
+	#	require => Package["python-pip"],
+	#}
+	#pip provider just stopper to work with
+	#Could not evaluate: Could not get latest version: HTTP-Error: 503 Service Temporarily Unavailable
+	exec { "pip install distribute":
+		command => "/usr/bin/pip install --upgrade distribute",
+		creates => "/usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/installed-files.txt"
 	}
-	package { "greenlet":
-		ensure => latest,
-		provider => "pip",
-		require => Package["python-pip"],
+	exec { "pip install greenlet":
+		command => "/usr/bin/pip install --upgrade greenlet",
+		creates => "/usr/local/lib/python2.7/dist-packages/greenlet.so"
 	}
+	
 
 	$api_version = "20100525"
 	exec { "/puppet/glastopf/bin/make-bfr.sh":
