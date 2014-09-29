@@ -169,7 +169,7 @@
           "type": "text",
           "loadingEditor": false,
           "mode": "text",
-          "content": "## HIVE:\nbq 1 -- hive> SELECT COUNT(*) FROM flowdata;\nbq 2 -- hive> SELECT count(*), sum(a.ipkt), sum(a.ibyt) FROM flowdata a;\nbq 3 -- hive> SELECT count(*) FROM flowdata a WHERE a.dp = 53;\nbq 4  -- hive> SELECT ts, pr, sa, da, sp, dp, ipkt, ibyt FROM flowdata WHERE dp = 53 AND pr = \"TCP\";\nbq 5 -- neni jednoduche (netflow/elk_basicquery4.sh) -- hive> SELECT sa, sum(ipkt), sum(ibyt) as bytes, count(*) FROM flowdata WHERE pr = \"TCP\" GROUP BY sa ORDER BY bytes;\ncannt do -- bq 6 -- hive> SELECT pr, sa, da, sp, dp, sum(ipkt), sum(ibyt), count(*) FROM flowdata GROUP BY pr, sa, da, sp, dp;",
+          "content": "## HIVE:\nbq 1 -- hive> SELECT COUNT(*) FROM flowdata;\nbq 2 -- hive> SELECT count(*), sum(a.ipkt), sum(a.ibyt) FROM flowdata a;\nbq 3 -- hive> SELECT count(*) FROM flowdata a WHERE a.dp = 53;\nbq 4  -- hive> SELECT ts, pr, sa, da, sp, dp, ipkt, ibyt FROM flowdata WHERE dp = 53 AND pr = \"TCP\";\nbq 5 -- netflow/bin/elk_basicquery4.sh -- hive> SELECT sa, sum(ipkt), sum(ibyt) as bytes, count(*) FROM flowdata WHERE pr = \"TCP\" GROUP BY sa ORDER BY bytes;\nbq 6 -- netflow/bin/elk_basicquery6.sh -- hive> SELECT pr, sa, da, sp, dp, sum(ipkt), sum(ibyt), count(*) FROM flowdata GROUP BY pr, sa, da, sp, dp;",
           "style": {
             "font-size": "14pt"
           },
