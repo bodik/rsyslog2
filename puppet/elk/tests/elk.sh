@@ -64,8 +64,17 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 kibana not found on webserver"
 fi
 
+wget "http://$(facter fqdn)/dash.html" -q -O - | grep "dashboard/file/logstashesb" 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 dashboard not found on webserver"
+fi
 
 
+
+echo "require 'elasticsearch'" | ruby
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 gem elasticsearch not installed"
+fi
 
 
 rreturn 0 "$0"

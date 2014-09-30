@@ -1,0 +1,124 @@
+= rsyslog2 - Data processing suite at metacentrum.cz
+
+This software suite is designed to aid creating and maintaining data processing
+cloud within a realm of CESNET.CZ and beyond. It is based on masterless puppet 
+and bash. Whole suite is bootsrapped from git to the clean provisioned 
+Debian Wheezy VM.
+
+TODO: elaborate on roles, check and check_stddev.sh
+
+=== Components
+
+Each major component should provide a puppet module and set of install/check
+and other scripts within itself.
+
+  component/ 			-- puppet module
+  component/fileX			-- additional file (perhaps a script)
+  component/tests/componentX.sh	-- simple test checking real state of the service
+  				   typically used by jenkins autotests
+
+=== Roles
+
+  role.install.sh			-- script for masterless installation
+  role.check.sh			-- script for state detection (noop show_diff)
+
+--------
+
+== Usecases
+
+The main usecase is for creating and maintaining services for logging and log
+processing at http://www.metacentrum.cz. Suite provides components for
+development and testing of rsyslog packages, installing and maintaining log
+processing gateway, and managing private/public cloud for data processing based
+primaliry on ELK stack (http://www.elasticsearch.org) and MongodDB
+(http://www.mongodb.com)
+
+
+=== Ops/Maintenance
+
+Bootstrap suite from a git repository, subsequent calls would pull from master repo.
+
+  wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  cd /puppet && ls -l
+  sh bootstrap.install.sh
+
+During ops, components/roles can be installed on managed node, or state can be cheched
+against roles.
+
+  #   install a component
+  $ sh componentX.install.sh
+  #   run a component test to check if installation was successfull
+  $ sh component/tests/component.sh
+
+  #   use component manually
+  $ puppet apply --modulespath=/puppet -i 'class {"rsyslog-client": rsyslog_server=>"a.b.c.d"}'
+
+Lately, a state of node can change, perhaps by rutime tuning or more
+development. A <tt>check_stddev.sh</tt> can be used to check changed things
+within the system.
+
+  #   show deviation from desired state, all available components .check.sh will be called
+  $ sh check_stddev.sh
+
+Then, changes can be accepted into repository or node state could be reverted to origial state.
+ 
+  $ cp /etc/fileX component/templates/fileX
+  $ vim component/manifests/subclass.pp
+  $ check_stddev.sh
+  $ git status
+  $ git commit
+
+==== Example installation of ELK analytics node
+
+Commands will ensure installation of basic set of components for data analysis
+(rediser queue, elasticsearch data node, logstash processor, kibana frontend).
+
+  $ wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  $ cd /puppet && ls -l
+  $ sh phase2.install.sh
+  $ sh rediser.install.sh
+  $ sh elk.install.sh
+  $ sh rediser/tests/rediser.sh
+  $ sh elk/tests/elk.sh
+  $ links http://$(facter fqdn)/dash.html
+ 
+==== Example installation of rsyslog development node
+
+Commands will ensure installation of basic set of components for rsyslog development
+(compiler, debugger, libs-dev,...)
+
+  $ wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  $ cd /puppet && ls -l
+  $ sh phase2.install.sh
+  $ sh rsyslog-dev.install.sh
+
+
+=== Automating tasks with (Robert) Jenkins
+
+While maintaining a small site can be done by hand as shown in previous
+chapter, large environment can use modules/components through standard
+puppetmaster, but neither approach is suitable for fast development iterations
+or creating an ad-hoc experiment environment (like performance or acceptance
+testing).
+
+Tasks needed can be automated using shell scripting and automated by Jenkins
+for scheduling, task chaining and result aggregations -- eg. creating an
+rsyslog server, 2 clients, spawning a test and archiving outputs and artefacts
+for latter use. In out usecase Jenkins is mean to be running on private VM,
+equiped with user's credentials and performing tasks towards available clouds
+and provisioned VMs. More documentation can be found in separate Jenkins component 
+documentation.
+
+--------
+
+== Available components
+
+* metalib[link:puppet/metalib/README_full.html]
+* rsyslog[link:puppet/rsyslog/README_full.html]
+* rediser[link:puppet/rediser/README_full.html]
+* elk[link:puppet/elk/README_full.html]
+* jenkins[link:puppet/jenkins/README_full.html]
+* netflow (nfdump, frpobe, pmacct)
+* mongodb
+* mongomine
+

@@ -1,5 +1,37 @@
-#!/usr/bin/puppet apply
-
+# == Class: rsyslog::client
+#
+# Class will ensure installation of rsyslog packages and configures daemon to client mode eg. : 
+# - forwards all logs to rsyslog server using omrelp or omgssapi on krb5 enabled nodes
+#
+# === Parameters
+#
+# [*version*] specific version to install (see rsyslog::install) 
+#
+# [*rsyslog_server*] hostname or ip to forward all logs to (default undef)
+#
+# [*rsyslog_auto*] perform rsyslog server autodiscovery by avahi (defult true)
+#
+# [*rsyslog_service*] name of rsyslog server service to discover (default "_syselgss._tcp")
+#
+# === Examples
+#
+# install default version, perform autodiscovery and forward logs to rsyslog server
+#
+#   include rsyslog::client
+#
+# install rsyslog from jessie, forwardm logs to designated server node
+#
+#   class { "rsyslog::client": 
+#     version => "jessie", 
+#     rsyslog_server => "1.2.3.4", 
+#   }
+#
+# install rsyslog client and do not forward gathered log anywhere
+#
+#   class { "rsyslog::server": 
+#     rsyslog_auto => false, 
+#   }
+#
 class rsyslog::client (
 	$version = "meta",
 	$rsyslog_server = undef,
@@ -43,6 +75,12 @@ class rsyslog::client (
 			require => Class["rsyslog::install"],
 			notify => Service["rsyslog"],
 		}
+	        notice("forward ACTIVE")
+	} else {
+		file { "/etc/rsyslog.d/meta-remote.conf":
+			ensure => absent,
+		}
+	        notice("forward PASSIVE")
 	}
 }
 

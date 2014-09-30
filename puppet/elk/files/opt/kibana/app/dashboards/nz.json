@@ -1,5 +1,5 @@
 {
-  "title": "nz4",
+  "title": "nz7",
   "services": {
     "query": {
       "list": {
@@ -20,10 +20,10 @@
     "filter": {
       "list": {
         "0": {
-          "from": "2014-06-10T01:16:40.108Z",
-          "to": "2014-06-14T01:30:22.080Z",
           "type": "time",
           "field": "@timestamp",
+          "from": "now-15m",
+          "to": "now",
           "mandate": "must",
           "active": true,
           "alias": "",
@@ -55,10 +55,10 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "fill": 3,
           "linewidth": 3,
-          "timezone": "utc",
+          "timezone": "browser",
           "spyable": true,
           "zoomlinks": true,
           "bars": true,
@@ -76,7 +76,7 @@
               0
             ]
           },
-          "title": "Events over time",
+          "title": "Events over time (Flows)",
           "intervals": [
             "auto",
             "1s",
@@ -153,7 +153,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -182,7 +182,7 @@
           "show_query": true,
           "interactive": true,
           "legend_counts": true,
-          "timezone": "utc",
+          "timezone": "browser",
           "percentage": false,
           "zerofill": true,
           "derivative": false,
@@ -226,7 +226,7 @@
           },
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "10s",
           "intervals": [
             "auto",
             "1s",
@@ -255,7 +255,7 @@
           "show_query": true,
           "interactive": true,
           "legend_counts": true,
-          "timezone": "utc",
+          "timezone": "browser",
           "percentage": false,
           "zerofill": true,
           "derivative": false,
@@ -270,7 +270,7 @@
     },
     {
       "title": "Stats",
-      "height": "150px",
+      "height": "100px",
       "editable": true,
       "collapse": false,
       "collapsable": true,
@@ -347,39 +347,6 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "pf",
-          "exclude": [],
-          "missing": false,
-          "other": false,
-          "size": 2,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "pie",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "PF"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
           "field": "pr",
           "exclude": [],
           "missing": false,
@@ -412,7 +379,7 @@
     },
     {
       "title": "Hosts",
-      "height": "150px",
+      "height": "100px",
       "editable": true,
       "collapse": false,
       "collapsable": true,
@@ -485,6 +452,62 @@
         },
         {
           "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "map",
+          "loadingEditor": false,
+          "map": "world",
+          "colors": [
+            "#A0E2E2",
+            "#265656"
+          ],
+          "size": 100,
+          "exclude": [],
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "title": "sa geo(sg)",
+          "field": "sg.cc"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "map",
+          "loadingEditor": false,
+          "map": "world",
+          "colors": [
+            "#A0E2E2",
+            "#265656"
+          ],
+          "size": 100,
+          "exclude": [],
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "title": "da geo (dg)",
+          "field": "dg.cc"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "PF6",
+      "height": "100px",
+      "editable": true,
+      "collapse": true,
+      "collapsable": true,
+      "panels": [
+        {
+          "error": false,
           "span": 3,
           "editable": true,
           "type": "terms",
@@ -548,6 +571,39 @@
           "tstat": "total",
           "valuefield": "",
           "title": "top Destinations6"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "pf",
+          "exclude": [],
+          "missing": false,
+          "other": false,
+          "size": 2,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "pie",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "PF"
         }
       ],
       "notice": false
@@ -572,7 +628,7 @@
           "pages": 5,
           "offset": 0,
           "sort": [
-            "@timestamp",
+            "ibyt",
             "desc"
           ],
           "style": {
@@ -582,7 +638,6 @@
           "fields": [
             "@timestamp",
             "ts",
-            "te",
             "td",
             "ipkt",
             "ibyt",
@@ -595,9 +650,11 @@
             "in",
             "pf",
             "sa6",
-            "da6"
+            "da6",
+            "sg.cc",
+            "dg.cc"
           ],
-          "localTime": false,
+          "localTime": true,
           "timeField": "@timestamp",
           "highlight": [],
           "sortable": true,
@@ -633,28 +690,28 @@
   "pulldowns": [
     {
       "type": "query",
-      "collapse": true,
+      "collapse": false,
       "notice": false,
       "query": "*",
       "pinned": true,
       "history": [
         "_type:\"nz\"",
+        "_type:\"nz\" AND da:131.246.123.4",
+        "_type:\"nz\" AND sa:131.246.123.4",
         "_type:\"nz\" AND da:\"42.71.234.29\"",
         "_type:\"nz\" AND da:\"42.71.234.2\"",
         "_type:\"nf\"",
         "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10.4.1.0 TO 10.4.1.255]",
         "_type:\"nf\" AND netflow.ipv4_src_addr:[10.4.1.0 TO 10.4.1.255]",
         "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.255.255]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr:[10. TO 10.4.]",
-        "_type:\"nf\" AND netflow.ipv4_src_addr.raw:[10. TO 10.4.]"
+        "_type:\"nf\" AND netflow.ipv4_src_addr:[10.0.0.0 TO 10.4.0.0]"
       ],
       "remember": 10,
       "enable": true
     },
     {
       "type": "filtering",
-      "collapse": true,
+      "collapse": false,
       "notice": true,
       "enable": true
     }
@@ -689,7 +746,7 @@
         "1d"
       ],
       "timefield": "@timestamp",
-      "now": false,
+      "now": true,
       "filter_id": 0,
       "enable": true
     }

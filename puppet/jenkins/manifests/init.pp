@@ -1,15 +1,13 @@
 # == Class: jenkins
 #
-# rsyslog2 jenkins install class
+# Class provides Jenkins installation from vendor repository packages and
+# configures basic set of jobs for building host with specified roles as well
+# as running autotests at the ends of the scenarios.
 #
 # === Examples
 #
 #  class { jenkins: }
 #
-# === Authors
-#
-# bodik@cesnet.cz
-
 class jenkins() {
 	include metalib::base
 
@@ -23,23 +21,23 @@ class jenkins() {
 		notify => Exec["apt-get update"],
 	}
 
-	#kvuli generovani image musi mit jenkins sudo, beztak je to super chlapek
+	#sudo is enabled because of kvm and xen creating local domains (lvm, mounts, ...)
 	package { ["jenkins", "sudo"]:
 		ensure => installed,
 		require => [File["/etc/apt/sources.list.d/jenkins.list"], Exec["apt-get update"]],
 	}
-
 	file { "/etc/sudoers.d/jenkins":
 		source => "puppet:///modules/${module_name}/jenkins.sudoers",
 		#TODO: enforce /puppet 640 jinak to nema smysl :)
 		owner => "root", group => "root", mode => "0640",
 		require => Package["sudo"],
 	}
-
 	user { "jenkins":
 		groups => ["kvm"],
 		require => [Package["jenkins"], Package["sudo"]],
 	}
+
+
 	augeas { "/etc/default/jenkins" :
 		context => "/files/etc/default/jenkins",
 		changes => [
@@ -48,13 +46,12 @@ class jenkins() {
 		require => Package["jenkins"],
 		notify => Service["jenkins"],
 	}
-
 	service { "jenkins": }
 	file { "/var/lib/jenkins/jobs":
 		ensure => directory,
 		source => "puppet:///modules/${module_name}/jobs",
 		recurse => true,
-		owner => "jenkins", group=> "nogroup", mode=>"0644",
+		owner => "jenkins", group=> "jenkins", mode=>"0644",
 		notify => Service["jenkins"],
 		require => User["jenkins"],
 	}

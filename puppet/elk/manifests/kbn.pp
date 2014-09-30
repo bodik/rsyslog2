@@ -1,5 +1,14 @@
-#!/usr/bin/puppet apply
-
+# == Class: elk::kbn
+#
+# Class will ensure installation of:
+# - kibana and apache virtualhost using example42's modules
+# - set of static dashboards
+# - general dasboard /dash.html
+#
+# === Examples
+#
+#   class { "elk::kbn": }
+#
 class elk::kbn () {
 
 	class { 'kibana':

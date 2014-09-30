@@ -1,4 +1,4 @@
-name    'rsyslog2-jenkins'
+name    'rsyslog2-rsyslog'
 version '0.0.1'
 source 'UNKNOWN'
 author 'rsyslog2'

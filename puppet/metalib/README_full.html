@@ -1,0 +1,60 @@
+<link href="../metalib/style.css" rel="stylesheet"></link>
+<h1>metalib</h1>
+
+<p>A set of support classes and helpers used within rsyslog2 puppet ecosystem.
+Classes are documenten within themselves, see <a
+href="README_full.html">README_full.html</a> for more documentation.</p>
+
+<h2>avahi.findservice.sh</h2>
+
+<p>Discover service by name using Avahi mDNS. Prints resolved hostname or IPv4
+address. Ensures installation of avahi-daemon on execution to aid
+lib/facter/avahi_findservice.rb at bootstrap time.</p>
+
+<h3>Examples</h3>
+
+<pre>$ avahi.findservice.sh _service1._tcp
+hostnamex.domain.tld
+$ avahi.findservice.sh _notpresent._tcp
+$</pre>
+
+<h2>lib.sh</h2>
+
+<p>Set of shell subroutines used within rsyslog2 puppet ecosystem.</p>
+<hr style="height: 6px">
+
+<h2>Class: metalib::avahi</h2>
+
+<p>Class for installling avahi utils and resolving daemon. This class is used
+during dynamic cloud autodiscovery by other classes.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::avahi</p>
+
+<h2>Class: metalib::base</h2>
+
+<p>Class for ensuring basic setting of managed machine such as: editors, git,
+puppet, hostname, krb5 client lib, sources list.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::base</p>
+
+<h2>Class: metalib::fail2ban</h2>
+
+<p>Class for installling fail2ban. Used during phase2 eg. basic machine
+setting.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::fail2ban</p>
+
+<h2>Class: metalib::dev</h2>
+
+<p>Class for installling set of development, debugging and packages needed for
+documentation generation. Used manually when needed.</p>
+
+<h3>Examples</h3>
+
+<p>include metalib::dev</p>

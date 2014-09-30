@@ -1,10 +1,26 @@
-#!/usr/bin/puppet apply
-
-class elk::esd () {
+# == Class: elk::esd
+#
+# Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
+# and creates single instance:
+# - heapsize as memorytotal/2
+# - set of basic plugins
+#
+# === Parameters
+#
+# [*cluster_name*]
+#   set a specific cluster name for node
+#
+# === Examples
+#
+#   class { "elk::esd": cluster_name => "abc", }
+#
+class elk::esd (
+	$cluster_name = "mrx",
+) {
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {
-		$half = floor($m[0] / 2)
+		$half = max(floor($m[0] / 2), 1)
 		$config_hash = {
 		  'ES_HEAP_SIZE' => "${half}g",
 		}
@@ -17,7 +33,7 @@ class elk::esd () {
 		datadir => '/scratch',
 		init_defaults => $config_hash,
 		config => { 
-			'cluster.name' => 'mrx',
+			'cluster.name' => $cluster_name,
 			'transport.tcp.port' => '39300-39400',
 			'http.port' => '39200-39300',
 			'script.disable_dynamic' => false,
@@ -49,7 +65,18 @@ class elk::esd () {
 		instances  => 'es01'
 	}
 
+	# needed for elk script queries
 	package { ["curl", "python-requests"]:
 		ensure => installed,
+	}
+
+	#https://tickets.puppetlabs.com/browse/PUP-1073
+	#package { 'elasticsearch':
+        #        ensure   => 'installed',
+        #        provider => 'gem',
+        #}
+	exec { "gem install elasticsearch":
+		command => "/usr/bin/gem install elasticsearch",
+		unless => "/usr/bin/gem list | /bin/grep elasticsearch",
 	}
 }

@@ -1,0 +1,113 @@
+<link href="../metalib/style.css" rel="stylesheet"></link>
+<h1>jenkins</h1>
+
+<p>Module provides installation and basic configuration and set of script for
+Jenkins to perform semiautomatic creation of cloud nodes with designated
+roles installed. It is used mainly for development of puppet modules with
+automatic testing and playing testing scenarios for rsylog component.
+Primarily it should be installed to private VM since Jenkins must be
+provisioned with user credentials and module does not configure any
+security for Jenkins.</p>
+
+<h2>Cloud/Virtualization helpers</h2>
+
+<p>Cloud/Virtualization helpers provides unified means for creating VM
+instalnces and shell acces to them.  All helpers take $VMNAME (environment
+variable) as instance selector or set a default one. All helpers provides
+subset of primitives:</p>
+<ul><li>
+<p>list     -- lists running VMs</p>
+</li><li>
+<p>build    -- build the instance (prepares local image; kvm, xen)</p>
+</li><li>
+<p>start    -- boot the instance</p>
+</li><li>
+<p>status   -- get status of instance</p>
+</li><li>
+<p>shutdown -- gracefully shuts down the instance</p>
+</li><li>
+<p>destroy  -- destroys the instance immediately</p>
+</li><li>
+<p>ssh      -- gets shell access to the instance</p>
+</li><li>
+<p>creds    -- initializes users credentials for accessing the cloud</p>
+</li><li>
+<p>login    -- initializes credential caches (metacloud only)</p>
+</li><li>
+<p>front    -- gets shell access to cloud/virtualization frontend</p>
+</li></ul>
+
+<h3>kvm.init</h3>
+
+<p>Used only for basic local testing inside jenkins VM itself with nested kvm
+as hypervisor.  Uses qemu-debian-create-image for image creating via
+debbootstrap.</p>
+
+<h3>xen.init</h3>
+
+<p>Used for hosting VM on remote dom0, uses LVM as storage backend and
+debbotstrap for image creation (xen-debian-create-image.sh,
+xen-destroy-image.sh).</p>
+
+<h3>metacloud.init</h3>
+
+<p>Used for hosting VMs in OpenNebula cloud using onetools. Uses static
+templates (templates.*) for VM provisioning. Helper must initialize users
+credentials to /dev/shm (<tt>/dev/shm/username</tt> and
+<tt>/dev/shm/usercert.pem</tt>)</p>
+
+<pre># run initializer
+$ metacloud.init creds
+# transfer or create local credentials
+jenkins@debian:/tmp$ scp user@remote:secretsdir/* /dev/shm
+# create auth cookie  
+jenkins@debian:/tmp$ metacloud.init login
+# ensure templates in OpenNebula/Metacloud
+jenkins@debian:/tmp$ metacloud.init templates
+# quit jenkins user shell
+jenkins@debian:/tmp$ exit
+
+# work with jenkins
+$ browser http://localhost:8081
+# work with instances
+$ VMNAME=RDEVCLIENTX metacloud.init build
+$ VMNAME=RDEVCLIENTX metacloud.init start
+$ VMNAME=RDEVCLIENTX metacloud.init status
+$ VMNAME=RDEVCLIENTX metacloud.init list
+$ VMNAME=RDEVCLIENTX metacloud.init ssh '/bin/true'
+$ VMNAME=RDEVCLIENTX metacloud.init ssh 'cd /puppet &amp;&amp; sh elk.install.sh'</pre>
+
+<h3>magrathea.init</h3>
+
+<p>Private helper used for hosting VMs in Magrathea grid using ssh and torque
+scheduler. Helper must initialize users credentials.</p>
+
+<pre># run initializer
+$ echo &quot;username&quot; &gt; /dev/shm/username
+$ magrathea.init creds
+$ magrathea.init list
+$ VMNAME=RDEVCLIENTX metacloud.init build
+$ VMNAME=RDEVCLIENTX metacloud.init start
+$ VMNAME=RDEVCLIENTX metacloud.init status
+$ VMNAME=RDEVCLIENTX metacloud.init ssh '/bin/true'
+$ VMNAME=RDEVCLIENTX metacloud.init ssh 'cd /puppet &amp;&amp; sh elk.install.sh'</pre>
+
+<h2>Other files</h2>
+<ul><li>
+<p><tt>popjobs.sh</tt> -- fetches jenkins configured jobs back to puppet
+repository</p>
+</li><li>
+<p><tt>run_jobs.sh</tt> -- runs set of jenkins job by regexp name. Used for
+quick'n'dirty jobs chaining</p>
+</li></ul>
+<hr style="height: 6px">
+
+<h2>Class: jenkins</h2>
+
+<p>Class provides Jenkins installation from vendor repository packages and
+configures basic set of jobs for building host with specified roles as well
+as running autotests at the ends of the scenarios.</p>
+
+<h3>Examples</h3>
+
+<pre>class { jenkins: }</pre>

@@ -1,5 +1,24 @@
-#!/usr/bin/puppet apply
-
+# == Class: rsyslog::install
+#
+# Class will ensure installation of rsyslog packages in specific version or distribution flavor.
+#
+# === Parameters
+#
+# [*version*] 
+#   specific version to install. Valid values: "meta", "bpo", "jessie"
+#
+# === Examples
+#
+# install default version
+#
+#   include rsyslog::install
+#
+# install rsyslog from jessie, forward logs to designated server node
+#
+#   class { "rsyslog::install": 
+#     version => "jessie", 
+#   }
+#
 class rsyslog::install ( 
 	$version = "meta" 
 ) { 
