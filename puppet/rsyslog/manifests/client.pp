@@ -75,6 +75,12 @@ class rsyslog::client (
 			require => Class["rsyslog::install"],
 			notify => Service["rsyslog"],
 		}
+	        notice("forward ACTIVE")
+	} else {
+		file { "/etc/rsyslog.d/meta-remote.conf":
+			ensure => absent,
+		}
+	        notice("forward PASSIVE")
 	}
 }
 

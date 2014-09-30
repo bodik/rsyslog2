@@ -95,6 +95,9 @@ class rsyslog::server (
 		}
 	        notice("forward rediser ACTIVE")
 	} else {
+		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf":
+			ensure => absent,
+		}
 		notice("forward rediser PASSIVE")
 	}
 
