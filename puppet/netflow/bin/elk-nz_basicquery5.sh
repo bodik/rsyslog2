@@ -3,6 +3,8 @@
 INDEX="logstash-$(date -u +%Y.%m.%d)"
 
 # this shows ammount of TCP traffic from given/top source addresses
+# bq 5 -- netflow/bin/elk_basicquery4.sh -- 
+# hive> SELECT sa, sum(ipkt), sum(ibyt) as bytes, count(*) FROM flowdata WHERE pr = "TCP" GROUP BY sa ORDER BY bytes;
 curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 {
         "query": { "query_string": { "query": "_type:\"nz\" AND pr:\"TCP\"" } },
@@ -15,12 +17,8 @@ curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 				"order": { "sum_ibyt": "desc" }
 			},
 			"aggs": {
-				"sum_ibyt": {
-					"sum": { "field": "ibyt" }
-				},
-				"sum_ipkt": { 
-					"sum": { "field": "ipkt" }
-				}
+				"sum_ibyt": { "sum": { "field": "ibyt" } },
+				"sum_ipkt": { "sum": { "field": "ipkt" } }
 			}
 		}
 	}

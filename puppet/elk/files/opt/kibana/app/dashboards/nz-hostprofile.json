@@ -595,7 +595,9 @@
             "in",
             "pf",
             "sa6",
-            "da6"
+            "da6",
+            "sg.cc",
+            "dg.cc"
           ],
           "localTime": true,
           "timeField": "@timestamp",
