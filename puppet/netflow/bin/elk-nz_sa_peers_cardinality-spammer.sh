@@ -10,7 +10,7 @@ curl -XPOST "localhost:39200/${INDEX}/_search?pretty" -d '
 	"size": 10,
 	"aggs": {
 		"group_by_sa": {
-			"terms": { "field": "sa" },
+			"terms": { "field": "sa", "order": { "da_card_count": "desc" } },
 			"aggs": { 
 				"sum_ibyt" : { "sum" : { "field" : "ibyt" } },
 				"sum_ipkt" : { "sum" : { "field" : "ipkt" } },
