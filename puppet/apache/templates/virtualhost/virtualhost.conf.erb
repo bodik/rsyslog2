@@ -13,4 +13,12 @@
 <% end -%>
     ErrorLog  <%= scope.lookupvar('apache::log_dir')%>/<%= @name %>-error_log
     CustomLog <%= scope.lookupvar('apache::log_dir')%>/<%= @name %>-access_log common
+
+    #apache 2.4 specs
+    <IfModule authz_core_module>
+            <Directory <%= @real_documentroot %>>
+              Require all granted
+            </Directory>
+   </IfModule>
+
 </VirtualHost>
