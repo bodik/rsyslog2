@@ -25,7 +25,7 @@ class elk::kbn () {
 		content => template("${module_name}/opt/kibana/config.js.erb"),
 		owner => "root", group => "root", mode => "0644",
 	}
-	file { "/etc/apache2/sites-enabled/000-default":
+	file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
 		ensure => absent,
 		require => Package["apache2"],
 		notify => Service["apache2"],
