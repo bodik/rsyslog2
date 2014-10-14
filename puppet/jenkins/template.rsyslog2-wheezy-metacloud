@@ -35,7 +35,7 @@ runcmd:
 CPU="4"
 DISK=[
   DRIVER="tap2:tapdisk:aio:",
-  IMAGE="METACLOUD-Debian-7.0-x86_64-0001@metacloud-dukan",
+  IMAGE="METACLOUD-Debian-7.0-x86_64-0002@metacloud-dukan",
   IMAGE_UNAME="oneadmin",
   TARGET="xvda" ]
 DISK=[
