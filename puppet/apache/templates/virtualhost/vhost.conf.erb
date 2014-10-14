@@ -62,4 +62,12 @@
     Alias <%= @aliases %>
 <% end -%>
 <% end -%>
+
+    #apache 2.4 specs
+    <IfModule authz_core_module>
+            <Directory <%= @real_docroot %>>
+              Require all granted
+            </Directory>
+   </IfModule>
+
 </VirtualHost>
