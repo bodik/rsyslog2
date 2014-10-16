@@ -24,16 +24,16 @@ class rediser {
         }
 
 
-	file { "/etc/apt/sources.list.d/jessie.list":
-	        source => "puppet:///modules/${module_name}/etc/apt/sources.list.d/jessie.list",
+	file { "/etc/apt/sources.list.d/wheezy-backports.list":
+	        source => "puppet:///modules/${module_name}/etc/apt/sources.list.d/wheezy-backports.list",
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
 	}
-	exec { "install_redis-server_wheezy-backports":
-		command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confold  -t jessie redis-server",
+	exec { "install_redis-server_force_version":
+		command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confold  -t wheezy-backports redis-server",
 		timeout => 600,
 		onlyif => "/usr/bin/dpkg -l redis-server | grep ':2\\.4'",
-		require => [File["/etc/apt/sources.list.d/jessie.list"], Package["redis-server"]],
+		require => [File["/etc/apt/sources.list.d/wheezy-backports.list"], Package["redis-server"]],
 	}
 
 	augeas { "/etc/redis/redis.conf" :
@@ -46,7 +46,7 @@ class rediser {
 			"set maxmemory 1024000000",
 			"rm save",
 	        ],
-	        require => [Package["redis-server"], Exec["install_redis-server_wheezy-backports"]],
+	        require => [Package["redis-server"], Exec["install_redis-server_force_version"]],
        		notify => Service["redis-server"],
 	}
 
