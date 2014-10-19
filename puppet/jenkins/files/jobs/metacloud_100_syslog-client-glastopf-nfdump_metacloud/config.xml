@@ -13,7 +13,7 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;RC-$$&quot;
+      <command>export VMNAME=&quot;RC-$$-GN&quot;
 /puppet/jenkins/metacloud.init login
 /puppet/jenkins/metacloud.init build
 /puppet/jenkins/metacloud.init start

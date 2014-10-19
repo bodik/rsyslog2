@@ -100,6 +100,16 @@ vm_status() {
 	rreturn $? "$0 status"
 }
 
+vm_fixup() {
+	/puppet/jenkins/magrathea.init list | grep " $VMNAME "
+	/puppet/jenkins/magrathea.init ssh '
+/etc/init.d/rsyslog stop; /etc/init.d/crond stop; 
+rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list; 
+apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common; 
+apt-get clean;apt-get update'
+	rreturn $? "$0 status"
+}
+
 vm_shutdown() {
 	/puppet/jenkins/magrathea.init ssh /bin/true
 	if [ $? -ne 0 ]; then
@@ -204,6 +214,12 @@ case "$1" in
 	;;
 	sshe)
 		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+	;;
+	sshdev)
+		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+	;;
+	fixup)
+		vm_fixup
 	;;
 	update)
 		magrathea_update
