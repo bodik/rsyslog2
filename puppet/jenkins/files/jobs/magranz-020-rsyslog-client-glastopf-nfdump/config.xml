@@ -23,10 +23,14 @@
 
 /puppet/jenkins/magrathea.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rediser.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rediser/tests/rediser.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;</command>
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-client.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh glastopf.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh nfdump.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf/tests/glastopf.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x netflow/tests/nfdump.sh&apos;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

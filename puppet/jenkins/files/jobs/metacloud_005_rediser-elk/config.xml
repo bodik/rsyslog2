@@ -22,6 +22,8 @@
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser.install.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
+#diky rediseru z jessie trva instalace velmi dlouho ;(
+/puppet/jenkins/metacloud.init login
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rediser/tests/rediser.sh&apos;
 /puppet/jenkins/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;
 </command>
