@@ -7,6 +7,7 @@
 # - input netflow data using udp codec netflow
 # - filtering/grokking data
 # - output data to elasticsearch using node discovery
+#    (special multicast group s fixed because of magrathea)
 #
 # === Parameters
 #
@@ -64,7 +65,8 @@ class elk::lsl (
 	augeas { "/etc/default/logstash" :
 		context => "/files/etc/default/logstash",
 		changes => [
-			"set LS_OPTS \"'-w $lsl_workers_real'\""
+			"set LS_OPTS \"'-w $lsl_workers_real'\"",
+			"set LS_JAVA_OPTS \"'-Des.discovery.zen.ping.multicast.group=224.0.0.251'\""
 		],
 		require => Package["logstash"],
 		notify => Service["logstash"],

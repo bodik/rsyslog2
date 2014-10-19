@@ -30,7 +30,8 @@ class glastopf::lsl (
 		context => "/files/etc/default/logstash",
 		changes => [
 			"set LS_OPTS \"'-w $lsl_workers_real'\"",
-			"set LS_USER \"'root'\""
+			"set LS_USER \"'root'\"",
+			"set LS_JAVA_OPTS \"'-Des.discovery.zen.ping.multicast.group=224.0.0.251'\""
 		],
 		require => Package["logstash"],
 		notify => Service["logstash"],
