@@ -4,7 +4,7 @@ if [ -z $1 ]; then
 fi
 
 
-for all in `python /puppet/elk/el_listindex.py | awk '{print $1}'`; do
+for all in `python /puppet/elk/bin/el_listindex.py | awk '{print $1}'`; do
 
 curl -XPUT "http://localhost:39200/${all}/_settings" -d '
 {
