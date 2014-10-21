@@ -207,6 +207,9 @@ case "$1" in
 	ssh)
 		vm_ssh "$2"
 	;;
+	node)
+		VMNAME=$2 /puppet/jenkins/metacloud.init ssh "$3"
+	;;
 	sshs)
 		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
