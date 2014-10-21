@@ -4,6 +4,7 @@ backport() {
 	#src balik se jmenuje jinak nez vysledek, peklo
 	PKG=$1
 	DIR=$2
+		
 	
 	find . -name "${PKG}*deb" | grep "${PKG}*deb"
 	if [ $? = 1 ]; then
@@ -14,6 +15,10 @@ backport() {
 			sed -i '1 s/)/.rb20)/' debian/changelog
 		fi
 		dpkg-buildpackage -rfakeroot
+		if [ $? -ne 0 ]; then
+			echo "ERROR: error building package"
+			exit 1
+		fi
 		cd ..
 		ls -l 
 	fi
