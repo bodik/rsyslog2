@@ -1,6 +1,6 @@
-# == Class: elk::esd
+# == Class: elk::esc
 #
-# Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
+# Class will ensure installation of elasticsearch client node using puppet-elasticsearch modules 
 # and creates single instance:
 # - heapsize as memorytotal/2
 # - set of basic plugins
@@ -10,12 +10,16 @@
 # [*cluster_name*]
 #   set a specific cluster name for node
 #
+# [*network_host*]
+#   set a network.host ES setting, eg. bind to specific interface
+#
 # === Examples
 #
-#   class { "elk::esd": cluster_name => "abc", }
+#   class { "elk::esc": cluster_name => "abc", }
 #
-class elk::esd (
+class elk::esc (
 	$cluster_name = "mry",
+	$network_host = undef,
 ) {
 
 	$m = split($::memorytotal, " ")
@@ -41,9 +45,19 @@ class elk::esd (
 			###'discovery.zen.minimum_master_nodes' => '2',
 			###'index.number_of_replicas' => '1',
 			###'index.number_of_shards' => '8',
+			'node.master' => 'false',
+			'node.data' => 'false',
+			'node.client' => 'true',
 		 }
 	}
-	elasticsearch::instance { 'es01': }
+
+	if $network_host {
+		elasticsearch::instance { 'es01': 
+			config => { 'network.host' => $network_host }
+		}
+	} else {
+		elasticsearch::instance { 'es01': }
+	}
 	
 	elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 		module_dir => 'kopf',

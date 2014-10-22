@@ -23,14 +23,14 @@ class iptables (
 	package { ["iptables", "iptables-persistent"]: ensure => installed }
 
 	file { "/etc/iptables/rules.v4":
-		source => [ $rules_v4, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4" ],
+		source => [ $rules_v4, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4" ],
 		owner => "root", group => "root", mode => "0644",
 		require => Package["iptables-persistent"],
 		notify => Service["iptables-persistent"],
 	}
 
 	file { "/etc/iptables/rules.v6":
-		source => [ $rules_v6, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6" ],
+		source => [ $rules_v6, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6" ],
 		owner => "root", group => "root", mode => "0644",
 		require => Package["iptables-persistent"],
 		notify => Service["iptables-persistent"],
