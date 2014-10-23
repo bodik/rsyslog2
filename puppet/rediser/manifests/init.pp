@@ -17,12 +17,7 @@ class rediser {
 		ensure => running,
 	}
 
-
-	exec {"apt-get update": 
-                command => "/usr/bin/apt-get update",
-                refreshonly => true,
-        }
-
+	include metalib::apt-get-update
 
 	file { "/etc/apt/sources.list.d/wheezy-backports.list":
 	        source => "puppet:///modules/${module_name}/etc/apt/sources.list.d/wheezy-backports.list",
