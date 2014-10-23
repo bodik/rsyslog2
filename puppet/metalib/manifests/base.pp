@@ -30,7 +30,7 @@ class metalib::base {
 
 
 	# generic debianization from next,next,next,... install
-	package { ["nfs-common","rpcbind", "dbus"]: ensure => absent, }
+	package { ["nfs-common","rpcbind"]: ensure => absent, }
 	package { ["joe","nano", "pico"]: ensure => absent, }
 	package { ["vim", "mc", "git", "puppet", "augeas-lenses", "nagios-plugins-basic", "screen", "psmisc"]: ensure => installed, }
 
