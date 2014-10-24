@@ -8,6 +8,7 @@
 # include metalib::avahi
 #
 class metalib::avahi ( ) {
+	notice($name)
 	package { ["avahi-daemon", "avahi-utils"]:
 	        ensure => installed,
 	}

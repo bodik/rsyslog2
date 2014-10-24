@@ -41,6 +41,7 @@ class elk::lsl (
 	$rediser_service = "_rediser._tcp",
 	$output_es_cluster_name = "mry",
 ) {
+	notice($name)
 	package { ["libgeoip1", "geoip-database"]:
 		ensure => installed,
 	}

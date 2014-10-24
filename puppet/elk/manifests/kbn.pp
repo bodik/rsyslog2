@@ -22,6 +22,8 @@ class elk::kbn (
 	$kibana_webserver = "apache",
 	$kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200',
 ) {
+	notice($name)
+
 	if ($kibana_webserver == false) {
 		$kibana_webserver_real = undef
 	} else {

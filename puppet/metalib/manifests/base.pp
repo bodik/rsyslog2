@@ -8,6 +8,7 @@
 # include metalib::base
 #
 class metalib::base {
+	notice($name)
 
 	# globals
 	package { "wget": ensure => installed, }

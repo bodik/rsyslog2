@@ -9,6 +9,7 @@
 #  class { rediser: }
 #
 class rediser {
+	notice($name)
 
 	package { "redis-server":
 		ensure => installed,
