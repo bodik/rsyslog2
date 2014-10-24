@@ -23,7 +23,7 @@ filter {
 
 output {
         elasticsearch {
-                cluster => "mry"
+                cluster => "<%= output_es_cluster_name %>"
 		bind_port => 39500
                 port => "39300-39400"
 		protocol => "node"
