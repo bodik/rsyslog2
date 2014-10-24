@@ -77,10 +77,20 @@ class elk::lsl (
 		notify => Service["logstash"],
 	}
 
+
+
+
 	logstash::configfile { 'simple':
 		content => template("${module_name}/etc/logstash/conf.d/simple.conf"),
 	#	order => 10,
 	}
+
+	logstash::configfile { 'netflow':
+		content => template("${module_name}/etc/logstash/conf.d/input-netflow.conf"),
+		order => 10,
+	}
+
+
 
 	if ($rediser_server) {
 		$rediser_server_real = $rediser_server
@@ -88,10 +98,14 @@ class elk::lsl (
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
 	}
-
 	if ( $rediser_server_real ) {
 		logstash::configfile { 'input-rediser-syslog':
 	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-syslog.conf.erb"),
+			order => 10,
+			notify => Service["logstash"],
+		}
+		logstash::configfile { 'input-rediser-auth':
+	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
 			order => 10,
 			notify => Service["logstash"],
 		}
@@ -101,7 +115,7 @@ class elk::lsl (
 			notify => Service["logstash"],
 		}
 		notify { "input rediser active":
-			require => [Logstash::Configfile['input-rediser-syslog'], Logstash::Configfile['input-rediser-nz']],
+			require => [Logstash::Configfile['input-rediser-syslog'], Logstash::Configfile['input-rediser-nz'], Logstash::Configfile['input-rediser-auth']],
 		}
 	} else {
 		logstash::configfile { 'input-rediser-syslog':
@@ -114,13 +128,14 @@ class elk::lsl (
 			order => 10,
 			notify => Service["logstash"],
 		}
+		logstash::configfile { 'input-rediser-auth':
+	        	content => "#input-rediser-auth passive\n",
+			order => 10,
+			notify => Service["logstash"],
+		}
 		notify { "input rediser passive": }
 	}
 
-	logstash::configfile { 'netflow':
-		content => template("${module_name}/etc/logstash/conf.d/input-netflow.conf"),
-		order => 10,
-	}
 
 
 
@@ -128,6 +143,11 @@ class elk::lsl (
 
 	logstash::configfile { 'filter-syslog':
 		content => template("${module_name}/etc/logstash/conf.d/filter-syslog.conf"),
+		order => 30,
+		notify => Service["logstash"],
+	}
+	logstash::configfile { 'filter-auth':
+		content => template("${module_name}/etc/logstash/conf.d/filter-auth.conf"),
 		order => 30,
 		notify => Service["logstash"],
 	}
@@ -152,6 +172,9 @@ class elk::lsl (
 		order => 41,
 		notify => Service["logstash"],
 	}
+
+
+
 
 
 
