@@ -81,7 +81,7 @@ vm_start() {
 		rreturn $? "magrathea vm already running"
 	fi
 
-        front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME"
+        front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME -m abe"
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
@@ -94,6 +94,27 @@ vm_start() {
 
 	rreturn 0 "$0 start"
 }
+
+vm_startpriv() {
+	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
+	if [ $? -eq 0 ]; then
+		rreturn $? "magrathea vm already running"
+	fi
+
+        front_ssh "echo ''|qsub -q reserved -l nodes=vmes1:cl_minos -l cluster=create -N $VMNAME -m abe"
+	RET=1
+	
+	#TODO: ip resolution in gated environment
+
+	if [ $RET -ne 0 ]; then
+		rreturn $RET "$0 start failed $VMNAME"
+	fi
+
+	rreturn 0 "$0 start"
+}
+
+
+
 
 vm_status() {
 	/puppet/jenkins/magrathea.init list | grep " $VMNAME "
@@ -187,6 +208,9 @@ case "$1" in
 	;;
 	start)
 		vm_start
+	;;
+	startpriv)
+		vm_startpriv
 	;;
 	status)
 		vm_status

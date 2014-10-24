@@ -21,6 +21,7 @@ class elk::esc (
 	$cluster_name = "mry",
 	$network_host = undef,
 ) {
+	notice($name)
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {

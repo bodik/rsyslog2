@@ -17,6 +17,7 @@
 class elk::esd (
 	$cluster_name = "mry",
 ) {
+	notice($name)
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {

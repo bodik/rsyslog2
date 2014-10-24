@@ -20,6 +20,7 @@ class iptables (
 	$rules_v4 = "puppet:///modules/${module_name}/nonexistent",
 	$rules_v6 = "puppet:///modules/${module_name}/nonexistent",
 ) {
+	notice($name)
 	package { ["iptables", "iptables-persistent"]: ensure => installed }
 
 	file { "/etc/iptables/rules.v4":

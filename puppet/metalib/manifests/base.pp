@@ -8,6 +8,7 @@
 # include metalib::base
 #
 class metalib::base {
+	notice($name)
 
 	# globals
 	package { "wget": ensure => installed, }
@@ -23,14 +24,11 @@ class metalib::base {
 			require => Exec["download $uri"],
 		}
 	}
-	exec {"apt-get update":
-	        command => "/usr/bin/apt-get update",
-	        refreshonly => true,
-	}
+	include metalib::apt-get-update
 
 
 	# generic debianization from next,next,next,... install
-	package { ["nfs-common","rpcbind", "dbus"]: ensure => absent, }
+	package { ["nfs-common","rpcbind"]: ensure => absent, }
 	package { ["joe","nano", "pico"]: ensure => absent, }
 	package { ["vim", "mc", "git", "puppet", "augeas-lenses", "nagios-plugins-basic", "screen", "psmisc"]: ensure => installed, }
 

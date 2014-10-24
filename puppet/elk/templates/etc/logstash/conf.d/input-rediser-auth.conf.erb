@@ -1,0 +1,13 @@
+input {
+	redis {
+		data_type => "list"
+		host => "<%= rediser_server_real %>"
+		key => "auth"
+		port => 16379
+		type => "auth"
+		threads => 1
+		batch_count => 1000
+		codec => line {}
+  	}
+}
+

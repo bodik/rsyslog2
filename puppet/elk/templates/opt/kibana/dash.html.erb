@@ -1,0 +1,57 @@
+<html>
+<body>
+<script>
+document.write("<ul>");
+var a = location.protocol+"//"+window.location.hostname+"/dash.html";
+document.write("<li> <a href=\""+a+"\">"+a+"</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/logstashesb20.json";
+document.write("<li> <a href=\""+a+"\">kibana3</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/fail2ban.json";
+document.write("<li> <a href=\""+a+"\">kibana3 fail2ban</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/fail2ban-stats1.json";
+document.write("<li> <a href=\""+a+"\">kibana3 fail2ban-stats1</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/nf.json";
+document.write("<li> <a href=\""+a+"\">kibana3 nf</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/nz.json";
+document.write("<li> <a href=\""+a+"\">kibana3 nz</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/nz-basicqueries.json";
+document.write("<li> <a href=\""+a+"\">kibana3 nz-basicqueries</a> </li>");
+</script>
+
+<script>
+function nzhostprofile(){
+        document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/nz-hostprofile.json?host='+document.getElementById('nzhostprofilehost').value;
+}
+</script>
+kibana3 nz-hostprofile: <form style=" display:inline!important;" action="javascript:void(0);">
+        <input id="nzhostprofilehost" type="text" name="host" value="">
+        <input type="button" name="profile" value="profile" onclick="nzhostprofile();">
+        </form></br>
+
+<p>
+
+
+<script>
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/glastopf.json";
+document.write("<li> <a href=\""+a+"\">kibana3 glastopf</a> </li>");
+
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>\"><%= kibana_elasticsearch_url %></a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_template?pretty=true\"><%= kibana_elasticsearch_url %>/_template?pretty=true\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/head/\"><%= kibana_elasticsearch_url %>/_plugin/head/\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/sense/\"><%= kibana_elasticsearch_url %>/_plugin/sense/\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/kopf/\"><%= kibana_elasticsearch_url %>/_plugin/kopf/\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/paramedic/\"><%= kibana_elasticsearch_url %>/_plugin/paramedic/\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/bigdesk/\"><%= kibana_elasticsearch_url %>/_plugin/bigdesk/\</a> </li>");
+document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/HQ/\"><%= kibana_elasticsearch_url %>/_plugin/HQ/\</a> </li>");
+document.write("<ul>");
+</script>
+
+
+</body>
+</html>

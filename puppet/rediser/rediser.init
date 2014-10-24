@@ -8,6 +8,7 @@ cd /tmp || exit 1
 
 killwaitpids() {
         PID="$@"
+	if [ -z "$PID" ]; then return; fi
         kill -TERM $PID
         for i in `seq 1 30`; do
                 ps -p $PID >/dev/null || break
@@ -28,16 +29,22 @@ case "$1" in
 	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-nz-filter.sh" 0.0.0.0 49559 &
 	        echo $! >> /var/run/rediser.pid
 
+	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-auth-filter.sh" 0.0.0.0 49557 &
+	        echo $! >> /var/run/rediser.pid
+
 	        echo "done"
 	;;
 	stop)
 	        echo -n "Stopping rediser: "
-	        killwaitpids `cat /var/run/rediser.pid`
-	        rm /var/run/rediser.pid
+		if [ -f /var/run/rediser.pid ]; then
+		        killwaitpids $(cat /var/run/rediser.pid)
+		        rm /var/run/rediser.pid
+		fi
+	        killwaitpids $(pgrep -f ${BASE}/ncat)
 	        echo "done"
 	;;
 	status)
-                pgrep -f /puppet/rediser/ncat 1>/dev/null
+		pgrep -f rediser 1>/dev/null
                 if [ $? -eq 0 ]; then
                         rreturn 0 "running"
                 fi
