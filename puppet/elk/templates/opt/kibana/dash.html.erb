@@ -14,6 +14,30 @@ document.write("<li> <a href=\""+a+"\">kibana3 fail2ban</a> </li>");
 a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/fail2ban-stats1.json";
 document.write("<li> <a href=\""+a+"\">kibana3 fail2ban-stats1</a> </li>");
 
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/kibana3auth.json";
+document.write("<li> <a href=\""+a+"\">kibana3 auth</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/kibana3auth-stats.json";
+document.write("<li> <a href=\""+a+"\">kibana3 auth stats</a> </li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/kibana3auth-grokfail.json";
+document.write("<li> <a href=\""+a+"\">kibana3 auth grokfail</a> </li>");
+</script>
+
+<script>
+function authhostprofile(){
+        document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofilehost').value;
+}
+</script>
+kibana3 auth-hostprofile: <form style=" display:inline!important;" action="javascript:void(0);">
+        <input id="authhostprofilehost" type="text" name="host" value="">
+        <input type="button" name="profile" value="profile" onclick="authhostprofile();">
+        </form></br>
+
+<p>
+
+
+<script>
 a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/nf.json";
 document.write("<li> <a href=\""+a+"\">kibana3 nf</a> </li>");
 
