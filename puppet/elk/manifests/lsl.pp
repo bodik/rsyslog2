@@ -23,6 +23,10 @@
 #
 # [*rediser_service*]
 #   name of rediser service to discover (default "_rediser._tcp")
+#
+# [*output_es_cluster_name*]
+#   output elasticsearch plugin cluster name config
+#
 # === Examples
 #
 #   class { "elk::lsl": 
@@ -35,6 +39,7 @@ class elk::lsl (
 	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
+	$output_es_cluster_name = "mry",
 ) {
 	package { ["libgeoip1", "geoip-database"]:
 		ensure => installed,
@@ -151,8 +156,8 @@ class elk::lsl (
 
 
 	logstash::configfile { 'output-es':
-		content => template("${module_name}/etc/logstash/conf.d/output-es-node.conf"),
-		#content => template("${module_name}/etc/logstash/conf.d/output-esh-local.conf"),
+		content => template("${module_name}/etc/logstash/conf.d/output-es-node.conf.erb"),
+		#content => template("${module_name}/etc/logstash/conf.d/output-esh-local.conf.erb"),
 		order => 50,
 		notify => Service["logstash"],
 	}
