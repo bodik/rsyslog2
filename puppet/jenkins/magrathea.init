@@ -103,11 +103,9 @@ vm_startpriv() {
 
         front_ssh "echo ''|qsub -q reserved -l nodes=vmes1:cl_minos -l cluster=create -N $VMNAME -m abe"
 	RET=1
-	for i in `seq 1 600`; do
-		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
-		/puppet/jenkins/magrathea.init status
-		sleep 1
-	done
+	
+	#TODO: ip resolution in gated environment
+
 	if [ $RET -ne 0 ]; then
 		rreturn $RET "$0 start failed $VMNAME"
 	fi
