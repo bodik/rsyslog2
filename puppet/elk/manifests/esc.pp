@@ -33,7 +33,7 @@ class elk::esc (
 
 	class { 'elasticsearch':
 		manage_repo  => true,
-		repo_version => '1.2',
+		repo_version => '1.4',
 		java_install => true,
 		datadir => '/scratch',
 		init_defaults => $config_hash,
