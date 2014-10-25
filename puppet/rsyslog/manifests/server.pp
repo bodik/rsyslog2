@@ -23,7 +23,7 @@
 #
 # === Examples
 #
-# install default version, perform autodiscovery and forward logs to rdiser
+# install default version, perform autodiscovery and forward logs to rediser
 #
 #   include rsyslog::server
 #
@@ -93,11 +93,16 @@ class rsyslog::server (
 			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
 			notify => Service["rsyslog"],
 		}
+		file { "/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf":
+			content => template("${module_name}/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf.erb"),
+			owner => "root", group=> "root", mode=>"0644",
+			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
+			notify => Service["rsyslog"],
+		}
 	        notice("forward rediser ACTIVE")
 	} else {
-		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf":
-			ensure => absent,
-		}
+		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf": ensure => absent, }
+		file { "/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf": ensure => absent, }
 		notice("forward rediser PASSIVE")
 	}
 

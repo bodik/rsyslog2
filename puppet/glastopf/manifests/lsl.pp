@@ -5,6 +5,7 @@ class glastopf::lsl (
 	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
+	$output_es_cluster_name = "mry",
 ) {
 	package { ["libgeoip1", "geoip-database"]:
 		ensure => installed,
@@ -38,7 +39,7 @@ class glastopf::lsl (
 	}
 
 	logstash::configfile { 'glastopf':
-		content => template("${module_name}/glastopf-logstash.conf"),
+		content => template("${module_name}/glastopf-logstash.conf.erb"),
 	#	order => 10,
 	}
 
