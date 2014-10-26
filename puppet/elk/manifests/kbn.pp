@@ -19,8 +19,9 @@
 #   class { "elk::kbn": }
 #
 class elk::kbn (
-	$kibana_webserver = "apache",
 	$kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200',
+	$kibana_version = "3.1.0",
+	$kibana_webserver = "apache",
 ) {
 	notice($name)
 
@@ -33,6 +34,7 @@ class elk::kbn (
 	class { 'kibana':
 		webserver => $kibana_webserver_real,
 		virtualhost => $fqdn,
+		version => $kibana_version,
 		
 		#tady v te casti je modul velmi osklivy
 		#jak s konfigurakem sem nevycetl ale meni mu prava na default 664
