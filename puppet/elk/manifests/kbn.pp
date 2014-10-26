@@ -30,7 +30,6 @@ class elk::kbn (
 	} else {
 		$kibana_webserver_real = $kibana_webserver
 	}
-
 	class { 'kibana':
 		webserver => $kibana_webserver_real,
 		virtualhost => $fqdn,
@@ -41,11 +40,6 @@ class elk::kbn (
 		file_mode => "0644",
 	
 	}
-	file { "/opt/kibana/config.js":
-		content => template("${module_name}/opt/kibana/config.js.erb"),
-		owner => "root", group => "root", mode => "0644",
-	}
-
 	if ( $kibana_webserver_real ) {	
 		file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
 			ensure => absent,
@@ -53,6 +47,14 @@ class elk::kbn (
 			notify => Service["apache2"],
 		}
 	}
+
+
+	file { "/opt/kibana/config.js":
+		content => template("${module_name}/opt/kibana/config.js.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => Class["kibana::install"],
+	}
+
 	file { "/opt/kibana/dash.html":
 		content => template("${module_name}/opt/kibana/dash.html.erb"),
 		owner => "root", group => "root", mode => "0644",
