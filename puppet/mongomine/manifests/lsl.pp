@@ -83,22 +83,16 @@ class mongomine::lsl (
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
 	}
+
 	if ( $rediser_server_real ) {
 		logstash::configfile { 'input-rediser-auth':
-	        	content => template("elk/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
+	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
 			order => 10,
 			notify => Service["logstash"],
 		}
-		notify { "input rediser active":
-			require => [Logstash::Configfile['input-rediser-auth']],
-		}
+		notice("input-rediser-auth active")
 	} else {
-		logstash::configfile { 'input-rediser-auth':
-	        	content => "#input-rediser-auth passive\n",
-			order => 10,
-			notify => Service["logstash"],
-		}
-		notify { "input rediser passive": }
+		notice("input-rediser-auth passive")
 	}
 
 

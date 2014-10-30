@@ -27,6 +27,10 @@
 # [*output_es_cluster_name*]
 #   output elasticsearch plugin cluster name config
 #
+# [*process_stream_auth*]
+#   boolean expresion if node has to process auth log
+#   currently is auth stream processed by mongomine, thus defauls to false
+#
 # === Examples
 #
 #   class { "elk::lsl": 
@@ -40,6 +44,7 @@ class elk::lsl (
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
 	$output_es_cluster_name = "mry",
+	$process_stream_auth = false,
 ) {
 	notice($name)
 	package { ["libgeoip1", "geoip-database"]:
@@ -94,7 +99,7 @@ class elk::lsl (
 
 
 	if ($rediser_server) {
-		$rediser_server_real = $rediser_server
+		$mongomine = $rediser_server
 	} elsif ( $rediser_auto == true ) {
 		include metalib::avahi
 		$rediser_server_real = avahi_findservice($rediser_service)
@@ -105,36 +110,29 @@ class elk::lsl (
 			order => 10,
 			notify => Service["logstash"],
 		}
-		logstash::configfile { 'input-rediser-auth':
-	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
-			order => 10,
-			notify => Service["logstash"],
-		}
+		notice("input-rediser-syslog active")
+	} else {
+		notice("input-rediser-syslog passive")
+	}
+	if ( $rediser_server_real ) {
 		logstash::configfile { 'input-rediser-nz':
 	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-nz.conf.erb"),
 			order => 10,
 			notify => Service["logstash"],
 		}
-		notify { "input rediser active":
-			require => [Logstash::Configfile['input-rediser-syslog'], Logstash::Configfile['input-rediser-nz'], Logstash::Configfile['input-rediser-auth']],
-		}
+		notice("input-rediser-nz active")
 	} else {
-		logstash::configfile { 'input-rediser-syslog':
-	        	content => "#input-rediser-syslog passive\n",
-			order => 10,
-			notify => Service["logstash"],
-		}
-		logstash::configfile { 'input-rediser-nz':
-	        	content => "#input-rediser-nz passive\n",
-			order => 10,
-			notify => Service["logstash"],
-		}
+		notice("input-rediser-nz passive")
+	}
+	if ( $rediser_server_real and $process_stream_auth ) {
 		logstash::configfile { 'input-rediser-auth':
-	        	content => "#input-rediser-auth passive\n",
+	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
 			order => 10,
 			notify => Service["logstash"],
 		}
-		notify { "input rediser passive": }
+		notice("input-rediser-auth active")
+	} else {
+		notice("input-rediser-auth passive")
 	}
 
 
