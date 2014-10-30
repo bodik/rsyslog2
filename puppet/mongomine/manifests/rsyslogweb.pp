@@ -20,6 +20,13 @@ class mongomine::rsyslogweb {
 		recurse => "true",
 		owner => "root", group => "root", mode => "0644",
 	}
+	
+	file  { "/etc/apache2/conf.d/rsyslogweb.conf":
+		ensure => link,
+		source => "puppet:///modules/${module_name}/opt/rsyslogweb/apache-proxy-bottle.conf",
+		owner => "root", group => "root", mode => "0644",
+		notify => Service["apache2"],
+	}
 
 
 

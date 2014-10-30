@@ -51,7 +51,8 @@ if [ $? -ne 0 ]; then
 fi
 
 
-
-
-
+python /puppet/mongomine/tests/autotest.py
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 mongomine autotest.py failed"
+fi
 

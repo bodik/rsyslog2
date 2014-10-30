@@ -1,0 +1,7 @@
+#!/bin/sh
+#just helper for every mongo init script
+
+for all in $(ls /etc/init.d/mongod_* /etc/init.d/mongos_*); do
+	bash $all $1
+done
+
