@@ -86,7 +86,7 @@ class mongomine::lsl (
 
 	if ( $rediser_server_real ) {
 		logstash::configfile { 'input-rediser-auth':
-	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
+	        	content => template("elk/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
 			order => 10,
 			notify => Service["logstash"],
 		}
