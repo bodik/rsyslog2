@@ -14,24 +14,6 @@ fi
 
 
 
-/usr/lib/nagios/plugins/check_procs -C apache2  -c 2:
-if [ $? -ne 0 ]; then
-	rreturn 1 "$0 apache2 not running"
-fi
-
-wget "http://$(facter fqdn)/rsyslogweb/stats" -O - | grep table_mapRemoteResult 1>/dev/null
-if [ $? -ne 0 ]; then
-	rreturn 1 "$0 rsyslogweb not available"
-fi
-
-wget "http://$(facter fqdn)/rock/index.php?action=server.status" -O - | grep uptimeEstimate 1>/dev/null
-if [ $? -ne 0 ]; then
-	rreturn 1 "$0 rock not available"
-fi
-
-
-
-
 
 #TODO: TOTO BY SE MELO PRESTEHOVAT AZ SE ROZTRHNE ES A LOGSTASH
 /usr/lib/nagios/plugins/check_procs --argument-array=/opt/logstash/lib/logstash/runner.rb -c 1:1
@@ -54,5 +36,29 @@ fi
 python /puppet/mongomine/tests/autotest.py
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 mongomine autotest.py failed"
+fi
+
+
+
+
+
+/usr/lib/nagios/plugins/check_procs -C apache2  -c 2:
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 apache2 not running"
+fi
+
+wget "http://$(facter fqdn)/rsyslogweb/stats" -O - | grep table_mapRemoteResult 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 rsyslogweb/stats not available"
+fi
+
+wget "http://$(facter fqdn)/rock/index.php?action=server.status" -O - | grep uptimeEstimate 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 rock not available"
+fi
+
+wget "http://$(facter fqdn)/rsyslogweb/" -O - | grep webmenu 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 rsyslogweb not available"
 fi
 
