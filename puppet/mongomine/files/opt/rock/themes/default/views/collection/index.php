@@ -19,6 +19,8 @@ currentFields.push("<?php h(addslashes($field));?>");
 <link rel="stylesheet" href="<?php render_theme_path() ?>/css/jquery-ui-1.8.4.smoothness.css" media="all"/>
 
 <a name="page_top"></a>
+
+<!-- Navigation & Menu -->
 <h3><?php render_navigation($db, $collection, false);?></h3>
 <div class="operation">
 	<strong><?php hm("query"); ?></strong>[<a href="<?php h($arrayLink);?>" <?php if(x("format")=="array"):?>style="text-decoration:underline"<?php endif;?>>Array</a>|<a href="<?php h($jsonLink); ?>" <?php if(x("format")!="array"):?>style="text-decoration:underline"<?php endif;?>>JSON</a></a>] |  <?php if ($_logQuery): ?><a href="#" onclick="showQueryHistory();return false;">History</a> | <?php endif;?>
@@ -26,6 +28,7 @@ currentFields.push("<?php h(addslashes($field));?>");
 	<?php render_collection_menu($db, $collection) ?>
 </div>
 
+<!-- Query box -->
 <div class="query">
 <form method="get" id="query_form">
 <input type="hidden" name="db" value="<?php h_escape($db);?>"/>
@@ -43,7 +46,7 @@ currentFields.push("<?php h(addslashes($field));?>");
 		</td>
 		<td valign="top" class="field_orders">
 			<!-- fields will be used in sorting -->
-			<p><input type="text" name="field[]" value="<?php h(rock_array_get(x("field"),0));?>" /> <select name="order[]"><option value="asc" <?php if (rock_array_get(x("order"),0)=="asc"):?>selected="selected"<?php endif;?>>ASC</option><option value="desc" <?php if (rock_array_get(x("order"),0)=="desc"):?>selected="selected"<?php endif;?>>DESC</option></select></p>
+			<p><input type="text" name="field[]" value="<?php h_escape(rock_array_get(x("field"),0));?>" /> <select name="order[]"><option value="asc" <?php if (rock_array_get(x("order"),0)=="asc"):?>selected="selected"<?php endif;?>>ASC</option><option value="desc" <?php if (rock_array_get(x("order"),0)=="desc"):?>selected="selected"<?php endif;?>>DESC</option></select></p>
 			<p><input type="text" name="field[]" value="<?php h_escape(rock_array_get(x("field"),1));?>" /> <select name="order[]"><option value="asc" <?php if (rock_array_get(x("order"),1)=="asc"):?>selected="selected"<?php endif;?>>ASC</option><option value="desc" <?php if (rock_array_get(x("order"),1)=="desc"):?>selected="selected"<?php endif;?>>DESC</option></select></p>
 			<p><input type="text" name="field[]" value="<?php h_escape(rock_array_get(x("field"),2));?>" /> <select name="order[]"><option value="asc" <?php if (rock_array_get(x("order"),2)=="asc"):?>selected="selected"<?php endif;?>>ASC</option><option value="desc" <?php if (rock_array_get(x("order"),2)=="desc"):?>selected="selected"<?php endif;?>>DESC</option></select></p>
 			<p><input type="text" name="field[]" value="<?php h_escape(rock_array_get(x("field"),3));?>" /> <select name="order[]"><option value="asc" <?php if (rock_array_get(x("order"),3)=="asc"):?>selected="selected"<?php endif;?>>ASC</option><option value="desc" <?php if (rock_array_get(x("order"),3)=="desc"):?>selected="selected"<?php endif;?>>DESC</option></select> </p>
@@ -59,7 +62,7 @@ currentFields.push("<?php h(addslashes($field));?>");
 			<?php endif; ?>
 			</span>
 			<!-- end query fields and hints -->
-			
+
 			<label id="limitLabel" <?php if (x("command") !="findAll"):?>style="display:none"<?php endif;?>><?php hm("limit"); ?>:<input type="text" name="limit" size="5" value="<?php h(xi("limit"));?>"/> |</label>
 			<span id="pageSetLabel" <?php if (x("command") !="findAll"):?>style="display:none"<?php endif;?>>
 			<select name="pagesize" title="<?php hm("rows_per_page"); ?>">
@@ -76,7 +79,11 @@ currentFields.push("<?php h(addslashes($field));?>");
 		</td>
 	</tr>
 	<tr>
-		<td colspan="2"><input type="submit" value="<?php hm("submit_query"); ?>"/> <input type="button" value="<?php hm("explain"); ?>" onclick="explainQuery(this.form)" /> <input type="button" value="<?php hm("clear_conditions"); ?>" onclick="window.location='<?php h(url("collection.index", array( "db"=>$db, "collection" => $collection, "format" => xn("format") ))); ?>'"/>
+		<td colspan="2">
+			<input type="submit" value="<?php hm("submit_query"); ?>"/>
+			<input type="button" value="<?php hm("explain"); ?>" onclick="explainQuery(this.form)" />
+			<input type="button" value="<?php hm("clear_conditions"); ?>" onclick="window.location='<?php h(url("collection.index", array( "db"=>$db, "collection" => $collection, "format" => xn("format") ))); ?>'"/>
+			[<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank">Query Examples</a>]
 			<?php if(isset($cost)):?>Cost <?php h(round($cost, 6));?>s<?php endif;?>
 			<?php if(isset($message)):?><p class="error"><?php h($message);?></p><?php endif;?></td>
 	</tr>
@@ -88,8 +95,8 @@ currentFields.push("<?php h(addslashes($field));?>");
 	<ul>
 	<?php foreach ($nativeFields as $field): if($field == "_id") {continue;}  ?>
 		<li><label>
-			<input type="checkbox" name="query_fields[]" value="<?php h($field); ?>" 
-				<?php if(in_array($field,$queryFields)||$field=="_id"): ?>checked="checked"<?php endif;?> 
+			<input type="checkbox" name="query_fields[]" value="<?php h($field); ?>"
+				<?php if(in_array($field,$queryFields)||$field=="_id"): ?>checked="checked"<?php endif;?>
 				<?php if($field=="_id"): ?>disabled="disabled"<?php endif?>
 			/> <?php h($field); ?></label></li>
 	<?php endforeach; ?>
@@ -118,10 +125,10 @@ currentFields.push("<?php h(addslashes($field));?>");
 		<?php endif;?>
 	<?php else: ?>
 		<p class="page"><?php h($page); ?> (<?php h(min($page->total(), $page->offset()+$page->size()));?>/<?php h($page->total());?>)</p>
-		
+
 		<!-- list all records -->
 		<?php foreach ($rows as $index => $row):?>
-		<div style="border:2px #ccc solid;margin-bottom:5px;" onmouseover="showOperationButtons('<?php h($index);?>')" onmouseout="hideOperationButtons('<?php h($index);?>')" class="record">
+		<div style="border:2px #ccc solid;margin-bottom:5px;" onmouseover="showOperationButtons('<?php h($index);?>')" onmouseout="hideOperationButtons('<?php h($index);?>')" class="record" <?php if(MCollection::isFile($row)): ?>r-is-file="yes" r-file-name="<?php h($row["filename"]) ?>"<?php endif; ?>>
 			<table width="100%" border="0" id="object_<?php h($index);?>">
 				<tr>
 					<td valign="top" width="50">#<?php echo $page->total() - $page->offset() - $index; ?></td>
@@ -130,36 +137,36 @@ currentFields.push("<?php h(addslashes($field));?>");
 					<div class="operation" id="operate_<?php h($index);?>">
 						<!-- you can modify row only when _id is not empty -->
 							<?php if($row["can_modify"]):?>
-								<a href="<?php echo url("collection.modifyRow", array( 
-									"db" => $db, 
-									"collection" => $collection, 
+								<a href="<?php echo url("collection.modifyRow", array(
+									"db" => $db,
+									"collection" => $collection,
 									"id" => rock_id_string($row["_id"]),
 									"uri" => $_SERVER["REQUEST_URI"]
 								)); ?>"><?php hm("update"); ?></a> |
 							<?php endif; ?>
-							
+
 							<?php if($row["can_delete"]): ?>
-								<a href="<?php echo url("collection.deleteRow", array( 
-									"db" => $db, 
-									"collection" => $collection, 
+								<a href="<?php echo url("collection.deleteRow", array(
+									"db" => $db,
+									"collection" => $collection,
 									"id" => rock_id_string($row["_id"]),
 									"uri" => $_SERVER["REQUEST_URI"]
-								)); 
+								));
 								?>" onclick="return window.confirm('Are you sure to delete the row #<?php echo $page->total() - $page->offset() - $index; ?>?');"><?php hm("delete"); ?></a> |
 							<?php else: ?>
 								<a href="#" class="disabled" onclick="return false;"><?php echo hm("delete"); ?></a> |
 							<?php endif; ?>
-							
+
 							<?php if ($row["can_add_field"]): ?>
 								<a href="#" onclick="fieldOpNew(null,'<?php h(rock_id_string($row["_id"])); ?>','',<?php h($index); ?>);return false;"><?php echo hm("new_field"); ?></a> |
 							<?php else: ?>
 								<a href="#" class="disabled" onclick="return false;"><?php echo hm("new_field"); ?></a> |
 							<?php endif; ?>
-							
+
 							<?php if ($row["can_duplicate"]): ?>
-								<a href="<?php h(url("collection.createRow", array( 
-									"db" => $db, 
-									"collection" => $collection, 
+								<a href="<?php h(url("collection.createRow", array(
+									"db" => $db,
+									"collection" => $collection,
 									"id" => rock_id_string($row["_id"]),
 									"uri" => $_SERVER["REQUEST_URI"]
 								))); ?>"><?php hm("duplicate"); ?></a> |
@@ -169,7 +176,7 @@ currentFields.push("<?php h(addslashes($field));?>");
 							<?php endif; ?>
 						<!-- render operation menu -->
 						<?php render_doc_menu($db, $collection, isset($row["_id"]) ? rock_id_string($row["_id"]) : 0, $index) ?>
-						
+
 						<!-- for gridfs -->
 						<?php if(MCollection::isFile($row)):?>
 						| GridFS: <a href="<?php
@@ -196,24 +203,24 @@ currentFields.push("<?php h(addslashes($field));?>");
 							"criteria" => $criteria)));
 						?>">Chunks</a>
 						<?php endif;?>
-					</div>	
-					
+					</div>
+
 					<!-- display record -->
-					<div id="text_<?php h($index);?>" style="max-height:150px;overflow-y:hidden;width:99%" ondblclick="expandText('<?php h($index);?>');" class="record_row" record_id="<?php if(isset($row["_id"])){h(rock_id_string($row["_id"]));} ?>" record_index="<?php h($index); ?>">
-						
+					<div id="text_<?php h($index);?>" style="max-height:150px;overflow-y:hidden;width:99%;" ondblclick="expandText('<?php h($index);?>');" class="record_row" record_id="<?php if(isset($row["_id"])){h(rock_id_string($row["_id"]));} ?>" record_index="<?php h($index); ?>">
+
 						<?php h($row["data"]); ?>
 					</div>
-					
+
 					<!-- switch to text so we can copy it easieer -->
 					<div id="field_<?php h($index);?>" style="display:none;max-height:150px;overflow-y:auto"><textarea rows="7" cols="60" ondblclick="this.select()" title="Double click to select all"><?php h($row["text"]);?></textarea></div>
-					
+
 					<div align="right" style="margin-top:-14px"><a href="#page_top">TOP</a></div>
 				</td>
 				</tr>
 			</table>
 		</div>
 		<?php endforeach; ?>
-	
+
 		<p class="page"><?php h($page); ?></p>
 	<?php endif;?>
 </div>
@@ -295,7 +302,7 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 	<tr class="long_value">
 		<td valign="top">Value:</td>
 		<td><input type="text" name="long_value"/></td>
-	</tr>	
+	</tr>
 	<tr class="double_value">
 		<td valign="top">Value:</td>
 		<td><input type="text" name="double_value"/></td>
@@ -303,9 +310,9 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 	<tr class="mixed_value">
 		<td valign="top">Value:</td>
 		<td><textarea name="mixed_value" rows="10" cols="50"><?php if($last_format=="array"): ?>array(
-	
+
 )<?php else: ?>{
-	
+
 }<?php endif; ?></textarea><br/> * An array or object</td>
 	</tr>
 </table>
@@ -340,7 +347,7 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 	<tr class="long_value">
 		<td valign="top">Value:</td>
 		<td><input type="text" name="long_value"/></td>
-	</tr>	
+	</tr>
 	<tr class="double_value">
 		<td valign="top">Value:</td>
 		<td><input type="text" name="double_value"/></td>
@@ -348,14 +355,15 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 	<tr class="mixed_value">
 		<td valign="top">Value:</td>
 		<td><textarea name="mixed_value" rows="10" cols="50"><?php if($last_format=="array"): ?>array(
-	
+
 )<?php else: ?>{
-	
+
 }<?php endif; ?></textarea><br/> * An array or object</td>
 	</tr>
 </table>
 </div>
 
+<!-- Query field dialog -->
 <div id="field_dialog_query" style="display:none">
 <table>
 	<tr>
@@ -372,6 +380,7 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 </table>
 </div>
 
+<!-- Field related indexes dialog -->
 <div id="field_dialog_indexes" style="display:none">
 <table bgcolor="#cccccc" width="400" cellpadding="2" cellspacing="1" class="indexes_table">
 	<tr>
@@ -403,6 +412,7 @@ Are you sure to set field "<span class="dialog_field"></span>" to NULL?
 </table>
 </div>
 
+<!-- Show query history dialog -->
 <div id="field_dialog_history" style="display:none">
 
 </div>

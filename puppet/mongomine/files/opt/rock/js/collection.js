@@ -3,6 +3,28 @@
  */
 window.parent.frames["left"].highlightCollection(currentCollection, currentRecordsCount);
 
+/**
+ * Pad leading zero to numbers
+ * 
+ * @param integer number Number to pad
+ * @param integer count Zero count
+ * @return string
+ * @since 1.1.6
+ */
+function r_pad_zero(number, count) {
+	if (typeof(count) == "undefined") {
+		count = 2;
+	}
+	var n = "" + number;
+	var l = n.length;
+	if (l < count) {
+		for (var i = 0; i < count - l; i ++) {
+			n = "0" + n;
+		}
+	}
+	return n;
+}
+
 /*
  * show operation buttons for one row 
  */
@@ -235,35 +257,71 @@ function initFieldMenu() {
  * init menu on data 
  */
 function initDataMenu() {
+	$(".string_var").click(function () {
+		var font = $(this);
+		var text = font.text();
+		var matches;
+		if (matches = text.match(/^"(\w+:\/\/.+)"$/)) {//URI
+			font.next("a").remove();
+			font.after("<a href=\"#\" style=\"font-size:11px;\" title=\"View AS\" onclick=\"showDataMenu(this,'" + escape(matches[1]) + "');return false\" class=\"menu_arrow\">▼</a>");
+		}
+		else if (matches = text.match(/^"([\w\._]+@[\w\.-]+)"$/)) {//Mail
+			font.after("<a href=\"#\" style=\"font-size:11px;\" title=\"View AS\" onclick=\"showDataMenu(this,'" + escape(matches[1]) + "');return false\" class=\"menu_arrow\">▼</a>");
+		}
+	});
 	$(".no_string_var").click(function () {
 		var font = $(this);
 		var text = font.text();
-		$(".menu_arrow").remove();
 		if (text.match(/^[\d\.]+$/)) {
-			font.after("<a href=\"#\" style=\"font-size:11px;\" title=\"View AS\" onclick=\"showDataMenu(this,'" + text + "');return false\" class=\"menu_arrow\">▼</a>");
+			font.next("a").remove();
+			font.after("<a href=\"#\" style=\"font-size:11px;\" title=\"View AS\" onclick=\"showDataMenu(this,'" + escape(text) + "');return false\" class=\"menu_arrow\">▼</a>");
 		}
 	});
 }
 
 function showDataMenu(link, text) {
 	var link = $(link);
+	var text = unescape(text);
 	
 	var menu = [];
 	var width = 100;
+	
+	//File size format
 	if (text.match(/^[\d\.]+$/)) {
 		var n = parseFloat(text);
 		menu.push("ToK: " + (Math.round(n/1024*100)/100) + "K");
 		menu.push("ToM: " + (Math.round(n/1024/1024*100)/100) + "M");
 		menu.push("ToG: " + (Math.round(n/1024/1024/1024*100)/100) + "G");
 		
-		//date
+		//Date format
 		if (text.length >= 10) {
 			var date =  new Date();
-			date.setTime(n * 1000);
-			menu.push("ToDate: " + date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() );
+			if (text.length >= 13) {
+				date.setTime(n * 1);
+			}
+			else {
+				date.setTime(n * 1000);
+			}
+			menu.push("ToDate: " + date.getFullYear() + "-" + r_pad_zero(date.getMonth() + 1, 2) + "-" + r_pad_zero(date.getDate(), 2) + " " + r_pad_zero(date.getHours(), 2) + ":" + r_pad_zero(date.getMinutes(), 2) + ":" + r_pad_zero(date.getSeconds(), 2));
 			width = 200;
 		}
 	}
+	
+	//URI format
+	if (text.match(/^\w+:\/\/.+$/)) {
+		menu.push("<a href=\"" + text + "\" target=\"_blank\">Go to URI</a>");
+		
+		if (text.match(/\.(gif|jpg|png)$/i)) {
+			menu.push("<br/><a href=\"" + text + "\" target=\"_blank\"><img src=\"" + text + "\" style=\"width:100px\"/></a>");
+		}
+	}
+	
+	//Mail
+	if (text.match(/^([\w\._]+@[\w\.-]+)$/)) {
+		menu.push("<a href=\"mailto:" + text + "\" target=\"_blank\">Send Mail</a>");
+	}
+	
+	//Show menu
 	if (menu.length > 0) {
 		$("#data_menu").remove();
 		var div = "<div class=\"menu\" id=\"data_menu\">";
@@ -276,6 +334,7 @@ function showDataMenu(link, text) {
 		dataMenu.css("left", link.position().left + 10);
 		dataMenu.css("top", link.position().top);
 		dataMenu.css("width", width);
+		dataMenu.css("overflow", "auto");
 		setTimeout(function () { $("#data_menu").show() }, 100);
 	}
 }
@@ -495,7 +554,14 @@ function fieldOpQuery(link) {
 			"modal": true,
 			"title": "Query on field \"" + field + "\"",
 			"buttons":buttons,
-			"width": 420
+			"width": 420,
+			"open": function () {
+				$(".ui-widget-overlay").unbind("click").click(function () {
+					if ($(this).closest(".ui-dialog").length == 0) {
+						div.dialog("close");
+					}
+				});
+			}
 		});
 	});
 }
@@ -604,7 +670,14 @@ function fieldOpNew(link, id, field, recordIndex) {
 		"modal": true,
 		"title": "Add new field",
 		"buttons":buttons,
-		"width": 450
+		"width": 450,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -733,7 +806,14 @@ function fieldOpUpdate(link, id, field, recordIndex) {
 			"modal": true,
 			"title": "Modify field \"" + field + "\" value",
 			"buttons":buttons,
-			"width": 450
+			"width": 450,
+			"open": function () {
+				$(".ui-widget-overlay").unbind("click").click(function () {
+					if ($(this).closest(".ui-dialog").length == 0) {
+						div.dialog("close");
+					}
+				});
+			}
 		});
 	});
 }
@@ -812,7 +892,14 @@ function fieldOpRename(link) {
 		"modal": true,
 		"title": "Rename field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -864,7 +951,14 @@ function fieldOpRemove(link) {
 		"modal": true,
 		"title": "Remove field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -916,7 +1010,14 @@ function fieldOpClear(link) {
 		"modal": true,
 		"title": "Clear field \"" + field + "\"",
 		"buttons":buttons,
-		"width": 420
+		"width": 420,
+		"open": function () {
+			$(".ui-widget-overlay").unbind("click").click(function () {
+				if ($(this).closest(".ui-dialog").length == 0) {
+					div.dialog("close");
+				}
+			});
+		}
 	});
 }
 
@@ -987,7 +1088,14 @@ function fieldOpIndexes(link) {
 				"modal": true,
 				"title": "Indexes on field \"" + field + "\"",
 				"buttons":buttons,
-				"width": 450
+				"width": 450,
+				"open": function () {
+					$(".ui-widget-overlay").unbind("click").click(function () {
+						if ($(this).closest(".ui-dialog").length == 0) {
+							div.dialog("close");
+						}
+					});
+				}
 			});
 		},
 		url: "index.php?action=field.indexes",
@@ -1073,6 +1181,32 @@ function clickUniqueKey(box) {
  */
 function showQueryHistory() {
 	var div = $("#field_dialog_history");
+	var buttons = {
+		/** Clear history **/	
+		"Clear": function () {
+			if (window.confirm("Are you sure to clear all the query history?")) {
+				jQuery.ajax({
+					"data": { "db":currentDb, "collection":currentCollection },
+					"dataType": "json",
+					"url": "index.php?action=collection.clearQueryHistory",
+					"success": function (data) {
+						if (data.code == 200) {
+							div.find(".no_history").show();
+							div.find(".has_history").hide();
+						}
+						else {
+							alert("Fail to clear query history. Please check directory \"$rockmongo/logs/\" permission.");
+						}
+					}
+				});
+			}
+		},
+		"Close": function () {
+			$(this).dialog("close");
+		}
+	};
+	
+	/** Retrieve history **/
 	jQuery.ajax({
 		"data": { "db":currentDb, "collection":currentCollection },
 		"dataType": "html",
@@ -1082,8 +1216,17 @@ function showQueryHistory() {
 			div.dialog({
 				"modal": true,
 				"title": "Query History",
-				//"buttons":buttons,
-				"width": 450
+				"buttons":buttons,
+				"width": 450,
+				"open": function(event, ui) {
+			        $("button").blur();
+			        
+			        $(".ui-widget-overlay").unbind("click").click(function () {
+						if ($(this).closest(".ui-dialog").length == 0) {
+							div.dialog("close");
+						}
+					});
+			    }
 			});
 		}
 		
