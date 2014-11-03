@@ -16,7 +16,7 @@
       <command>/puppet/jenkins/kvm.init destroy_cache
 /puppet/jenkins/kvm.init build
 /puppet/jenkins/kvm.init start
-/puppet/jenkins/kvm.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh&apos;
+/puppet/jenkins/kvm.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh&apos;
 /puppet/jenkins/kvm.init shutdown
 /puppet/jenkins/kvm.init make_cache</command>
     </hudson.tasks.Shell>
