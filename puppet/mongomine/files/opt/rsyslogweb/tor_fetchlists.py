@@ -6,7 +6,6 @@ import re
 import datetime
 
 import sys
-###sys.path = ['/home/mongo/pyshared'] + sys.path
 import pymongo
 
 def douri(uri):
@@ -29,12 +28,12 @@ def int2ip(addr):
 
 def fetch1():
         ret = []
-        data = douri("https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=147.228.121.122")
+        data = douri("https://check.torproject.org/cgi-bin/TorBulkExitList.py?ip=147.228.0.1")
         if data["text"] == "error":
                 print "ERROR:", data
                 return ret
         for tmp in data["text"].split("\n"):
-                if not re.match("#",tmp):
+                if tmp and not re.match("#",tmp):
                         ret.append({"source": data["uri"], "ip":tmp})
         return ret
 
@@ -45,7 +44,7 @@ def fetch2():
                 print "ERROR:", data
                 return ret
         for tmp in data["text"].split("\n"):
-                if not re.match("#",tmp):
+                if tmp and not re.match("#",tmp):
                         ret.append({"source": data["uri"], "ip":tmp})
         return ret
 
@@ -56,7 +55,7 @@ def fetch3():
                 print "ERROR:", data
                 return ret
         for tmp in data["text"].split("\n"):
-                if not re.match("#",tmp):
+                if tmp and not re.match("#",tmp):
                         ret.append({"source": data["uri"], "ip":tmp})
         return ret
 
@@ -70,8 +69,9 @@ if __name__ == '__main__':
                 db = conn.tor
 
                 for tmp in data:
-                        if db.lists.find(tmp).count():
-                                db.lists.update(tmp, { "$set": { "last": datetime.datetime.now()} }, upsert=True)
+			fid = db.lists.find_one(tmp)
+                        if fid:
+                                db.lists.update(fid, { "$set": { "last": datetime.datetime.now()} }, upsert=True)
                         else:
                                 tmp["first"] = datetime.datetime.now()
                                 db.lists.insert(tmp)
