@@ -18,7 +18,7 @@
 /puppet/jenkins/magrathea.init build
 /puppet/jenkins/magrathea.init start
 /puppet/jenkins/magrathea.init fixup
-/puppet/jenkins/magrathea.init ssh &apos;wget http://home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-dev.install.sh&apos;
