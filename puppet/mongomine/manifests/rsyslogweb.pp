@@ -41,6 +41,7 @@ class mongomine::rsyslogweb {
 	exec { ["pecl install mongo"]:
 		command => "/usr/bin/pecl install mongo",
 		unless => "/usr/bin/pecl list | grep mongo",
+		require => [Package["php5-dev"], Package["php-pear"]],
 		notify => Service["apache2"],
 	}
 	file { "/etc/php5/conf.d/mongo.ini":
