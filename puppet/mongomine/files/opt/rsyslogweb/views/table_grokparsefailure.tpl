@@ -13,7 +13,7 @@ $(document).ready(function() {
         "sAjaxSource": "table_grokparsefailure_data",
         "aoColumns": [
             { "mDataProp": "_id.$oid" },
-            { "mDataProp": "@timestamp" },
+            { "mDataProp": "t" },
             { "mDataProp": "@tags" },
             { "mDataProp": "@message",sWidth: '50%' },
         ]
@@ -27,7 +27,7 @@ $(document).ready(function() {
 <table cellpadding="0" cellspacing="0" border="0" class="display" id="example" width="100%">
 <thead>
 	<th>_id.$oid</th>
-	<th>@timestamp</th>
+	<th>t</th>
 	<th>@tags</th>
 	<th>@message</th>
 </thead>

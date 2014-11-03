@@ -240,7 +240,7 @@ def search_data():
 	collection = bottle.request.query.get("collection")
 
         if collection == "log":
-		sort_field = "@timestamp"
+		sort_field = "t"
 	else:
 		sort_field = "_id.t"
 
@@ -248,17 +248,19 @@ def search_data():
 	c = conn.sshd[collection].find(query).sort(sort_field, direction=-1).limit(limit)
         if collection == "log":
 		for tmp in c:
-			if "@timestamp" in tmp:
-				tmp['@0timestamp'] = tmp["@timestamp"].astimezone(our_zone).ctime()
-				del tmp["@timestamp"]
+			if "t" in tmp:
+				tmp['@0t'] = tmp["t"].astimezone(our_zone).ctime()
+				del tmp["t"]
 
-			if "remote" in tmp["@fields"]:
+			if "remote" in tmp:
 					#TODO: tohle je spatne
-					a = "".join(tmp["@fields"]["remote"])
-					tmp["@fields"]["remote"] = "<a href='profile_remote?remote="+a+"'>"+a+"</a>"
+					a = "".join(tmp["remote"])
+					tmp["remote"] = "<a href='profile_remote?remote="+a+"'>"+a+"</a>"
 
-			del tmp["@message"]
-			del tmp["@tags"]
+			del tmp["pid"]
+			del tmp["message"]
+			del tmp["@version"]
+			del tmp["geoip"]["location"]
 			data.append(tmp)
         else:
                	for tmp in c:
@@ -305,8 +307,8 @@ def search():
 	
 	# nastaveni defaultniho namespacu pro vyhledavani, LS to bude stejne menit a po MR je to v _id
         if bottle.request.forms.collection == "log":
-		base = "@fields."
-		ts_field = "@timestamp"
+		base = ""
+		ts_field = "t"
 	else:
 		base = "_id."
 		ts_field = "_id.t"

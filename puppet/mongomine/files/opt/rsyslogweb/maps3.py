@@ -16,7 +16,7 @@ def printf(format, *args):
 
 
 #takhle naivne to delat nejde, rozhazuje to casove zony
-#emit_mapHourly = "var d = new Date(this.@timestamp).getTime(); var a = new Date(); a.setTime(d-(d% (60*60 *1000) ));"
+#emit_mapHourly = "var d = new Date(this.t).getTime(); var a = new Date(); a.setTime(d-(d% (60*60 *1000) ));"
 #emit_remapDaily = """
 #        var d = new Date(this._id.t).getTime();
 #        var a = new Date();
@@ -25,19 +25,19 @@ def printf(format, *args):
 
 # musi to byt takhle i kdyz mam zmereno ze to je pomalejsi
 emit_mapHourly = """var a = new Date(
-            this.@timestamp.getFullYear(),
-            this.@timestamp.getMonth(),
-            this.@timestamp.getDate(),
-            this.@timestamp.getHours(),
+            this.t.getFullYear(),
+            this.t.getMonth(),
+            this.t.getDate(),
+            this.t.getHours(),
             0, 0, 0);"""
 emit_mapDaily = """var a = new Date(
-            this.@timestamp.getFullYear(),
-            this.@timestamp.getMonth(),
-            this.@timestamp.getDate(),
+            this.t.getFullYear(),
+            this.t.getMonth(),
+            this.t.getDate(),
             0, 0, 0, 0);"""
 emit_mapMonthly = """var a = new Date(
-            this.@timestamp.getFullYear(),
-            this.@timestamp.getMonth(),
+            this.t.getFullYear(),
+            this.t.getMonth(),
             1, 0, 0, 0, 0);"""
 
 emit_remapDaily = """var a = new Date(
@@ -108,7 +108,13 @@ def genmap(keys):
 		""")
 
 	for tmp in keys:
-		(prefix,fname) = tmp.split(".")
+
+		try:
+			(prefix,fname) = tmp.split(".")
+		except:
+			prefix = ""
+			fname = tmp
+
 		ret.append("""%s: (this.%s ? this.%s.toString() : 'NULL'),""" % (fname, tmp, tmp) )
 
 	ret.append("""
@@ -177,11 +183,6 @@ log = db.log
 
 
 
-# this needs to be incremental, because of scalability
-#make_timedmap( "log", [], emit_mapHourly, "mapLogPerHour" )
-#make_timedmap( "log", ["@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result"], emit_mapHourly, "mapLogsourceUserMethodRemoteResultPerHour", {"@tags": { "$not": {"$in": ["_grokparsefailure"]}}})
-
-
 
 # vezmu si teda nove dokumenty ktere pritelky
 # TODO: tohle jde asi predelat na find and save, bylo by to asi snazsi ...
@@ -225,12 +226,11 @@ make_timedmap( "mapLogPerDay",	[], emit_remapMonthly, "mapLogPerMonth" )
 
 
 
-#make_timedmap( "log", ["@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result"], emit_mapHourly, "mapLogsourceUserMethodRemoteResultPerHour", {"@tags": { "$not": {"$in": ["_grokparsefailure"]}}})
 query["@tags"] = { "$not": {"$in": ["_grokparsefailure"]}} 
 
 make_timedmap( 
 	"log", 
-	["@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result"], 
+	["logsource", "user", "method", "remote", "result"], 
 	emit_mapHourly, 
 	"mapLogsourceUserMethodRemoteResultPerHour", 
 	query, 
@@ -241,7 +241,7 @@ make_timedmap(
 # mapLogsourceUserMethodRemoteResultPerX
 make_timedmap( 
 	"log", 
-	["@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result"], 
+	["logsource", "user", "method", "remote", "result"], 
 	emit_mapDaily,
 	"mapLogsourceUserMethodRemoteResultPerDay",
 	query,
@@ -250,7 +250,7 @@ make_timedmap(
 
 make_timedmap( 
 	"log", 
-	["@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result"], 
+	["logsource", "user", "method", "remote", "result"], 
 	emit_mapMonthly,
 	"mapLogsourceUserMethodRemoteResultPerMonth",
 	query,
@@ -264,7 +264,7 @@ make_timedmap(
 
 make_timedmap( 
 	"log", 
-	["@fields.remote","@fields.result"], 
+	["remote","result"], 
 	emit_mapHourly, 
 	"mapRemoteResultPerHour",
 	query,
@@ -272,7 +272,7 @@ make_timedmap(
 )
 make_timedmap( 
 	"log", 
-	["@fields.remote","@fields.result"], 
+	["remote","result"], 
 	emit_mapDaily, 
 	"mapRemoteResultPerDay",
 	query,
@@ -280,7 +280,7 @@ make_timedmap(
 )
 make_timedmap( 
 	"log", 
-	["@fields.remote","@fields.result"], 
+	["remote","result"], 
 	emit_mapMonthly, 
 	"mapRemoteResultPerMonth",
 	query,
@@ -319,7 +319,7 @@ reduceCount("mapResultPerMonth", mapf, "mapResult")
 #                    );}	""")
 #reduceCount("mapLogsourceUserMethodRemoteResultPerMonth", mapf, "mapMethod")
 mapf = bson.Code("""function(){ emit( 
-			{ method: (this.@fields.method ? this.@fields.method.toString() : 'NULL') },
+			{ method: (this.method ? this.method.toString() : 'NULL') },
 			{count: (this.value ? this.value.count : 1)}
                     );}	""")
 reduceCount("log", mapf, "mapMethod", query, {"reduce": "mapMethod"})

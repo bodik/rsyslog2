@@ -5,7 +5,7 @@ class mongomine::database (
 ) {
 	notice($name)
 	include mongodb
-
+	
 	# Install the MongoDB config server -- mongos
 	mongodb::mongod { 'mongod_config':
 		mongod_instance  => 'shardproxy',
@@ -39,12 +39,20 @@ class mongomine::database (
 	$shards_real = range(30001, 30000+$shards)
 	mongomineshard { $shards_real: }
 
+
+
+	package { "python-pip": ensure => installed, }
+	package { "pymongo":	ensure => installed,
+		provider => "pip",	
+	}
 	#will ensure registering num of shards and setup basic db structures/indexes
 	exec { "setup-mongomine.py":
 		command => "/usr/bin/python /puppet/mongomine/bin/setup-mongomine.py $shards",
 		refreshonly => true,
 		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"], Mongomineshard[$shards_real]],
 	}
+
+
 
 
 	#autoconfig

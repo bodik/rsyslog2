@@ -3,11 +3,13 @@
 class mongomine::rsyslogweb {
 	notice($name)
 
-	service { "apache2": }
 
-	package { ["libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
+	package { ["apache2", "libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
 		ensure => installed,
 		notify => Service["apache2"],
+	}
+	service { "apache2": 
+		ensure => running,
 	}
 	package { ["bottle", "pymongo"]:
 		ensure => installed,
@@ -25,6 +27,7 @@ class mongomine::rsyslogweb {
 		ensure => link,
 		source => "puppet:///modules/${module_name}/opt/rsyslogweb/apache-proxy-bottle.conf",
 		owner => "root", group => "root", mode => "0644",
+		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"]],
 		notify => Service["apache2"],
 	}
 
