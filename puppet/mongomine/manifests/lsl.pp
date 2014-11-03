@@ -54,6 +54,11 @@ class mongomine::lsl (
 		require => File["/etc/logstash/patterns"],
 		notify => Service["logstash"],
 	}
+	file { "/opt/logstash/lib/logstash/outputs/mongodb.rb":
+		source => "puppet:///modules/${module_name}/opt/logstash/lib/logstash/outputs/mongodb.rb",
+		owner => "root", group => "root", mode => "0644",
+		require => Package["logstash"],
+	}
 
 
 	if ( $lsl_workers == undef ) {
