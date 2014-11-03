@@ -19,12 +19,12 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 apache2 not running"
 fi
 
-wget "http://localhost/rsyslogweb/stats" -O - | grep table_mapRemoteResult 1>/dev/null
+wget "http://$(facter fqdn)/rsyslogweb/stats" -O - | grep table_mapRemoteResult 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rsyslogweb not available"
 fi
 
-wget "http://localhost/rock/index.php?action=server.status" -O - | grep uptimeEstimate 1>/dev/null
+wget "http://$(facter fqdn)/rock/index.php?action=server.status" -O - | grep uptimeEstimate 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rock not available"
 fi

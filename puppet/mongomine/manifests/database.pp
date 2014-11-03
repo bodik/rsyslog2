@@ -1,6 +1,8 @@
 #!/usr/bin/puppet
 
-class mongomine::database {
+class mongomine::database (
+	$shards = 4,
+) {
 	notice($name)
 	include mongodb
 
@@ -23,40 +25,25 @@ class mongomine::database {
 	}
 
 	# Install the MongoDB shard server
-	mongodb::mongod { 'mongod_Shard1':
-		mongod_instance => 'Shard1',
-		mongod_port     => 30001,
-		mongod_replSet  => '',
-		mongod_shardsvr => 'true',
-		mongod_bind_ip  => '127.0.0.1',
-		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"]],
+	define mongomineshard {
+		mongodb::mongod { "mongod_Shard${name}":
+			mongod_instance => "Shard${name}",
+			mongod_port     => $name,
+			mongod_replSet  => '',
+			mongod_shardsvr => 'true',
+			mongod_bind_ip  => '127.0.0.1',
+			require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"]],
+			notify => Exec["setup-mongomine.py"],
+		}
 	}
+	$shards_real = range(30001, 30000+$shards)
+	mongomineshard { $shards_real: }
 
-	mongodb::mongod { 'mongod_Shard2':
-		mongod_instance => 'Shard2',
-		mongod_port     => 30002,
-		mongod_replSet  => '',
-		mongod_shardsvr => 'true',
-		mongod_bind_ip  => '127.0.0.1',
-		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"]],
-	}
-
-	mongodb::mongod { 'mongod_Shard3':
-		mongod_instance => 'Shard3',
-		mongod_port     => 30003,
-		mongod_replSet  => '',
-		mongod_shardsvr => 'true',
-		mongod_bind_ip  => '127.0.0.1',
-		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"]],
-	}
-
-	mongodb::mongod { 'mongod_Shard4':
-		mongod_instance => 'Shard4',
-		mongod_port     => 30004,
-		mongod_replSet  => '',
-		mongod_shardsvr => 'true',
-		mongod_bind_ip  => '127.0.0.1',
-		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"]],
+	#will ensure registering num of shards and setup basic db structures/indexes
+	exec { "setup-mongomine.py":
+		command => "/usr/bin/python /puppet/mongomine/bin/setup-mongomine.py $shards",
+		refreshonly => true,
+		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"], Mongomineshard[$shards_real]],
 	}
 
 
