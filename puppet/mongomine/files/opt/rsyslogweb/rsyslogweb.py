@@ -256,11 +256,20 @@ def search_data():
 					#TODO: tohle je spatne
 					a = "".join(tmp["remote"])
 					tmp["remote"] = "<a href='profile_remote?remote="+a+"'>"+a+"</a>"
+		
+			if "@timestamp" in tmp:
+				del tmp["@timestamp"]
+			if "@version" in tmp:
+				del tmp["@version"]
+			if "pid" in tmp:
+				del tmp["pid"]
+			if "message" in tmp:
+				del tmp["message"]
+			if "tags" in tmp:
+				del tmp["tags"]
+			if ("geoip" in tmp) and ("location" in tmp["geoip"]):
+				del tmp["geoip"]["location"]
 
-			del tmp["pid"]
-			del tmp["message"]
-			del tmp["@version"]
-			del tmp["geoip"]["location"]
 			data.append(tmp)
         else:
                	for tmp in c:

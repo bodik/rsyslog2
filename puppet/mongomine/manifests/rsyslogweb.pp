@@ -1,6 +1,9 @@
 #!/usr/bin/puppet
 
-class mongomine::rsyslogweb {
+class mongomine::rsyslogweb (
+	$backend_email = "bodik@cesnet.cz",
+	$alert_email = "bodik@cesnet.cz",
+) {
 	notice($name)
 
 
@@ -21,6 +24,7 @@ class mongomine::rsyslogweb {
 		source => "puppet:///modules/${module_name}/opt/rsyslogweb",
 		recurse => "true",
 		owner => "root", group => "root", mode => "0644",
+		notify => Service["apache2"],
 	}
 	
 	file  { "/etc/apache2/conf.d/rsyslogweb.conf":
@@ -29,6 +33,27 @@ class mongomine::rsyslogweb {
 		owner => "root", group => "root", mode => "0644",
 		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"]],
 		notify => Service["apache2"],
+	}
+
+
+	cron { "maps3.py":
+		command => "(cd /opt/rsyslogweb/; /usr/bin/python maps3.py 1>/dev/null)",
+		environment => "MAILTO=${backend_email}",
+		minute      => "*",
+		require => [File["/opt/rsyslogweb"], Package["pymongo"]],
+	}
+	cron { "tor_fetchlists.py":
+		command => "(cd /opt/rsyslogweb/; /usr/bin/python tor_fetchlists.py)",
+		environment => "MAILTO=${backend_email}",
+		minute      => "0",
+		hour      => "*/4",
+		require => [File["/opt/rsyslogweb"], Package["pymongo"]],
+	}
+	cron { "report_crackers.py":
+		command => "(cd /opt/rsyslogweb/; /usr/bin/python report_crackers.py)",
+		environment => "MAILTO=${alert_email}",
+		minute      => "*/5",
+		require => [File["/opt/rsyslogweb"], Package["pymongo"]],
 	}
 
 
