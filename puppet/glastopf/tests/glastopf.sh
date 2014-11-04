@@ -19,11 +19,11 @@ fi
 
 NOW=$(date +%s)
 wget -O /dev/null -q "http://localhost/autotest_message_$NOW"
-sleep 1
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 glastopf-runner webserver unavailable"
 fi
 
+sleep 1
 grep "autotest_message_$NOW" /var/log/syslog 1>/dev/null 2>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 glastopf-runner not logging properly"
