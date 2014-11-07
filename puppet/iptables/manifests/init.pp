@@ -21,6 +21,7 @@ class iptables (
 	$rules_v6 = "puppet:///modules/${module_name}/nonexistent",
 ) {
 	notice($name)
+	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 	package { ["iptables"]: ensure => installed }
 	package { "iptables-persistent": ensure => absent,}
 
