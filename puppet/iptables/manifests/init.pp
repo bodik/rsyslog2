@@ -22,6 +22,8 @@ class iptables (
 ) {
 	notice($name)
 	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+
+
 	package { ["iptables"]: ensure => installed }
 	package { "iptables-persistent": ensure => absent,}
 
@@ -45,9 +47,21 @@ class iptables (
 		require => File["/var/lib/iptables"],
 		notify => Service["iptables"],
 	}
-
 	file { "/var/lib/ip6tables/active":
 		source => [ $rules_v6, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6" ],
+		owner => "root", group => "root", mode => "0640",
+		require => File["/var/lib/ip6tables"],
+		notify => Service["ip6tables"],
+	}
+
+	file { "/var/lib/iptables/inactive":
+		source => "puppet:///modules/${module_name}/rules.v4-inactive",
+		owner => "root", group => "root", mode => "0640",
+		require => File["/var/lib/iptables"],
+		notify => Service["iptables"],
+	}
+	file { "/var/lib/ip6tables/inactive":
+		source => "puppet:///modules/${module_name}/rules.v6-inactive",
 		owner => "root", group => "root", mode => "0640",
 		require => File["/var/lib/ip6tables"],
 		notify => Service["ip6tables"],
