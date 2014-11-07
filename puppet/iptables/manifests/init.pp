@@ -36,23 +36,23 @@ class iptables (
 
 	file { ["/var/lib/iptables", "/var/lib/ip6tables"]:
 		ensure => "directory",
-		owner => "root", group => "root", mode => "0755",
+		owner => "root", group => "root", mode => "0750",
 	}
 
 	file { "/var/lib/iptables/active":
 		source => [ $rules_v4, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4" ],
-		owner => "root", group => "root", mode => "0644",
+		owner => "root", group => "root", mode => "0640",
 		require => File["/var/lib/iptables"],
 		notify => Service["iptables"],
 	}
 
 	file { "/var/lib/ip6tables/active":
 		source => [ $rules_v6, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6" ],
-		owner => "root", group => "root", mode => "0644",
+		owner => "root", group => "root", mode => "0640",
 		require => File["/var/lib/ip6tables"],
 		notify => Service["ip6tables"],
 	}
-
+	
 	service { "iptables": 
 		enable => true, 
 		require => [File["/etc/init.d/iptables"], File["/var/lib/iptables/active"]],
