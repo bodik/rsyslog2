@@ -21,29 +21,44 @@ class iptables (
 	$rules_v6 = "puppet:///modules/${module_name}/nonexistent",
 ) {
 	notice($name)
-	package { ["iptables", "iptables-persistent"]: ensure => installed }
+	package { ["iptables"]: ensure => installed }
+	package { "iptables-persistent": ensure => absent,}
 
-	file { "/etc/iptables/rules.v4":
+	file { "/etc/init.d/iptables":
+		source => "puppet:///modules/${module_name}/etc/init.d/iptables",
+		owner => "root", group => "root", mode => "0755",
+	}
+	file { "/etc/init.d/ip6tables":
+		source => "puppet:///modules/${module_name}/etc/init.d/ip6tables",
+		owner => "root", group => "root", mode => "0755",
+	}
+
+	file { ["/var/lib/iptables", "/var/lib/ip6tables"]:
+		ensure => "directory",
+		owner => "root", group => "root", mode => "0755",
+	}
+
+	file { "/var/lib/iptables/active":
 		source => [ $rules_v4, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4.${fqdn}", "puppet:///modules/${module_name}/rules.v4" ],
 		owner => "root", group => "root", mode => "0644",
-		require => Package["iptables-persistent"],
-		notify => Service["iptables-persistent"],
+		require => File["/var/lib/iptables"],
+		notify => Service["iptables"],
 	}
 
-	file { "/etc/iptables/rules.v6":
+	file { "/var/lib/ip6tables/active":
 		source => [ $rules_v6, "puppet:///modules/${module_name}/PRIVATEFILE_rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6.${fqdn}", "puppet:///modules/${module_name}/rules.v6" ],
 		owner => "root", group => "root", mode => "0644",
-		require => Package["iptables-persistent"],
-		notify => Service["iptables-persistent"],
+		require => File["/var/lib/ip6tables"],
+		notify => Service["ip6tables"],
 	}
 
-	service { "iptables-persistent": 
+	service { "iptables": 
 		enable => true, 
-		require => [File["/etc/iptables/rules.v4"], File["/etc/iptables/rules.v6"]],
+		require => [File["/etc/init.d/iptables"], File["/var/lib/iptables/active"]],
 	}
-
-	#legacy layer
-	file { "/etc/init.d/iptables": ensure => link, target => "/etc/init.d/iptables-persistent" }
-	file { "/etc/init.d/ip6tables": ensure => link, target => "/etc/init.d/iptables-persistent" }
+	service { "ip6tables": 
+		enable => true, 
+		require => [File["/etc/init.d/ip6tables"], File["/var/lib/ip6tables/active"]],
+	}
 
 }
