@@ -36,6 +36,8 @@ for all in $VMLIST; do
 	VMCOUNT=$(($VMCOUNT+1))
 done
 
+echo "INFO: VMCOUNT $VMCOUNT"
+
 #reconnect all clients
 /puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
 /puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog start'
