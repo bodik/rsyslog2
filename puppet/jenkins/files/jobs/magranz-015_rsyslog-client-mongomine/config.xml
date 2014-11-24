@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>export VMNAME=&quot;RS-$$-MM&quot;
+/puppet/jenkins/magrathea.init login
+/puppet/jenkins/magrathea.init build
+/puppet/jenkins/magrathea.init start
+
+#vm image fixup
+/puppet/jenkins/magrathea.init fixup
+
+/puppet/jenkins/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x mongomine.install.sh&apos;
+/puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
+/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x mongomine/tests/mongomine.sh&apos;</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
