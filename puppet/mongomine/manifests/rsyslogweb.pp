@@ -1,11 +1,33 @@
-#!/usr/bin/puppet
+# == Class: mongomine::rsyslogweb
+#
+# Class will ensure installation of rsysloweb, python bottle aplication for
+# mongodb collection browsing.  Also creates set of cronjobs which will compute
+# crackers maps or fetch lists of tor nodes, ...
+#
+# === Parameters
+#
+# [*backend_email*] 
+# [*alert_email*] 
+#   send emited email messages to specific e-mail
+#
+# [*mta_package*]
+# [*mta_fix_cloud_sender*] 
+#   will tune postfix to rewrite sender addresses to something more 
+#   non cloudish which will pass various filtering (nxdomain,...)
+#
+# === Examples
+#
+#   class { "mongomine::rsyslogweb": }
+#
+
 
 class mongomine::rsyslogweb (
 	$backend_email = "bodik@cesnet.cz",
 	$alert_email = "bodik@cesnet.cz",
+	$mta_package = "postfix",
+	$mta_fix_cloud_sender = true,
 ) {
-	notice($name)
-
+	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
 	package { ["apache2", "libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
 		ensure => installed,
@@ -35,6 +57,25 @@ class mongomine::rsyslogweb (
 		notify => Service["apache2"],
 	}
 
+
+	#this is a cloud dependency for mail alerting
+	package { $mta_package: ensure => installed, }
+	if ( $mta_package == "postfix" and $mta_fix_cloud_sender == true) {
+		augeas { "postfix-rewrite-cloudsender":
+		        context => "/files/etc/postfix/main.cf",
+		        changes => [
+		                "set smtp_generic_maps regexp:/etc/postfix/generic",
+		        ] 
+		        require => Package["postfix"],
+			notify => Service["postfix"],
+		}
+		file { "/etc/postfix/generic":
+			content => "/root@vmes2.metacentrum.cz/ root@esb.metacentrum.cz\n",
+			owner => "root", group => "root", mode => "0644",
+			require => Package["postfix"],
+			notify => Service["postfix"],
+		}
+	}
 
 	cron { "maps3.py":
 		command => "(cd /opt/rsyslogweb/; /usr/bin/python maps3.py 1>/dev/null)",
