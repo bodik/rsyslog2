@@ -21,7 +21,7 @@ class elk::esc (
 	$cluster_name = "mry",
 	$network_host = undef,
 ) {
-	notice($name)
+	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
 	$m = split($::memorytotal, " ")
 	if ( $m[1] == "GB" ) {
