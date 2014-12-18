@@ -61,11 +61,12 @@ class mongomine::rsyslogweb (
 	#this is a cloud dependency for mail alerting
 	package { $mta_package: ensure => installed, }
 	if ( $mta_package == "postfix" and $mta_fix_cloud_sender == true) {
+		service { "postfix": }
 		augeas { "postfix-rewrite-cloudsender":
 		        context => "/files/etc/postfix/main.cf",
 		        changes => [
 		                "set smtp_generic_maps regexp:/etc/postfix/generic",
-		        ] 
+		        ],
 		        require => Package["postfix"],
 			notify => Service["postfix"],
 		}
