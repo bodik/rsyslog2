@@ -56,8 +56,7 @@ class mongomine::rsyslogwebproxy (
 		notify => Service["apache2"],
 	}
 
-	package { "apache2": ensure => installed, }
-	service { "apache2": }
+	include metalib::apache2
 	file { "/etc/apache2/mods-enabled/rewrite.load":
 		ensure => link, 	target => "../mods-available/rewrite.load", 
 		require => Package["apache2"],	notify => Service["apache2"],
