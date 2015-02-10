@@ -45,7 +45,7 @@ primaliry on ELK stack (http://www.elasticsearch.org) and MongodDB
 
 Bootstrap suite from a git repository, subsequent calls would pull from master repo.
 
-  wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   cd /puppet && ls -l
   sh bootstrap.install.sh
 
@@ -80,7 +80,7 @@ Then, changes can be accepted into repository or node state could be reverted to
 Commands will ensure installation of basic set of components for data analysis
 (rediser queue, elasticsearch data node, logstash processor, kibana frontend).
 
-  $ wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  $ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   $ cd /puppet && ls -l
   $ sh phase2.install.sh
   $ sh rediser.install.sh
@@ -94,7 +94,7 @@ Commands will ensure installation of basic set of components for data analysis
 Commands will ensure installation of basic set of components for rsyslog development
 (compiler, debugger, libs-dev,...)
 
-  $ wget home.zcu.cz/~bodik/bootstrap.install.sh && sh bootstrap.install.sh
+  $ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   $ cd /puppet && ls -l
   $ sh phase2.install.sh
   $ sh rsyslog-dev.install.sh
@@ -126,6 +126,5 @@ documentation.
 * elk[link:puppet/elk/README_full.html]
 * jenkins[link:puppet/jenkins/README_full.html]
 * netflow (nfdump, frpobe, pmacct)
-* mongodb
 * mongomine
 

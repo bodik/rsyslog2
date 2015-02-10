@@ -47,7 +47,7 @@ href="http://www.elasticsearch.org">www.elasticsearch.org</a>) and MongodDB
 <p>Bootstrap suite from a git repository, subsequent calls would pull from
 master repo.</p>
 
-<pre>wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+<pre>wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
 cd /puppet &amp;&amp; ls -l
 sh bootstrap.install.sh</pre>
 
@@ -84,7 +84,7 @@ $ git commit</pre>
 analysis (rediser queue, elasticsearch data node, logstash processor,
 kibana frontend).</p>
 
-<pre>$ wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+<pre>$ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
 $ cd /puppet &amp;&amp; ls -l
 $ sh phase2.install.sh
 $ sh rediser.install.sh
@@ -98,7 +98,7 @@ $ links http://$(facter fqdn)/dash.html</pre>
 <p>Commands will ensure installation of basic set of components for rsyslog
 development (compiler, debugger, libs-dev,...)</p>
 
-<pre>$ wget home.zcu.cz/~bodik/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
+<pre>$ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh bootstrap.install.sh
 $ cd /puppet &amp;&amp; ls -l
 $ sh phase2.install.sh
 $ sh rsyslog-dev.install.sh</pre>
@@ -133,8 +133,6 @@ found in separate Jenkins component  documentation.</p>
 <p><a href="puppet/jenkins/README_full.html">jenkins</a></p>
 </li><li>
 <p>netflow (nfdump, frpobe, pmacct)</p>
-</li><li>
-<p>mongodb</p>
 </li><li>
 <p>mongomine</p>
 </li></ul>
