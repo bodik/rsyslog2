@@ -8,7 +8,7 @@ echo "h2. == DESCRIPTION BEGIN"
 echo "CLUSTER DESCRIPTION"
 
 echo "h3. === describe.rb begin"
-sh /puppet/elkvut/bin/forall.sh 'ruby /puppet/elkvut/bin/describe.rb'
+sh /puppet/elkvut/bin/forall.sh 'ruby /puppet/elkvut/bin/describe_node.rb'
 echo "== describe.rb end"
 
 echo "h3. === _nodes/_all begin"
