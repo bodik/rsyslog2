@@ -16,15 +16,22 @@
 #
 class elk::esd (
 	$cluster_name = "mry",
+	$esd_heap_size = undef,
 ) {
 	notice($name)
 
-	$m = split($::memorytotal, " ")
-	if ( $m[1] == "GB" ) {
-		$half = max(floor($m[0] / 2), 1)
-		$config_hash = {
-		  'ES_HEAP_SIZE' => "${half}g",
+	if ( $esd_heap_size ) {
+		$esd_heap_size_real = $esd_heap_size
+	} else {
+		$m = split($::memorytotal, " ")
+		if ( $m[1] == "GB" ) {
+			$half = max(floor($m[0] / 2), 1)
+			$esd_heap_size_real = "${half}g"
 		}
+	}
+
+	$config_hash = {
+		  'ES_HEAP_SIZE' => $esd_heap_size_real,
 	}
 
 	class { 'elasticsearch':
