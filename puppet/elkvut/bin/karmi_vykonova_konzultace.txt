@@ -1,0 +1,79 @@
+16:02 -!- Irssi: Starting query in freenode with karmi
+16:02 <bodik> zdar, si tu ? mas 5 minut ?
+16:02 <karmi> cau, jasne
+16:02 <bodik> prosimte
+16:02 <bodik> delam nejake testy vykonu elasticu pri agregacich
+16:03 <bodik> cluster ma 9x ES data node, 8cpu, 8GB ram
+16:03 <bodik> je v tem v jednom indexu nasackovano cca 800M dokumentu netflow dat (prevazne textova data)
+16:03 <bodik> delam pres to nejake agregace
+16:03 <bodik> uznavam, zrejme to pretezuju coz by me neprekvapilo
+16:03 <bodik> ale dostavam
+16:03 <bodik> vyjimku
+16:04 <karmi> jen aside, tezko rict, nemusis to pretizit -- samozrejme zalezi co se presne dela za dotazy
+16:04 <bodik> http://pastebin.com/x15LgBF2
+16:04 <karmi> to je jen timeout :)
+16:04 <bodik> zkousel sem trosku si hrat s Elasticsearch.client new .... timeout: 1800
+16:04 <karmi> musis ho zvednout pro toho Ruby klienta, poslu link
+16:04 <bodik> ale nejak mi neprijde ze by to melo jakykoliv vliv na to jak dlouho se ceka
+16:05 <karmi> Musis to dat do transport_options
+16:05 <bodik> aaha
+16:05 <karmi> ctrl+F tady : https://github.com/elasticsearch/elasticsearch-ruby/tree/master/elasticsearch-transport#transport-implementations
+16:05 <karmi> tohle by melo pomoct
+16:05 <bodik> super
+16:05 <bodik> dik moc
+16:05 <karmi> neni zac!
+16:05 <karmi> jestli valis vic dotazu za sebou
+16:06 <karmi> tak nainstaluj a require nejakyho lepsiho libcurl-based HTTP gem
+16:06 <karmi> Viz "For optimal performance, you should use a HTTP library which supports persistent ("keep-alive") connections, e.g. https://github.com/toland/patron or https://github.com/typhoeus/typhoeus. "
+16:06 <bodik> no to asi valim
+16:06 <karmi> require 'patron' by obecne melo stacit
+16:06 <bodik> ok, tak to je magic ;]
+16:06 <karmi> tim budes mit persistentni connections a nebudes to zpomalovat otviranim a zaviranim HTTP 
+16:06 <bodik> das require a ono to zacne pouzivat jiny knihovny jo ?
+16:06 <karmi> a taky Elasticsearch nebude muset tolik pracovat atd
+16:07 <bodik> jako to jsou jenom sekvencni dotazy zatim
+16:07 <karmi> jojo, require to natahne a ja se jen podivam jestli je to natazeny :)
+16:07 <bodik> super, dik moc jdu si s tim pohrat
+16:07 <karmi> jasan, kdyztak se ozvi!
+16:08 <karmi> BTW kdyby zlobilo ze nemas dost RAM, da se to tunit podle toho co delas za agregace (nenahravt napr. vsechny terms ale jen ty nejfrekventovanejsi) anebo pouzit tzv. "doc values" (hledej v docs)
+16:08 <bodik> ok
+16:09 <karmi> Blbe se to hleda, tady je to http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/doc-values.html
+16:09 <karmi> Jen pro poradek. Tohle pak pouziva disk + fs memory cache a ne primo RAM v Java heap.
+16:09 <bodik> jaaj
+16:09 <bodik> no tak to by se mi asi ted hodilo ;]
+16:09 <karmi> zkus to nejdriv vsechno v defaultech a uvidis
+16:10 <karmi> rychlejsi to nebude, naopak, ale nepotrebujes tolik RAM
+16:10 <bodik> jasny to chapu
+16:10 <bodik> ja sem to zatim vyresil ze ty agregace delam po castech
+16:10 <bodik> ale to neni uplne hezke
+16:10 <bodik> jako 8G na nodu je fakt malo, ale zatim mame co mame
+16:11 <karmi> 9*8 => 72 GB... *mohlo* by to na neco stacit, ale to fakt uvidis podle dotazu
+16:11 <bodik> no na neco jo, kdyz oni chteji agregace za cely dataset, to uz sem musel ladit breaker aby se to tam secko veslo
+16:12 <bodik> ja chapu ze to drzi ten index a jeste vedle toho dela ty agregace
+16:12 <bodik> celkem to ma 400g ten index takze to je 40g na nodu ktera ma 8g ram ;]
+16:12 <karmi> jasny -- ty tim size:0 chces VSECKO co? :)
+16:12 <bodik> tak nejak ;]
+16:12 <karmi> to je trosku brutalni :)
+16:12 <bodik> je
+16:13 <karmi> na to by se ty doc values asi fakt hodily vyzkouset
+16:13 <bodik> jako tohle je prd jo
+16:13 <bodik> ale oni hledaji technologii ktera zpracuje 1M eventu za sekundu ;]
+16:13 <bodik> v tom projektu
+16:13 <karmi> jeste zkus misto `query_string` mit `match: { type: "nz" }`
+16:13 <bodik> jako nedelam si iluze ze by to elk nebo jina vec dneska uplne dokazala, ale rekl sem jim ze to zkusim odmerit jak rychle to nahrava a hleda proste
+16:13 <karmi> jak "zpracuje"?
+16:14 <karmi> zaindexuje nebo?
+16:14 <bodik> no prave to je na tom zabavne, zpracuje znamena prijme, ulozi a umi nad tim udelat nejake zakladni dotazy
+16:14 <bodik> kazdopadne na pritoku chteji mit 1M zprav za sekundu
+16:14 <karmi> no jasne, ale 1M/sec je zapis?
+16:14 <bodik> jo
+16:14 <karmi> myslim, ze to nekdo s ES dela, ale je to samozrejme o hardwae
+16:14 <karmi> uz vim kdo, Verizon
+16:14 <bodik> 1 milion dokumentu za sekundu ?
+16:14 <bodik> takze to jde jo ? kdyz mas dostatek zroju ?
+16:15 <karmi> jo, to jde, ale samozrejme je to o hardware, aby se to rozdelilo mezi ty stroje
+16:16 <bodik> jasny, ja sem se prave bal ze to bude skalovat jenom do urcite meze a pak se narazi na rezii, ja sem z toho ve stary verzi vymackl maximalne 70k
+16:16 <karmi> Podle mne o tom mluvi tady, http://www.elasticsearch.org/videos/washington-d-c-meetup-december-11-2014/
+16:16 <bodik> a to co chteji oni je o 2 rady vic
+16:16 <bodik> no parada
+16:16 <bodik> nebudu te dal zdrzovat, dik moc a jdu si s tim pohrat
