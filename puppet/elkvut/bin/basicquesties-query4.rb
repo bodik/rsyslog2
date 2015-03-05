@@ -23,7 +23,7 @@ query = {
 }
 puts "BENCHMARK: query basicquery 4 (find some traffic): "+query.to_s
 just_search_start = Time.now
-client = Elasticsearch::Client.new(log: false, host: Facter.value('ipaddress')+":39200")
+client = Elasticsearch::Client.new(log: false, host: Facter.value('ipaddress')+":39200", transport_options: { request: { timeout: 360 }})
 just_search_data = client.search(index: index, body: query)
 pp just_search_data
 just_search_finish = Time.now

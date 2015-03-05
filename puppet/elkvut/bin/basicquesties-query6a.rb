@@ -74,7 +74,7 @@ query = {
 }
 puts "BENCHMARK: flows_in_time_historgram: "+query.to_s
 start = Time.now
-client = Elasticsearch::Client.new(log: false, host: Facter.value('ipaddress')+":39200")
+client = Elasticsearch::Client.new(log: false, host: Facter.value('ipaddress')+":39200", transport_options: { request: { timeout: 360 }})
 data = client.search(index: index, body: query)
 finish = Time.now
 diff = finish - start
