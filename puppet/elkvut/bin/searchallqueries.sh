@@ -37,7 +37,7 @@ sh /puppet/elkvut/bin/describe_cluster.sh
 t=$(timer)
 echo "h2. == SEARCH DATA BEGIN"
 date
-for all in basicquesties-query1.rb basicquesties-query2.rb basicquesties-query3.rb basicquesties-query4.rb basicquesties-query5a.rb basicquesties-query6a.rb; do
+for all in basicquesties-query1.rb basicquesties-query2.rb basicquesties-query3.rb basicquesties-query4.rb basicquesties-query4-origquery.rb basicquesties-query5a.rb basicquesties-query6a.rb; do
 	echo "== searching $all"
 	time ruby $all
 done
