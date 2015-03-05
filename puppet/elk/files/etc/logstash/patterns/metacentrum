@@ -10,11 +10,12 @@ FAIL2BANACTION %{WORD:loglevel} \[%{WORD:jail}\] %{FAIL2BANACT:action} %{IP:remo
 SYSLOGLINETEST %{GREEDYDATA:message}
 
 SYSLOGBASEMETA1 (%{TIMESTAMP_ISO8601} (%{IP:coll} )?%{SYSLOGHOST:logsource} )?%{TIMESTAMP_ISO8601:timestamp} (%{SYSLOGHOST} )?(?:%{SYSLOGPROG}|%{FAIL2BANPROG}):( \[%{KERNSTAMP:kernstamp}\])?
+SYSLOGBASEMETAOLD (%{SYSLOGTIMESTAMP} (%{IP:coll} )?%{SYSLOGHOST:logsource} )?%{SYSLOGTIMESTAMP:timestamp} (%{SYSLOGHOST} )?(?:%{SYSLOGPROG}|%{FAIL2BANPROG}):( \[%{KERNSTAMP:kernstamp}\])?
 
-SYSLOGLINEMETA1 %{SYSLOGBASEMETA1} %{GREEDYDATA:message}
+SYSLOGLINEMETA1 (?:%{SYSLOGBASEMETA1}|%{SYSLOGBASEMETAOLD}) %{GREEDYDATA:message}
 
 # tohle se nam trosku dost zasmodrchava !
-AAARESULT (?:Accepted|Failed|Authorized|identification|Invalid|disconnect|tried|refused|Postponed)
+AAARESULT (?:Accepted|Failed|Authorized|identification|Invalid|disconnect|tried|refused|Postponed|failure)
 METHOD (?:[a-z\-/]+|correct key)
 #TODO: principal bude i v SYSLOGBASE2
 PRINCIPAL [a-zA-Z0-9_/\-]+@%{HOSTNAME}
@@ -26,9 +27,20 @@ INVALID %{AAARESULT:result} user %{USER:user} from %{IPORHOST:remote}
 DISCONNECT Received %{AAARESULT:result} from %{IPORHOST:remote}: 11: disconnected by user
 WRONGKEY Authentication %{AAARESULT:result} for %{USER:user} with %{METHOD:method} but not from a permitted host \(host=%{IPORHOST:remote}, ip=%{IPORHOST}\)
 REFUSED %{AAARESULT:result} connect from %{IPORHOST:remote} \(%{IPORHOST:remote}\)
+PAMERR1 error: PAM: Authentication %{AAARESULT:result} for %{USER:user} from %{IPORHOST:remote}
 
-SSHATTEMPT (?:%{AUTHN}|%{AUTHZ}|%{SCAN}|%{INVALID}|%{DISCONNECT}|%{WRONGKEY}|%{REFUSED})
+SSHATTEMPT (?:%{AUTHN}|%{AUTHZ}|%{SCAN}|%{INVALID}|%{DISCONNECT}|%{WRONGKEY}|%{REFUSED}|%{PAMERR1})
 
 #TODO vyhodit program name pro mongo v lsl filtru
 SSHLINE %{SYSLOGBASEMETA1} %{SSHATTEMPT:message}
+
+
+
+#campr@gram1 (8049525.arien.ics.muni.cz) module add cuda-6.5 python27-modules-gcc cmake-2.8.12 ffmpeg opencv-2.4 mkl-11.0 matlab-8.3
+MODULENAME [a-zA-Z0-9_/\-\.]+
+PBSJOBID [a-zA-Z0-9_/\-\.]+
+MODULESNAMES %{MODULENAME:modulesused}( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?( %{MODULENAME:modulesused})?
+MODULESLINE %{PRINCIPAL:principal} \(%{PBSJOBID:jobid}\) module (add|load) %{MODULESNAMES}
+
+
 
