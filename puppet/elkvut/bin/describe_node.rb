@@ -12,7 +12,8 @@ nodedescription = {
 	memorytotal: Facter.value('memorytotal'),
 	lsbdistdescription: Facter.value('lsbdistdescription'),
 	processor0: Facter.value('processor0'),
-	a: `cat /proc/mdstat`
+	proc_mdstat: `cat /proc/mdstat`,
+	lshw_system: `lshw -class system`
 }
 
 pp nodedescription

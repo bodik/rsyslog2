@@ -30,7 +30,7 @@ class metalib::base {
 	# generic debianization from next,next,next,... install
 	package { ["nfs-common","rpcbind"]: ensure => absent, }
 	package { ["joe","nano", "pico"]: ensure => absent, }
-	package { ["vim", "mc", "git", "puppet", "augeas-lenses", "nagios-plugins-basic", "screen", "psmisc"]: ensure => installed, }
+	package { ["vim", "mc", "git", "puppet", "augeas-lenses", "nagios-plugins-basic", "screen", "psmisc", "lshw"]: ensure => installed, }
 
 	package { "krb5-user": ensure => installed, }
 	download { "/etc/krb5.conf":
