@@ -13,12 +13,12 @@ class mongomine::database (
 		mongod_replSet   => '',
 		mongod_configsvr => 'true',
 		mongod_bind_ip  => '127.0.0.1',
-		notify => Exec["sleep 5"],
+		notify => Exec["sleep 10"],
 	}
 
 	#minos is too fast/slow, we have to wait for config server to come up unless mongos will fail	
-	exec { "sleep 5":
-		command => "/bin/sleep 5",
+	exec { "sleep 10":
+		command => "/bin/sleep 10",
 		refreshonly => true,
 	}
 	
@@ -28,7 +28,7 @@ class mongomine::database (
 		mongos_port          => 27017,
 		mongos_configServers => "127.0.0.1:27018",
 		mongos_bind_ip  => '127.0.0.1',
-		require => [Mongodb::Mongod["mongod_config"], Exec["sleep 5"]],
+		require => [Mongodb::Mongod["mongod_config"], Exec["sleep 10"]],
 	}
 
 	# Install the MongoDB shard server
