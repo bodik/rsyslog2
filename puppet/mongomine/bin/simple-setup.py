@@ -237,7 +237,7 @@ for i in range(1, N_SHARDS+1):
 for config_str in configs:
     host, port = config_str.split(':')
     config = pymongo.Connection(host, int(port)).config
-    config.settings.save({'_id':'chunksize', 'value':CHUNK_SIZE}, safe=True)
+    config.settings.save({'_id':'chunksize', 'value':CHUNK_SIZE}, w=1)
 del config #don't leave around connection directly to config server
 
 if N_MONGOS == 1:

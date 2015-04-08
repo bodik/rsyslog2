@@ -3,6 +3,7 @@
 import sys
 import pymongo
 from time import sleep
+import re
 
 try:
     # new pymongo
@@ -39,26 +40,55 @@ COLLECTION_KEYS = {
 
 # END CONFIGURATION
 
-conn = pymongo.Connection('localhost', MONGOS_PORT)
+conn = pymongo.MongoClient('localhost', MONGOS_PORT)
 admin = conn.admin
 
+print "INFO: adding shards"
 for i in range(1, N_SHARDS+1):
 	sleep(1.0)
-	try:
-		print "INFO: adding shard "+'localhost:'+str(SHARDS_PORT_BASE+i)
-		admin.command('addshard', 'localhost:'+str(SHARDS_PORT_BASE+i), allowLocal=True)
-	except Exception as e:
-		print "WARN: Unexpected error:", sys.exc_info()[0]
-		print e
-		print "WARN: trying to continue to setup mongomine"
-		pass
+	counter = 10
+	while counter > 0:
+		try:
+			print "INFO: adding shard "+'localhost:'+str(SHARDS_PORT_BASE+i)
+			admin.command('addshard', 'localhost:'+str(SHARDS_PORT_BASE+i), allowLocal=True)
+			print "INFO: added shard "+'localhost:'+str(SHARDS_PORT_BASE+i)
+			counter = 0
+		except pymongo.errors.OperationFailure as e:
+			if re.search("CONNECT_ERROR", e.details['errmsg']):
+				print "WARN: trying to wait for shard to come up (counter=%d)" % counter
+				counter = counter-1
+				sleep(10.0)
+			elif re.search("host already used", e.details['errmsg']):
+				#already sharded, probably subsequent run of the setup script
+				counter = 0
+				pass
+			else:
+				#some other OperationFailure happens
+				print "WARN: Unexpected error:", sys.exc_info()[0], e, e.details
+				print "WARN: trying to continue to setup mongomine, proceeding to next shard"
+				counter = -1
+			pass
+
+		except Exception as e:
+			print "WARN: Unexpected error:", sys.exc_info()[0], e
+			print "WARN: trying to continue to setup mongomine, proceedint to next shard"
+			counter = -1
+			pass
 
 
 
-
+print "INFO: enabling sharding on databases"
 for database in ['test', 'sshd', 'mentat', 'warden', 'tor', 'autotest']:
 	try:
 		admin.command('enablesharding', database)
+	except pymongo.errors.OperationFailure as e:
+		if re.search("already enabled", e.details['errmsg']):
+			#already enabled, probably subsequent run of the setup script
+			pass
+		else:
+			#some other OperationFailure happens
+			print "WARN: Unexpected error:", sys.exc_info()[0], e, e.details
+			pass
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0]
 		print e
@@ -67,13 +97,21 @@ for database in ['test', 'sshd', 'mentat', 'warden', 'tor', 'autotest']:
 
 
 
-
+print "INFO: sharding collections"
 #TODO: fuj, takhle hnusne to mit udelany, ale celej tenhle skript je trosku moc slozitej
 for (collection, keystr) in COLLECTION_KEYS.iteritems():
 	(db,col)=collection.split('.')
 	conn[db][col].ensure_index([(keystr,1)])
 	try:
 		admin.command('shardcollection', collection, key=SON((k,1) for k in keystr.split(',')))
+	except pymongo.errors.OperationFailure as e:
+		if re.search("already sharded", e.details['errmsg']):
+			#already enabled, probably subsequent run of the setup script
+			pass
+		else:
+			#some other OperationFailure happens
+			print "WARN: Unexpected error:", sys.exc_info()[0], e, e.details
+			pass
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0]
 		print e
@@ -84,6 +122,7 @@ for (collection, keystr) in COLLECTION_KEYS.iteritems():
 
 
 
+print "INFO: ensuring indexes"
 # app indexes
 for index in ["@timestamp", "@fields.logsource", "@fields.user", "@fields.method", "@fields.remote", "@fields.result", "@fields.principal", "@tags"]:
 	try:
@@ -121,9 +160,18 @@ for index in ["ip"]:
 
 
 
+print "INFO: sharding test.fs collection"
 try:
 	admin.command('shardcollection', 'test.fs.files', key={'_id':1})
 	admin.command('shardcollection', 'test.fs.chunks', key={'files_id':1})
+except pymongo.errors.OperationFailure as e:
+	if re.search("already sharded", e.details['errmsg']):
+		#already enabled, probably subsequent run of the setup script
+		pass
+	else:
+		#some other OperationFailure happens
+		print "WARN: Unexpected error:", sys.exc_info()[0], e, e.details
+		pass
 except Exception as e:
 	print "Unexpected error:", sys.exc_info()[0]
 	print e

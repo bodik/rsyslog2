@@ -176,7 +176,7 @@ else:
 
 
 
-connection = pymongo.mongo_client.MongoClient("mongodb://localhost", safe=True)
+connection = pymongo.mongo_client.MongoClient("mongodb://localhost", w=1)
 db = connection.sshd
 log = db.log
 

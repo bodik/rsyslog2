@@ -5,7 +5,7 @@ export MKTAB="/dev/shm/user.keytab"
 export MADMKTAB="/dev/shm/useradmin.keytab"
 export FRONT="minos.zcu.cz"
 
-if [ -z $VMNAME ]; then
+if [ -z "$VMNAME" ]; then
 	VMNAME="RS"
 fi
 cd /tmp || exit 1
@@ -57,7 +57,7 @@ vm_make_cache() {
 
 vm_ssh() {
 	VMID=$(/puppet/jenkins/magrathea.init id)
-	if [ -z $VMID ]; then
+	if [ -z "$VMID" ]; then
 		rreturn 1 "vm id not detected from magrathea"
 	fi
 	VMIP=$(/puppet/jenkins/magrathea.init front "qstat -f $VMID" | grep "sched_nodespec = host=" | sed 's/.*host=\([^:]*\):.*/\1/')

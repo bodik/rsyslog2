@@ -21,8 +21,8 @@ define mongodb::mongos (
       require => Class['mongodb::install'];
     "/etc/init.d/mongos_${mongos_instance}":
       content => $::osfamily ? {
-        debian => template('mongodb/debian_mongos-init.conf.erb'),
-        redhat => template('mongodb/redhat_mongos-init.conf.erb'),
+        Debian => template('mongodb/debian_mongos-init.conf.erb'),
+        RedHat => template('mongodb/redhat_mongos-init.conf.erb'),
       },
       mode    => '0755',
       require => Class['mongodb::install'],
@@ -32,7 +32,7 @@ define mongodb::mongos (
     file { "/etc/mongos_${mongos_instance}.key":
       content => template('mongodb/mongos.key.erb'),
       mode    => '0700',
-      owner   => $mongodb::params::run_as_user,
+      owner   => $::mongodb::run_as_user,
       require => Class['mongodb::install'],
       notify  => Service["mongos_${mongos_instance}"],
     }
@@ -46,10 +46,11 @@ define mongodb::mongos (
         hasstatus  => true,
         hasrestart => true,
         require    => [
-          File["/etc/mongos_${mongos_instance}.conf", "/etc/init.d/mongos_${mongos_instance}"],
-          Service[$::mongodb::params::old_servicename]
+          File["/etc/mongos_${mongos_instance}.conf"],
+          File["/etc/init.d/mongos_${mongos_instance}"],
+          Service[$::mongodb::old_servicename]
         ],
-        before => Anchor['mongodb::end']
+        before     => Anchor['mongodb::end']
     }
   }
 
