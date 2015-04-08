@@ -16,7 +16,7 @@ import rsyslogweblib
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 
-conn = pymongo.mongo_client.MongoClient("mongodb://localhost", safe=True, tz_aware=True)
+conn = pymongo.mongo_client.MongoClient("mongodb://localhost", w=1, tz_aware=True)
 our_zone = dateutil.tz.gettz('CET')
 utc_zone = dateutil.tz.gettz('UTC')
 

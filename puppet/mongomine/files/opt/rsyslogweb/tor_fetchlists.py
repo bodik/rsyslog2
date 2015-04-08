@@ -65,7 +65,7 @@ if __name__ == '__main__':
         data = fetch1() + fetch2() + fetch3()
         if data:
                 connection_string = "mongodb://localhost"
-                conn = pymongo.mongo_client.MongoClient(connection_string, safe=True, tz_aware=True)
+                conn = pymongo.mongo_client.MongoClient(connection_string, w=1, tz_aware=True)
                 db = conn.tor
 
                 for tmp in data:

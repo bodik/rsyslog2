@@ -34,7 +34,7 @@ def gen_alert(remote):
 
 
 
-conn = pymongo.mongo_client.MongoClient("mongodb://localhost", safe=True, tz_aware=True)
+conn = pymongo.mongo_client.MongoClient("mongodb://localhost", w=1, tz_aware=True)
 our_zone = dateutil.tz.gettz('CET')
 utc_zone = dateutil.tz.gettz('UTC')
 
