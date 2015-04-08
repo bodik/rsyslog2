@@ -39,7 +39,7 @@ COLLECTION_KEYS = {
 
 # END CONFIGURATION
 
-conn = pymongo.Connection('localhost', MONGOS_PORT)
+conn = pymongo.MongoClient('localhost', MONGOS_PORT)
 admin = conn.admin
 
 for i in range(1, N_SHARDS+1):
