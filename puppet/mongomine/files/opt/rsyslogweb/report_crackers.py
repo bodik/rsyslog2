@@ -60,7 +60,7 @@ now = datetime.datetime.now(our_zone)
 # class datetime.timedelta([days[, seconds[, microseconds[, milliseconds[, minutes[, hours[, weeks]]]]]]])
 alert_horizont = datetime.timedelta(14)
 
-for tmp in c["result"]:
+for tmp in c:
 	remote = tmp["_id"]
 
 	c = conn.sshd.internalData.find_one({"type": "alert", "remote": remote})
