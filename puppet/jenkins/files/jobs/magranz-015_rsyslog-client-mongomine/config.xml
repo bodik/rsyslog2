@@ -13,7 +13,7 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;RS-$$-MM&quot;
+      <command>export VMNAME=&quot;RC-$$-MM&quot;
 /puppet/jenkins/magrathea.init login
 /puppet/jenkins/magrathea.init build
 /puppet/jenkins/magrathea.init start
