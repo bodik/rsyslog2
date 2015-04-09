@@ -2,7 +2,11 @@
 
 
 #defaults
-FILE="/var/cache/nfdump/$(ls /var/cache/nfdump/ -1 | tail -2 | head -1)"
+if [ -d /var/cache/nfdump/ ]; then
+	FILE="/var/cache/nfdump/$(ls /var/cache/nfdump/ -1 | tail -2 | head -1)"
+else
+	FILE="/tmp/nonexistentfile"
+fi
 TZ=$(date +%z)
 
 while getopts "f:" o; do
