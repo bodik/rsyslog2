@@ -58,11 +58,17 @@ class glastopf {
 		require => [Package["php5"], Exec["/puppet/glastopf/bin/make-bfr.sh"]],
 	}
 
-	package { "glastopf":
-		ensure => installed,
-		provider => "pip",
-		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"]],
-	}
+	#err: Could not prefetch package provider 'pip':
+	#package { "glastopf":
+	#	ensure => installed,
+	#	provider => "pip",
+	#	require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"]],
+	#}
+	exec { "pip install glastopf":
+                command => "/usr/bin/pip install glastopf",
+                creates => "/usr/local/lib/python2.7/dist-packages/glastopf/glastopf.cfg.dist",
+		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"], Package["python-dev"]],
+        }
 
 
 	#perun mi ji krade
@@ -101,11 +107,11 @@ class glastopf {
 
 	service { "apache2":
 		ensure => stopped,
-		require => Package["glastopf"],
+		require => Exec["pip install glastopf"],
 	}
 	service { "glastopf":
 		ensure => running,
-		require => [File["/opt/glastopf/glastopf.cfg"], File["/etc/init.d/glastopf"], Package["glastopf"], Service["apache2"], Exec["python cap_net"]],
+		require => [File["/opt/glastopf/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"]],
 	}
 	
 	class { "glastopf::lsl":
