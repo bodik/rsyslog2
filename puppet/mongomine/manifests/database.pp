@@ -4,7 +4,16 @@ class mongomine::database (
 	$shards = 4,
 ) {
 	notice($name)
-	include mongodb
+
+	file { "/scratch":
+		ensure => directory,
+		owner => "root", group => "root", mode => "0755",
+	}
+	class { "mongodb":
+		dbdir => "/scratch",
+		pidfilepath => "/scratch",
+		require => File["/scratch"],
+	}
 	
 	# Install the MongoDB config server -- mongos
 	mongodb::mongod { 'mongod_config':

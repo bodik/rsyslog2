@@ -1,58 +1,63 @@
 NAME = rsyslog2-wheezy-metacloud
-CONTEXT=[
-  PUBLIC_IP="$NIC[IP]",
-  SSH_KEY="$USER[SSH_KEY]",
-  TARGET="xvdb",
-  USER_DATA="#cloud-config
+CONTEXT=[EMAIL="$USER[EMAIL]",PUBLIC_IP="$NIC[IP]",SSH_KEY="$USER[SSH_KEY]",TARGET="vdb",TOKEN="YES",USER_DATA="#cloud-config
 # see https://help.ubuntu.com/community/CloudInit
 
 bootcmd:
 - test -L /etc/motd && unlink /etc/motd || /bin/true
 
-mounts:
-- [xvdc,none,swap,sw,0,0]
-
-packages: []
-
-write_files:
-- path: /etc/motd
-  content: |2
-
-       __  __      _         ____ _                 _
-      |  \/  | ___| |_ __ _ / ___| | ___  _   _  __| |
-      | |\/| |/ _ \ __/ _  | |   | |/ _ \| | | |/ _  |
-      | |  | |  __/ |_ (_| | |___| | (_) | |_| | (_| |
-      |_|  |_|\___|\__\____|\____|_|\___/ \____|\____|
-
-      cloud@metacentrum.cz
-
 runcmd:
-- passwd -u root
-- /bin/echo 'Instance is ready to use.' | wall
+- unlink /etc/nologin || /bin/true
 - touch /root/READY-TO-USE
 
-" ]
+mounts:
+- [vdc,none,swap,sw,0,0]
+- [vdd,/scratch,ext3,defaults,2,0]
+
+write_files:
+- path: /etc/nologin
+  content: |2
+    
+      *** Initial configuration by cloud-init is in progress. Please wait. ***
+- path: /etc/motd
+  content: |2
+                                   cccccccc
+                                 ::       :::
+                               :c            c:
+                               c              c::
+                           ::::c:             :  :::
+               :::::::::::c:     :                :c:::::::::::
+             :::          :                      ::            :::
+            c:   __  __      _         ____ _                 _  :c
+       :::::c:  |  \/  | ___| |_ __ _ / ___| | ___  _   _  __| |   c
+     :::        | |\/| |/ _ \ __/ _` | |   | |/ _ \| | | |/ _` |  :::::::
+    c           | |  | |  __/ || (_| | |___| | (_) | |_| | (_| |        ::
+    c           |_|  |_|\___|\__\__,_|\____|_|\___/ \__,_|\__,_|         c
+     :::                                                          :     c:
+        ::::c:               cloud@metacentrum.cz      :        :cc:::::
+              :::c                                    :c:::::::::
+                 ::::::::::            ::          :::
+                          :::::      :::::::::::::::
+                              ccccccc:
+
+# sysadmin's master access key
+ssh_authorized_keys:
+- ssh-dss AAAAB3NzaC1kc3MAAACBAJIwhyfTXj6LeaF5adEINIsRawjlYE8vi1rHK9lb3fC0J+58NSL7mRx5zX0r+HPfnyYptciIG9uh0s7RRRu5c6MHPU5L4Vh7CrAT9SkKg7XmdkfNC6k6a6Dpq2hntwEUjxHvaNbuQA+FtiMEYT3M1/RBR6TdvmEFN2FMcHox5L3zAAAAFQC7Uu5YO5vIVRF80LJ2i7TAqYR3FwAAAIB3ioZ1nxwhYatpdIIaLbK8Za+fFzYT3sObea2jzEItGHVK/smyA4CcMw+54clCx726+0DF9nRnoQUWsh0hYGGdo3s5aPMksX+pqE+w0Nv94osVc+3RkixUjPiNnTLWYcZ/o228Du+FpN1o7AtoGYoQgnL/ZDCwyLWJSApdoAJu0AAAAIAIMihuKkNKHPvgVzJNAAtX+10LH7EAA/iY1wBnotLZ+e1doOCOcqnYw/ULJfBYWx9vMle4cPg8o7yioDn/SfO+GUwQNkr2Z1XkmLwmdWVdCeLgbor2hswyZmS7jF8CvdwMHxKD8ve/RrHkyBUkVxiUUnYT8MmInouPGfdmgR5Wow== cloud-support@metacentrum.cz
+
+power_state:
+  mode: reboot
+  message: Initial configuration done by cloud-init, forcing reboot to apply changes.
+
+
+",VM_GID="$GID",VM_GNAME="$GNAME",VM_ID="$VMID",VM_UID="$UID",VM_UNAME="$UNAME"]
 CPU="4"
-DISK=[
-  DRIVER="tap2:tapdisk:aio:",
-  IMAGE="METACLOUD-Debian-7.0-x86_64-0002@metacloud-dukan",
-  IMAGE_UNAME="oneadmin",
-  TARGET="xvda" ]
-DISK=[
-  DRIVER="tap2:tapdisk:aio:",
-  SIZE="4096",
-  TARGET="xvdc",
-  TYPE="swap" ]
-FEATURES=[
-  ACPI="no" ]
+DISK=[DEV_PREFIX="vd",IMAGE="METACLOUD-Debian-7.8.0-x86_64-201504051048@metacloud-dukan",IMAGE_UNAME="oneadmin"]
+DISK=[DEV_PREFIX="vd",SIZE="4096",TYPE="swap"]
+DISK=[DEV_PREFIX="vd",FORMAT="ext3",SIZE="40960",TYPE="fs"]
+LOGO="images/logos/debian.png"
 MEMORY="4096"
-NIC=[
-  NETWORK_ID="1" ]
-OS=[
-  KERNEL="/opt/pv-grub/pv-grub-x86_64.gz" ]
-RAW=[
-  DATA="
-extra = '(hd0,0)/boot/grub/menu.lst'
-",
-  TYPE="xen" ]
+NIC=[NETWORK="metacloud-brno-public",NETWORK_UNAME="oneadmin"]
+RAW=[DATA="<!-- RAW data follows: --><cpu mode='host-model'></cpu> <devices><serial type='pty'><target port='0'/></serial><console type='pty'><target type='serial' port='0'/></console> <channel type='pty'><target type='virtio' name='org.qemu.guest_agent.0'/></channel></devices>",TYPE="kvm"]
+SUNSTONE_CAPACITY_SELECT="YES"
+SUNSTONE_NETWORK_SELECT="YES"
 VCPU="4"
+
