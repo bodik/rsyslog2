@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;ELK-$$&quot;
+      <command>export VMNAME=&quot;RS-$$-ELK&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start
