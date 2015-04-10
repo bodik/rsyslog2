@@ -14,19 +14,19 @@
   <builders>
     <hudson.tasks.Shell>
       <command>export VMNAME=&quot;ELK-$$&quot;
-/puppet/jenkins/magrathea.init login
-/puppet/jenkins/magrathea.init build
-/puppet/jenkins/magrathea.init start
+/puppet/jenkins/bin/magrathea.init login
+/puppet/jenkins/bin/magrathea.init build
+/puppet/jenkins/bin/magrathea.init start
 
 #vm image fixup
-/puppet/jenkins/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/rsyslog.d /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/rsyslog.d /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
 
-/puppet/jenkins/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
-####/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+####/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
 ################
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;</command>
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

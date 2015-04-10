@@ -7,13 +7,19 @@ bootcmd:
 
 runcmd:
 - unlink /etc/nologin || /bin/true
-- touch /root/READY-TO-USE
 
 mounts:
 - [vdc,none,swap,sw,0,0]
 - [vdd,/scratch,ext3,defaults,2,0]
 
 write_files:
+#this is the something alike 'touch /root/READY-TO-USE' which executes correctly after final power_state reboot
+- path: /etc/rc.local
+  content: IyEvYmluL3NoCiMgcmMubG9jYWwKCmVjaG8gJCgoICQoY2F0IC92YXIvY2FjaGUvYm9vdF9jb3VudCAyPi9kZXYvbnVsbCkgKyAxICkpID4gL3Zhci9jYWNoZS9ib290X2NvdW50CmlmIFsgJChjYXQgL3Zhci9jYWNoZS9ib290X2NvdW50KSAtZ2UgMiBdOyB0aGVuCgl0b3VjaCAvcm9vdC9SRUFEWS1UTy1VU0UKZmkKCmV4aXQgMAo=
+  encoding: b64
+  owner: root:root
+  permissions: '0755'
+
 - path: /etc/nologin
   content: |2
     

@@ -42,7 +42,7 @@ vm_id() {
 
 
 vm_destroy() {
-	VMID=$(/puppet/jenkins/metacloud.init id)
+	VMID=$(/puppet/jenkins/bin/metacloud.init id)
 	if [ -z "$VMID" ]; then
 		rreturn 1 "metacloud id not detected"
 	fi
@@ -58,7 +58,7 @@ vm_make_cache() {
 }
 
 vm_ssh() {
-	VMIP=$(onevm show $(/puppet/jenkins/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
+	VMIP=$(onevm show $(/puppet/jenkins/bin/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
 	if [ -z "$VMIP" ]; then
 		rreturn 1 "vm ip not detected from metacloud"
 	fi
@@ -73,7 +73,7 @@ vm_start() {
 		TEMPLATE=$1
 	fi
 
-	#/puppet/jenkins/metacloud.init status | grep $VMNAME
+	#/puppet/jenkins/bin/metacloud.init status | grep $VMNAME
 	onevm list -v -f NAME=$VMNAME | grep $ONEUSERNAME
 	if [ $? -eq 0 ]; then
 		rreturn $? "metacloud vm already running"
@@ -82,8 +82,8 @@ vm_start() {
 	onetemplate instantiate $TEMPLATE --name $VMNAME
 	RET=1
 	for i in `seq 1 600`; do
-		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
-		/puppet/jenkins/metacloud.init status
+		/puppet/jenkins/bin/metacloud.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/bin/metacloud.init status
 		sleep 1
 	done
 	if [ $RET -ne 0 ]; then
@@ -91,8 +91,8 @@ vm_start() {
 	fi
 	sleep 10
 	for i in `seq 1 60`; do
-		#toto dela cloudinit na svem konci pres template::user_data::runcmd
-		/puppet/jenkins/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
+		#this is created by rc.local modified by cloudinit
+		/puppet/jenkins/bin/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
 		if [ $? -eq 0 ]; then
 			rreturn 0 "$0 start"
 		fi
@@ -108,20 +108,20 @@ vm_status() {
 }
 
 vm_shutdown() {
-	/puppet/jenkins/metacloud.init ssh /bin/true
+	/puppet/jenkins/bin/metacloud.init ssh /bin/true
 	if [ $? -ne 0 ]; then
 		rreturn $? "shutdown vm not running"
 	fi
 
 	echo "INFO: sending halt"
-	/puppet/jenkins/metacloud.init ssh halt
+	/puppet/jenkins/bin/metacloud.init ssh halt
 	if [ $? -ne 0 ]; then
 		rreturn $? "shutdown cannot shutdown vm"
 	fi
 
 	RET=1
 	for i in `seq 1 60`; do
-		/puppet/jenkins/metacloud.init ssh /bin/true 1>/dev/null
+		/puppet/jenkins/bin/metacloud.init ssh /bin/true 1>/dev/null
 		if [ $? = 1 ]; then
 			rreturn $? "shutdown"
 		fi
@@ -132,8 +132,8 @@ vm_shutdown() {
 }
 
 vm_build() {
-	/puppet/jenkins/metacloud.init shutdown
-	/puppet/jenkins/metacloud.init destroy
+	/puppet/jenkins/bin/metacloud.init shutdown
+	/puppet/jenkins/bin/metacloud.init destroy
 	sleep 5
 	rreturn $? "$0"
 }
@@ -153,9 +153,9 @@ metacloud_creds() {
 
 metacloud_templates() {
 	onetemplate delete rsyslog2-wheezy-metacloud 1>/dev/null
-	onetemplate create /puppet/jenkins/template.rsyslog2-wheezy-metacloud
+	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-metacloud
 	onetemplate delete rsyslog2-wheezy-cerit-XL 1>/dev/null
-	onetemplate create /puppet/jenkins/template.rsyslog2-wheezy-cerit-XL
+	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-cerit-XL
 }
 
 vm_list() {
@@ -163,8 +163,8 @@ vm_list() {
 }
 
 metacloud_update() {
-	for all in $(/puppet/jenkins/metacloud.init list|grep "R[CS]-"| awk '{print $4}'); do
-		VMNAME=$all /puppet/jenkins/metacloud.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	for all in $(/puppet/jenkins/bin/metacloud.init list|grep "R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh 'cd /puppet && sh bootstrap.install.sh'
 	done
 }
 
@@ -206,19 +206,19 @@ case "$1" in
 		vm_ssh "$2"
 	;;
 	node)
-		VMNAME=$2 /puppet/jenkins/metacloud.init ssh "$3"
+		VMNAME=$2 /puppet/jenkins/bin/metacloud.init ssh "$3"
 	;;
 	sshs)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
 	sshc)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
 	sshe)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
 	sshdev)
-		VMNAME=$(/puppet/jenkins/metacloud.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/metacloud.init ssh "$2"
 	;;
 	update)
 		metacloud_update

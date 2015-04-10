@@ -30,12 +30,12 @@ primitives:
 === kvm.init
 
 Used only for basic local testing inside jenkins VM itself with nested kvm as
-hypervisor.  Uses qemu-debian-create-image for image creating via debbootstrap.
+hypervisor.  Uses qemu-debian-create-image.sh for image creating via debbootstrap.
 
 === xen.init
 
 Used for hosting VM on remote dom0, uses LVM as storage backend and debbotstrap
-for image creation (xen-debian-create-image.sh, xen-destroy-image.sh).
+for image creation (bin/xen-debian-create-image.sh, bin/xen-destroy-image.sh).
 
 === metacloud.init
 
@@ -83,7 +83,7 @@ scheduler. Helper must initialize users credentials.
 
 == Other files
 
-* <tt>popjobs.sh</tt> -- fetches jenkins configured jobs back to puppet repository
-* <tt>run_jobs.sh</tt> -- runs set of jenkins job by regexp name. Used for quick'n'dirty jobs chaining
+* <tt>bin/popjobs.sh</tt> -- fetches jenkins configured jobs back to puppet repository
+* <tt>bin/run_jobs.sh</tt> -- runs set of jenkins job by regexp name. Used for quick'n'dirty jobs chaining
 
 --------

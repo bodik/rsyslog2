@@ -13,10 +13,10 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>/puppet/jenkins/kvm.init destroy_cache
-/puppet/jenkins/kvm.init build
-/puppet/jenkins/kvm.init start
-/puppet/jenkins/kvm.init shutdown
+      <command>/puppet/jenkins/bin/kvm.init destroy_cache
+/puppet/jenkins/bin/kvm.init build
+/puppet/jenkins/bin/kvm.init start
+/puppet/jenkins/bin/kvm.init shutdown
 </command>
     </hudson.tasks.Shell>
   </builders>

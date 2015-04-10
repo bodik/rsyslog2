@@ -14,10 +14,10 @@
   <builders>
     <hudson.tasks.Shell>
       <command>export VMNAME=&quot;RDEVCLIENTX&quot;
-/puppet/jenkins/metacloud.init login
-/puppet/jenkins/metacloud.init build
-/puppet/jenkins/metacloud.init start
-/puppet/jenkins/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init login
+/puppet/jenkins/bin/metacloud.init build
+/puppet/jenkins/bin/metacloud.init start
+/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############</command>
     </hudson.tasks.Shell>
   </builders>

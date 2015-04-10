@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>sh -x /puppet/jenkins/run_jobs.sh &quot;^metacloud&quot;</command>
+      <command>sh -x /puppet/jenkins/bin/run_jobs.sh &quot;^metacloud&quot;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

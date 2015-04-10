@@ -13,8 +13,8 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>/puppet/jenkins/metacloud.init login
-/puppet/jenkins/metacloud.init update 1&gt;/dev/null
+      <command>/puppet/jenkins/bin/metacloud.init login
+/puppet/jenkins/bin/metacloud.init update 1&gt;/dev/null
 cd /rsyslog2/test02
 sh test_clients.sh 4 none</command>
     </hudson.tasks.Shell>

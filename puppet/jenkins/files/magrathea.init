@@ -28,18 +28,18 @@ rreturn() {
 }
 
 vm_id() {
-	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | awk -F"." '{print $1"."$2}'
+	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME " | awk -F"." '{print $1"."$2}'
 }
 
 
 vm_destroy() {
-	VMID=$(/puppet/jenkins/magrathea.init id)
+	VMID=$(/puppet/jenkins/bin/magrathea.init id)
 	if [ -z "$VMID" ]; then
 		rreturn 1 "magrathea id not detected"
 	fi
 	front_ssh "qdel $VMID"
 	for i in `seq 1 120`; do
-		/puppet/jenkins/magrathea.init status 
+		/puppet/jenkins/bin/magrathea.init status 
 		if [ $? = 1 ]; then
 			rreturn $? "destroy"
 		fi
@@ -56,11 +56,11 @@ vm_make_cache() {
 }
 
 vm_ssh() {
-	VMID=$(/puppet/jenkins/magrathea.init id)
+	VMID=$(/puppet/jenkins/bin/magrathea.init id)
 	if [ -z "$VMID" ]; then
 		rreturn 1 "vm id not detected from magrathea"
 	fi
-	VMIP=$(/puppet/jenkins/magrathea.init front "qstat -f $VMID" | grep "sched_nodespec = host=" | sed 's/.*host=\([^:]*\):.*/\1/')
+	VMIP=$(/puppet/jenkins/bin/magrathea.init front "qstat -f $VMID" | grep "sched_nodespec = host=" | sed 's/.*host=\([^:]*\):.*/\1/')
 	if [ -z "$VMIP" ]; then
 		rreturn 1 "vm name not detected from magrathea"
 	fi
@@ -76,7 +76,7 @@ vm_ssh() {
 }
 
 vm_start() {
-	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
+	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
 	if [ $? -eq 0 ]; then
 		rreturn $? "magrathea vm already running"
 	fi
@@ -84,8 +84,8 @@ vm_start() {
         front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME -m abe"
 	RET=1
 	for i in `seq 1 600`; do
-		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
-		/puppet/jenkins/magrathea.init status
+		/puppet/jenkins/bin/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
+		/puppet/jenkins/bin/magrathea.init status
 		sleep 1
 	done
 	if [ $RET -ne 0 ]; then
@@ -96,7 +96,7 @@ vm_start() {
 }
 
 vm_startpriv() {
-	/puppet/jenkins/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
+	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
 	if [ $? -eq 0 ]; then
 		rreturn $? "magrathea vm already running"
 	fi
@@ -117,13 +117,13 @@ vm_startpriv() {
 
 
 vm_status() {
-	/puppet/jenkins/magrathea.init list | grep " $VMNAME "
+	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME "
 	rreturn $? "$0 status"
 }
 
 vm_fixup() {
-	/puppet/jenkins/magrathea.init list | grep " $VMNAME "
-	/puppet/jenkins/magrathea.init ssh '
+	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME "
+	/puppet/jenkins/bin/magrathea.init ssh '
 /etc/init.d/rsyslog stop; /etc/init.d/crond stop; 
 rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list; 
 apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common perun-slave-meta-key;
@@ -132,20 +132,20 @@ apt-get clean;apt-get update'
 }
 
 vm_shutdown() {
-	/puppet/jenkins/magrathea.init ssh /bin/true
+	/puppet/jenkins/bin/magrathea.init ssh /bin/true
 	if [ $? -ne 0 ]; then
 		rreturn $? "shutdown vm not running"
 	fi
 
 	echo "INFO: sending halt"
-	/puppet/jenkins/magrathea.init ssh halt
+	/puppet/jenkins/bin/magrathea.init ssh halt
 	if [ $? -ne 0 ]; then
 		rreturn $? "shutdown cannot shutdown vm"
 	fi
 
 	RET=1
 	for i in `seq 1 60`; do
-		/puppet/jenkins/magrathea.init ssh /bin/true 1>/dev/null
+		/puppet/jenkins/bin/magrathea.init ssh /bin/true 1>/dev/null
 		if [ $? = 1 ]; then
 			rreturn $? "shutdown"
 		fi
@@ -156,8 +156,8 @@ vm_shutdown() {
 }
 
 vm_build() {
-	/puppet/jenkins/magrathea.init shutdown
-	/puppet/jenkins/magrathea.init destroy
+	/puppet/jenkins/bin/magrathea.init shutdown
+	/puppet/jenkins/bin/magrathea.init destroy
 	sleep 5
 	rreturn $? "$0"
 }
@@ -184,8 +184,8 @@ vm_list() {
 }
 
 magrathea_update() {
-	for all in $(/puppet/jenkins/magrathea.init list|grep " R[CS]-"| awk '{print $4}'); do
-		VMNAME=$all /puppet/jenkins/magrathea.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	for all in $(/puppet/jenkins/bin/magrathea.init list|grep " R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all /puppet/jenkins/bin/magrathea.init ssh 'cd /puppet && sh bootstrap.install.sh'
 	done
 }
 
@@ -231,19 +231,19 @@ case "$1" in
 		vm_ssh "$2"
 	;;
 	node)
-		VMNAME=$2 /puppet/jenkins/magrathea.init ssh "$3"
+		VMNAME=$2 /puppet/jenkins/bin/magrathea.init ssh "$3"
 	;;
 	sshs)
-		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
 	;;
 	sshc)
-		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
 	;;
 	sshe)
-		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
 	;;
 	sshdev)
-		VMNAME=$(/puppet/jenkins/magrathea.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
 	;;
 	fixup)
 		vm_fixup

@@ -13,8 +13,8 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>/puppet/jenkins/magrathea.init login
-/puppet/jenkins/magrathea.init update 1&gt;/dev/null
+      <command>/puppet/jenkins/bin/magrathea.init login
+/puppet/jenkins/bin/magrathea.init update 1&gt;/dev/null
 cd /rsyslog2/test02
 export CLOUD=&quot;magrathea&quot; 
 sh test_clients.sh 4 none</command>

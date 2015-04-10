@@ -14,20 +14,20 @@
   <builders>
     <hudson.tasks.Shell>
       <command>export VMNAME=&quot;RC-$$&quot;
-/puppet/jenkins/magrathea.init login
-/puppet/jenkins/magrathea.init build
-/puppet/jenkins/magrathea.init start
+/puppet/jenkins/bin/magrathea.init login
+/puppet/jenkins/bin/magrathea.init build
+/puppet/jenkins/bin/magrathea.init start
 
 #vm image fixup
-/puppet/jenkins/magrathea.init fixup
+/puppet/jenkins/bin/magrathea.init fixup
 
-/puppet/jenkins/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
-/puppet/jenkins/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;</command>
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;ps faxu&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

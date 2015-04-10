@@ -78,11 +78,11 @@ class jenkins() {
 
 	file { "/usr/local/bin/metacloud.init":
 		ensure => link,
-		target => "/puppet/jenkins/metacloud.init",
+		target => "/puppet/jenkins/bin/metacloud.init",
 	}
 	file { "/usr/local/bin/magrathea.init":
 		ensure => link,
-		target => "/puppet/jenkins/magrathea.init",
+		target => "/puppet/jenkins/bin/magrathea.init",
 	}
 }
 
