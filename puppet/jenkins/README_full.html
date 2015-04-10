@@ -40,14 +40,14 @@ subset of primitives:</p>
 <h3>kvm.init</h3>
 
 <p>Used only for basic local testing inside jenkins VM itself with nested kvm
-as hypervisor.  Uses qemu-debian-create-image for image creating via
+as hypervisor.  Uses qemu-debian-create-image.sh for image creating via
 debbootstrap.</p>
 
 <h3>xen.init</h3>
 
 <p>Used for hosting VM on remote dom0, uses LVM as storage backend and
-debbotstrap for image creation (xen-debian-create-image.sh,
-xen-destroy-image.sh).</p>
+debbotstrap for image creation (bin/xen-debian-create-image.sh,
+bin/xen-destroy-image.sh).</p>
 
 <h3>metacloud.init</h3>
 
@@ -94,11 +94,11 @@ $ VMNAME=RDEVCLIENTX metacloud.init ssh 'cd /puppet &amp;&amp; sh elk.install.sh
 
 <h2>Other files</h2>
 <ul><li>
-<p><tt>popjobs.sh</tt> -- fetches jenkins configured jobs back to puppet
+<p><tt>bin/popjobs.sh</tt> -- fetches jenkins configured jobs back to puppet
 repository</p>
 </li><li>
-<p><tt>run_jobs.sh</tt> -- runs set of jenkins job by regexp name. Used for
-quick'n'dirty jobs chaining</p>
+<p><tt>bin/run_jobs.sh</tt> -- runs set of jenkins job by regexp name. Used
+for quick'n'dirty jobs chaining</p>
 </li></ul>
 <hr style="height: 6px">
 
