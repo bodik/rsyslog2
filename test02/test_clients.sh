@@ -25,28 +25,28 @@ fi
 
 ################# MAIN
 
-/puppet/jenkins/$CLOUD.init login
-VMLIST=$(/puppet/jenkins/$CLOUD.init list | grep "RC-" |awk '{print $4}')
+/puppet/jenkins/bin/$CLOUD.init login
+VMLIST=$(/puppet/jenkins/bin/$CLOUD.init list | grep "RC-" |awk '{print $4}')
 
 # ZALOZENI TESTU
 VMCOUNT=0
 for all in $VMLIST; do
 	echo "INFO: client $all config"
-	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(cat /etc/rsyslog.d/meta-remote.conf)" | awk -v VMNAME=$all '//{ print VMNAME,$0}'
+	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "(cat /etc/rsyslog.d/meta-remote.conf)" | awk -v VMNAME=$all '//{ print VMNAME,$0}'
 	VMCOUNT=$(($VMCOUNT+1))
 done
 
 echo "INFO: VMCOUNT $VMCOUNT"
 
 #reconnect all clients
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog start'
+/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
+/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog start'
 for all in $VMLIST; do
 	echo "INFO: client $all restart"
-	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
+	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
 done
 sleep 10
-CONNS=$(/puppet/jenkins/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
+CONNS=$(/puppet/jenkins/bin/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
 if [ $CONNS -ne $VMCOUNT ]; then
 	rreturn 1 "$0 missing clients on startup"
 fi
@@ -57,7 +57,7 @@ fi
 
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
-	VMNAME=$all /puppet/jenkins/$CLOUD.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
+	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 done
 
 
@@ -71,7 +71,7 @@ case $DISRUPT in
 sleep 10;
 TIMER=240
 echo "INFO: tcpkill begin $TIMER";
-/puppet/jenkins/$CLOUD.init sshs "cd /rsyslog2/test02;
+/puppet/jenkins/bin/$CLOUD.init sshs "cd /rsyslog2/test02;
 ./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
 PPP=\$!; 
 sleep $TIMER;
@@ -85,7 +85,7 @@ WAITRECOVERY=230
 (
 sleep 10; 
 echo "INFO: restart begin";
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
+/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
 echo "INFO: restart end";
 )
 WAITRECOVERY=230
@@ -94,8 +94,8 @@ WAITRECOVERY=230
 (
 sleep 10; 
 echo "INFO: killserver begin";
-/puppet/jenkins/$CLOUD.init sshs 'kill -9 `pidof rsyslogd`'
-/puppet/jenkins/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
+/puppet/jenkins/bin/$CLOUD.init sshs 'kill -9 `pidof rsyslogd`'
+/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
 echo "INFO: killserver end";
 )
 WAITRECOVERY=230
@@ -134,8 +134,8 @@ count $WAITRECOVERY
 
 # VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
-	CLIENT=$( VMNAME=$all /puppet/jenkins/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
-	/puppet/jenkins/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
+	CLIENT=$( VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
+	/puppet/jenkins/bin/$CLOUD.init sshs "sh /rsyslog2/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
 echo =============
 

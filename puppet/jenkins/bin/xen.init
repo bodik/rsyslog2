@@ -182,7 +182,7 @@ case "$1" in
 		vm_ssh "$2"
 	;;
 #	sshe)
-#		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/magrathea.init ssh "$2"
+#		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/bin/magrathea.init ssh "$2"
 #	;;
 #	update)
 #		magrathea_update
