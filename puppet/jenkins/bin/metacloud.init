@@ -94,6 +94,7 @@ vm_start() {
 		#this is created by rc.local modified by cloudinit
 		/puppet/jenkins/bin/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
 		if [ $? -eq 0 ]; then
+			/puppet/jenkins/bin/metacloud.init fixup
 			rreturn 0 "$0 start"
 		fi
 		echo "INFO: waiting for cloud-init to finnish"
@@ -105,6 +106,13 @@ vm_start() {
 vm_status() {
 	onevm list -v -f NAME=$VMNAME
 	rreturn $? "$0 status"
+}
+
+vm_fixup() {
+	/puppet/jenkins/bin/metacloud.init ssh '
+cat /etc/krb5.conf  | grep ".meta.zcu.cz = META" 1>/dev/null 2>/dev/null
+if [ $? -eq 1 ]; then perl -pi -e "s#.zcu.cz = ZCU.CZ#.zcu.cz = ZCU.CZ\\n.meta.zcu.cz = META#" /etc/krb5.conf; fi'
+	rreturn $? "$0 fixup"
 }
 
 vm_shutdown() {
@@ -222,6 +230,9 @@ case "$1" in
 	;;
 	sshw)
 		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "WS-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	fixup)
+		vm_fixup
 	;;
 	update)
 		metacloud_update
