@@ -12,7 +12,7 @@
 . /puppet/metalib/lib.sh
 tmpfile=/tmp/warden-server.selftest
 
-url="https://$(facter_fqdn):45443/warden3"
+url="https://$(facter fqdn):45443/warden3"
 client="puppet_test_client"
 secret=""
 keyfile="/opt/warden_server/etc/$(facter fqdn).key"
