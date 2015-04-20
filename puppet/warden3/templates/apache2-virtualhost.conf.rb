@@ -26,8 +26,8 @@ Listen *:<%= port %>
 	SSLVerifyDepth 4
 	SSLOptions +StdEnvVars +ExportCertData
 	#SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-	SSLCertificateFile      /opt/hostcert<%= fqdn %>.crt
-	SSLCertificateKeyFile   /opt/hostcert<%= fqdn %>.key
+	SSLCertificateFile      /opt/hostcert/<%= fqdn %>.crt
+	SSLCertificateKeyFile   /opt/hostcert/<%= fqdn %>.key
 	SSLCACertificateFile    /opt/hostcert/cachain.pem
 
 	WSGIScriptAlias /warden3 <%= install_dir %>/warden_server.wsgi
