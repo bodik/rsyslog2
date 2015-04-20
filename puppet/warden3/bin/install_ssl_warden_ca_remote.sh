@@ -45,7 +45,7 @@ while [ $SIGNED -eq 0 ]; do
 done
 
 curl -k "http://${WS}:45444/getCaCertificate" >${BASE}/cachain.crt 2>/dev/null
-curl -k "http://${WS}:45444/getCaCrl" >${BASE}/ca.crl 2>/dev/null
+curl -k "http://${WS}:45444/getCrl" >${BASE}/ca.crl 2>/dev/null
 
 chmod 640 ${BASE}/*
 echo "INFO: done generating certificate from warden_ca"

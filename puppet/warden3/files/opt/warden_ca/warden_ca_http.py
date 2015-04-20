@@ -46,6 +46,10 @@ def getCaCertificate(self):
 	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_ca_crt"])
 	return data
 
+def getCrl(self):
+	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_crl"])
+	return data
+
 def putCsr(self):
 	hostname = resolve_client_address(self.client_address[0])
 	filename = "ssl/ca/requests/%s.pem" % hostname
@@ -84,6 +88,12 @@ def process_request(self):
 		
 		elif self.path.startswith("/getCaCertificate"):
 			data = getCaCertificate(self)
+			self.send_response(200)
+			self.end_headers()
+			self.wfile.write(data)
+
+		elif self.path.startswith("/getCrl"):
+			data = getCrl(self)
 			self.send_response(200)
 			self.end_headers()
 			self.wfile.write(data)
