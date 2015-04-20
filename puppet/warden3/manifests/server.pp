@@ -148,7 +148,7 @@ class warden3::server (
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
-			Exec["gen cert"], 
+			Class["warden3::hostcert"], 
 			File["/etc/apache2/mods-enabled/ssl.load", "/etc/apache2/mods-enabled/ssl.conf"], 
 			],
 		notify => Service["apache2"],

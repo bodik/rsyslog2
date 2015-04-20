@@ -8,14 +8,14 @@ else
         BASE=$1
 fi
 
-if [ -f ${BASE}/$HNAME.key ]; then
-        echo "WARN: key ${BASE}/$HNAME.key already present"
-        exit 1
-fi
-
 WS=$(/puppet/metalib/avahi.findservice.sh _warden-server._tcp)
 if [ -z "$WS" ]; then
 	echo "ERROR: cannt discover warden_ca server"
+	exit 1
+fi
+
+if [ -f ${BASE}/$HNAME.crt ]; then
+        echo "WARN: key ${BASE}/$HNAME.crt already present"
 	exit 1
 fi
 
@@ -35,7 +35,7 @@ fi
 SIGNED=0
 while [ $SIGNED -eq 0 ]; do
 	curl -k "http://${WS}:45444/getCertificate" >${BASE}/${HNAME}.crt 2>/dev/null
-	openssl x509 -in ${BASE}/${HNAME}.crt
+	openssl x509 -in ${BASE}/${HNAME}.crt 1>/dev/null
 	if [ $? -eq 0 ]; then
 		SIGNED=1
 	else
@@ -45,6 +45,7 @@ while [ $SIGNED -eq 0 ]; do
 done
 
 curl -k "http://${WS}:45444/getCaCertificate" >${BASE}/cachain.crt 2>/dev/null
+curl -k "http://${WS}:45444/getCaCrl" >${BASE}/ca.crl 2>/dev/null
 
 chmod 640 ${BASE}/*
 echo "INFO: done generating certificate from warden_ca"

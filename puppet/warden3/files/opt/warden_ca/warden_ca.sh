@@ -23,6 +23,7 @@ usage() {
 	echo "$0 get_crt FQDN"
 	echo "$0 get_key FQDN"
 	echo "$0 revoke FQDN"
+	echo "$0 clean FQDN"
 }
 
 case "$1" in
@@ -56,6 +57,9 @@ case "$1" in
 	;;
 	revoke)
 		puppet cert $OPTS revoke $2
+	;;
+	clean)
+		puppet cert $OPTS clean $2
 	;;
 	*)
 		usage

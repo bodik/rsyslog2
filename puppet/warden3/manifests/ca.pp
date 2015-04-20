@@ -8,6 +8,7 @@
 
 class warden3::ca (
 	$ca_name = "warden3ca",
+	$autosign = true,
 ) {
 	file { "/opt/warden_ca":
 		ensure => directory,
@@ -34,5 +35,8 @@ class warden3::ca (
 		ensure => running,
 		require => File["/etc/init.d/warden_ca_http"],
 	}
-
+	file { "/opt/warden_ca/AUTOSIGN":
+		content => "AUTOSIGN ENABLED",
+		owner => "root", group => "root", mode => "0700",
+ 	}
 }
