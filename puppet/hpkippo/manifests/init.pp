@@ -1,40 +1,5 @@
-# == Class: hpkippo
-#
-# Full description of class hpkippo here.
-#
-# === Parameters
-#
-# Document parameters here.
-#
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
-#
-# === Variables
-#
-# Here you should define a list of variables that this module would require.
-#
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if it
-#   has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should not be used in preference to class parameters  as of
-#   Puppet 2.6.)
-#
-# === Examples
-#
-#  class { hpkippo:
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ]
-#  }
-#
-# === Authors
-#
-# Author Name <author@domain.com>
-#
-# === Copyright
-#
-# Copyright 2011 Your name here, unless otherwise noted.
-#
+#!/usr/bin/puppet apply
+
 class hpkippo (
 
 	$install_dir = "/opt/kippo",
@@ -48,6 +13,10 @@ class hpkippo (
 	$mysql_db = "kippo",
 	$mysql_user = "kippo",
 	$mysql_password = undef,
+	
+	$warden_server = undef,
+	$warden_server_auto = true,
+	$warden_server_service = "_warden-server._tcp",
 ) {
 
 
@@ -67,7 +36,7 @@ class hpkippo (
 	        require => [Package["mysql-server"], File["/etc/mysql/debian.cnf"]],
 	}
 
-
+	#mysql db
         if( $mysql_db and $mysql_user) {
                 mysql_database { "${mysql_db}":
                         ensure  => 'present',
@@ -99,6 +68,8 @@ class hpkippo (
         }
 
 
+
+	# application
 	exec { "clone kippo":
 		command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
 		creates => "${install_dir}/start.sh",
@@ -126,7 +97,7 @@ class hpkippo (
 	}
 	file { "${install_dir}/kippo.cfg":
 		content => template("${module_name}/kippo.cfg.erb"),
-		owner => "root", group => "root", mode => "0644",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb"], File["${install_dir}/dl", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 	}
 
@@ -151,5 +122,45 @@ class hpkippo (
 
 	#autotest
 	package { "medusa": ensure => installed, }
+
+
+
+
+
+	# warden_client pro kippo
+	file { "${install_dir}/warden":
+		ensure => directory,
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
+	}
+	file { "${install_dir}/warden/warden_client.py":
+		source => "puppet:///modules/${module_name}/warden_client.py",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
+		require => File["${install_dir}/warden"],
+	}
+	file { "${install_dir}/warden/warden3-kippo-sender.py":
+		source => "puppet:///modules/${module_name}/warden3-kippo-sender.py",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
+		require => File["${install_dir}/warden"],
+	}
+	$sensor_ip4 = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*$/.x.x/'")
+	file { "${install_dir}/warden/warden_client-kippo.cfg":
+		content => template("${module_name}/warden_client-kippo.cfg.erb"),
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/warden"],
+	}
+
+
+	if ($warden_server) {
+                $warden_server_real = $warden_server
+        } elsif ( $warden_server_auto == true ) {
+                include metalib::avahi
+                $warden_server_real = avahi_findservice($warden_server_service)
+        }
+	file { "${install_dir}/warden/warden_client.cfg":
+		content => template("${module_name}/warden_client.cfg.erb"),
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/warden"],
+	}
+
 
 }

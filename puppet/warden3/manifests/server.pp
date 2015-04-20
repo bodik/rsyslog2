@@ -11,11 +11,20 @@ class warden3::server (
         $mysql_db = "warden3",
         $mysql_user = "warden3",
         $mysql_password = false,
+
+	$avahi_enable = true,
 ) {
 
-	#include warden3::ca
-	class { "warden3::ca":
-		ca_dir => $ca_dir,
+	include warden3::ca
+
+	if ($avahi_enable) {
+		include metalib::avahi
+	        file { "/etc/avahi/services/warden-server.service":
+	                content => template("${module_name}/warden-server.service.erb"),
+	                owner => "root", group => "root", mode => "0644",
+	                require => Package["avahi-daemon"],
+	                notify => Service["avahi-daemon"],
+	        }
 	}
 
 	#mysql server
@@ -83,7 +92,7 @@ class warden3::server (
 	}
 
 	#$sources = "/warden/warden3/warden_server/"
-	$sources = "puppet:///modules/${module_name}/warden_server/"
+	$sources = "puppet:///modules/${module_name}/opt/warden_server/"
 	file { "${install_dir}/warden_server.wsgi":
 		source => "${sources}warden_server.wsgi.dist",
 		owner => "root", group => "root", mode => "0755",
@@ -127,7 +136,7 @@ class warden3::server (
 	}
 
 	exec { "gen cert":
-		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh ${install_dir}/etc",
+		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca_local.sh ${install_dir}/etc",
 		creates => "${install_dir}/etc/${fqdn}.crt",
 		#require => Class["warden3::ca"],
 		require => [File["${ca_dir}/puppet.conf"], File["${ca_dir}/warden_ca.sh"]],

@@ -7,19 +7,22 @@
 #  puppet cert revoke
 
 class warden3::ca (
-	$ca_dir = "/opt/warden_ca",
 	$ca_name = "warden3ca",
 ) {
-	file { "$ca_dir":
+	file { "/opt/warden_ca":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0700",
 	}
-	file { "$ca_dir/puppet.conf":
+	file { "/opt/warden_ca/puppet.conf":
 		content => template("${module_name}/ca-puppet.conf.erb"),
 		owner => "root", group => "root", mode => "0600",
 	}
-	file { "$ca_dir/warden_ca.sh":
-		content => template("${module_name}/warden_ca.sh.erb"),
+	file { "/opt/warden_ca/warden_ca.sh":
+		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca.sh",
+		owner => "root", group => "root", mode => "0700",
+	}
+	file { "/opt/warden_ca/warden_ca_http.py":
+		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
 		owner => "root", group => "root", mode => "0700",
 	}
 }

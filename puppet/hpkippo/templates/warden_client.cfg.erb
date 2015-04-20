@@ -1,0 +1,20 @@
+{
+    "url": "https://<%= warden_server_real %>:45443/warden3",
+
+    "certfile": "<%= install_dir %>/warden/<%= fqdn %>.crt",
+    "keyfile": "<%= install_dir %>/warden/<%= fqdn %>.key",
+    "cafile": "<%= install_dir %>/warden/cachain.pem",
+
+    "timeout": 60,
+    "get_events_limit": 1000,
+
+    "errlog": {"level": "debug"},
+    //"filelog": {"file": "warden_client.log", "level": "warning"},
+    "syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
+
+    "idstore": "warden_client.id",
+
+    "name": "org.example.warden_client",
+
+    "secret": ""
+}

@@ -8,7 +8,7 @@
 # revoke keys
 #  puppet cert revoke
 
-CADIR="<%= ca_dir %>"
+CADIR="/opt/warden_ca"
 OPTS="--confdir $CADIR"
 
 usage() {
@@ -17,11 +17,12 @@ usage() {
 	echo "$0 get_ca_crt"
 	echo "$0 list"
 	echo "$0 get_crl"
-	echo "$0 generate DN"
-	echo "$0 show_crt DN"
-	echo "$0 get_crt DN"
-	echo "$0 get_key DN"
-	echo "$0 revoke DN"
+	echo "$0 generate FQDN"
+	echo "$0 sign FQDN"
+	echo "$0 show_crt FQDN"
+	echo "$0 get_crt FQDN"
+	echo "$0 get_key FQDN"
+	echo "$0 revoke FQDN"
 }
 
 case "$1" in
@@ -39,6 +40,9 @@ case "$1" in
 	;;
 	generate)
 		puppet cert $OPTS generate $2
+	;;
+	sign)
+		puppet cert $OPTS sign $2
 	;;
 	get_crt)
 		puppet certificate find $2 --ca-location local $OPTS

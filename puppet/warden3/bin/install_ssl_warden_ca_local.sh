@@ -17,6 +17,9 @@ echo "INFO: generating ${BASE}/$HNAME.key"
 if [ ! -d ${BASE} ]; then
         mkdir -p ${BASE}
 fi
+
+cd /opt/warden_ca || exit 1
+
 /opt/warden_ca/warden_ca.sh init
 /opt/warden_ca/warden_ca.sh generate $HNAME
 /opt/warden_ca/warden_ca.sh get_key $HNAME > $BASE/$HNAME.key
