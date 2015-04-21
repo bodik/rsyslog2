@@ -52,7 +52,7 @@ done
 curl -k "http://${WS}:45444/getCaCertificate" >cachain.pem 2>/dev/null
 curl -k "http://${WS}:45444/getCrl" >ca.crl 2>/dev/null
 
-find . -type f -exec chmod 640 {} \;
+find . -type f -exec chmod 644 {} \;
 
 echo "INFO: done generating certificate from warden_ca"
 

@@ -1,9 +1,9 @@
 {
     "url": "https://<%= warden_server_real %>:45443/warden3",
 
-    "certfile": "<%= install_dir %>/warden/<%= fqdn %>.crt",
-    "keyfile": "<%= install_dir %>/warden/<%= fqdn %>.key",
-    "cafile": "<%= install_dir %>/warden/cachain.pem",
+    "certfile": "/opt/hostcert/<%= fqdn %>.crt",
+    "keyfile": "/opt/hostcert/<%= fqdn %>.key",
+    "cafile": "/opt/hostcert/cachain.pem",
 
     "timeout": 60,
     "get_events_limit": 1000,
@@ -14,7 +14,7 @@
 
     "idstore": "warden_client.id",
 
-    "name": "org.example.warden_client",
+    //"name": "org.example.warden_client",
 
-    "secret": ""
+    "secret": "<%= hostname %>-kippo"
 }

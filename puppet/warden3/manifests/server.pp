@@ -69,7 +69,7 @@ class warden3::server (
                 }
                 mysql_grant { "${mysql_db}@localhost/${mysql_db}.*":
                                 ensure     => present,
-                                privileges => ["SELECT", "INSERT", "DELETE"],
+                                privileges => ["SELECT", "INSERT", "DELETE", "UPDATE"],
                                 table      => "${mysql_db}.*",
                                 user       => "${mysql_user}@localhost",
                                 require => Mysql_user["${mysql_user}@localhost"],

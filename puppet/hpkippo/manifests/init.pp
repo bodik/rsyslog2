@@ -143,6 +143,7 @@ class hpkippo (
 		require => File["${install_dir}/warden"],
 	}
 	$sensor_ip4 = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*$/.x.x/'")
+	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
 	file { "${install_dir}/warden/warden_client-kippo.cfg":
 		content => template("${module_name}/warden_client-kippo.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
