@@ -39,7 +39,7 @@ fi
 SIGNED=0
 while [ $SIGNED -eq 0 ]; do
 	curl -k "http://${WS}:45444/getCertificate" >${HNAME}.crt 2>/dev/null
-	openssl x509 -in ${HNAME}.crt 1>/dev/null
+	openssl x509 -in ${HNAME}.crt 1>/dev/null 2>/dev/null
 	if [ $? -eq 0 ]; then
 		SIGNED=1
 	else

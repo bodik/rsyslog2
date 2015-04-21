@@ -56,30 +56,31 @@ def putCsr(self):
 	try:
 		length = int(self.headers['Content-Length'])
         	post_data = urllib.unquote(self.rfile.read(length).decode('utf-8'))
-		with open(filename, 'w') as the_file: the_file.write(post_data)
+
+		try:
+			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "revoke", hostname])
+			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "clean", hostname])
+		except Exception as e:
+			pass
+
+		the_file = open(filename, 'w')
+		the_file.write(post_data)
+		the_file.flush()
 		the_file.close()
 
 		if os.path.exists("AUTOSIGN"):
 			print ("WARN: autosigning for %s" % hostname)
-			sign(hostname)
+			try:
+				data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
+			except Exception as e:
+				print "Unexpected error:", sys.exc_info()[0], e, data
+				raise
 
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
 		return 500
 	
 	return 200
-
-def sign(hostname=None):
-	if hostname:
-		try:
-			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "revoke", hostname])
-		except Exception as e:
-			pass
-		try:
-			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "clean", hostname])
-		except Exception as e:
-			pass
-		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
 
 
 	
