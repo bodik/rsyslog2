@@ -22,6 +22,11 @@ class warden3::ca (
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca.sh",
 		owner => "root", group => "root", mode => "0700",
 	}
+	exec { "warden_ca.sh init":
+		command => "/bin/sh /opt/warden_ca/warden_ca.sh init",
+		creates => "/opt/warden_ca/ssl/ca/ca_crt.pem",
+		require => File["/opt/warden_ca/puppet.conf", "/opt/warden_ca/warden_ca.sh"],
+	}
 	file { "/opt/warden_ca/warden_ca_http.py":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
 		owner => "root", group => "root", mode => "0700",
@@ -35,8 +40,12 @@ class warden3::ca (
 		ensure => running,
 		require => File["/etc/init.d/warden_ca_http"],
 	}
-	file { "/opt/warden_ca/AUTOSIGN":
-		content => "AUTOSIGN ENABLED",
-		owner => "root", group => "root", mode => "0700",
- 	}
+	if ($autosign) {
+		file { "/opt/warden_ca/AUTOSIGN":
+			content => "AUTOSIGN ENABLED",
+			owner => "root", group => "root", mode => "0600",
+	 	}
+	} else {
+		file { "/opt/warden_ca/AUTOSIGN":	ensure => absent }
+	}
 }

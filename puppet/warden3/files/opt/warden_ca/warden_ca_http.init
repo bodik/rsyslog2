@@ -43,6 +43,9 @@ case "$1" in
 	rm -f $PIDFILE
 	sleep 1
 	;;
+  log)
+	tail -f warden_ca.log
+	;;
 
   restart|force-reload)
 	${0} stop

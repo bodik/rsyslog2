@@ -1,9 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
 import SimpleHTTPServer
 import SocketServer
-import sys
+import sys, os
 import subprocess
 import socket
 import urllib
@@ -60,14 +60,14 @@ def putCsr(self):
 		the_file.close()
 
 		if os.path.exists("AUTOSIGN"):
-			print "WARN: autosigning for %s" % hostname
+			print ("WARN: autosigning for %s" % hostname)
 			sign(hostname)
 
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
-		return
+		return 500
 	
-	return
+	return 200
 
 def sign(hostname=None):
 	if hostname:
@@ -100,7 +100,7 @@ def process_request(self):
 
 		elif self.path.startswith("/putCsr"):
 			data = putCsr(self)
-			self.send_response(200)
+			self.send_response(data)
 			self.end_headers()
 
 		else:
@@ -108,7 +108,7 @@ def process_request(self):
 			self.end_headers()
 
 	except Exception as e:
-		print "Unexpected error:", sys.exc_info()[0], e
+		print ("Unexpected error:", sys.exc_info()[0], e)
 		self.send_error(500)
 
 
@@ -122,6 +122,7 @@ class MyHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
 	def do_POST(self):
 		process_request(self)
+
 		
 class MyTCPServer(SocketServer.TCPServer):
 	def server_bind(self):
@@ -130,6 +131,12 @@ class MyTCPServer(SocketServer.TCPServer):
         	self.socket.bind(self.server_address)
 
 if __name__=="__main__":
+
+	if sys.stdout.name == '<stdout>':
+        	sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+	if sys.stderr.name == '<stderr>':
+        	sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
+
 	server_address = ('', 45444)
 	httpd = MyTCPServer(server_address, MyHandler)
 	try:
