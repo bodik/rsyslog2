@@ -34,6 +34,7 @@ class warden3::ca (
 	file { "/etc/init.d/warden_ca_http":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.init",
 		owner => "root", group => "root", mode => "0700",
+		require => File["/opt/warden_ca/warden_ca_http.py"],
 	}
 	service { "warden_ca_http": 
 		enable => true,

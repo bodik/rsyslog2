@@ -14,8 +14,6 @@ class warden3::server (
 	$avahi_enable = true,
 ) {
 
-	include warden3::ca
-
 	if ($avahi_enable) {
 		include metalib::avahi
 	        file { "/etc/avahi/services/warden-server.service":
@@ -140,9 +138,7 @@ class warden3::server (
 	#	#require => Class["warden3::ca"],
 	#	require => [File["${ca_dir}/puppet.conf"], File["${ca_dir}/warden_ca.sh"]],
 	#}
-	class { "warden3::hostcert":
-		require => Class["warden3::ca"],
-	}
+	class { "warden3::hostcert": }
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
 		content => template("${module_name}/apache2-virtualhost.conf.rb"),
 		owner => "root", group => "root", mode => "0644",

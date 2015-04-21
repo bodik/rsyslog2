@@ -49,10 +49,10 @@ while [ $SIGNED -eq 0 ]; do
 	fi
 done
 
-curl -k "http://${WS}:45444/getCaCertificate" >cachain.crt 2>/dev/null
+curl -k "http://${WS}:45444/getCaCertificate" >cachain.pem 2>/dev/null
 curl -k "http://${WS}:45444/getCrl" >ca.crl 2>/dev/null
 
-find . -exec chmod 640 {} \;
+find . -type f -exec chmod 640 {} \;
 
 echo "INFO: done generating certificate from warden_ca"
 

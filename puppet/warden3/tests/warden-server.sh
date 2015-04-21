@@ -15,9 +15,9 @@ tmpfile=/tmp/warden-server.selftest
 url="https://$(facter fqdn):45443/warden3"
 client="puppet_test_client"
 secret=""
-keyfile="/opt/warden_server/etc/$(facter fqdn).key"
-certfile="/opt/warden_server/etc/$(facter fqdn).crt"
-cafile="/opt/warden_server/etc/cachain.pem"
+keyfile="/opt/hostcert/$(facter fqdn).key"
+certfile="/opt/hostcert/$(facter fqdn).crt"
+cafile="/opt/hostcert/cachain.pem"
 
 
 echo "Test  404"

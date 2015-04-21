@@ -71,8 +71,14 @@ def putCsr(self):
 
 def sign(hostname=None):
 	if hostname:
-		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "revoke", hostname])
-		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "clean", hostname])
+		try:
+			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "revoke", hostname])
+		except Exception as e:
+			pass
+		try:
+			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "clean", hostname])
+		except Exception as e:
+			pass
 		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
 
 
