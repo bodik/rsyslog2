@@ -138,7 +138,9 @@ class warden3::server (
 	#	#require => Class["warden3::ca"],
 	#	require => [File["${ca_dir}/puppet.conf"], File["${ca_dir}/warden_ca.sh"]],
 	#}
-	class { "warden3::hostcert": }
+	class { "warden3::hostcert": 
+		require => File["/etc/avahi/services/warden-server.service"],
+	}
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
 		content => template("${module_name}/apache2-virtualhost.conf.rb"),
 		owner => "root", group => "root", mode => "0644",
