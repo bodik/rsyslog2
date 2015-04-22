@@ -8,6 +8,7 @@ import subprocess
 import socket
 import urllib
 import json
+from urlparse import urlparse, parse_qs
 
 def resolve_client_address(ip=None):
 	if hasattr(socket, 'setdefaulttimeout'):
@@ -83,6 +84,26 @@ def putCsr(self):
 	return 200
 
 
+def registerSensor(self):
+	if os.path.exists("AUTOSIGN") == False:
+		return 403
+
+	try:
+		hostname = resolve_client_address(self.client_address[0])
+		hostname_rev = hostname.split(".")
+		hostname_rev.reverse()
+		hostname_rev = ".".join(hostname_rev)
+
+		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,s]), hostname)
+		print "DEBUG:",cmd
+		data = subprocess.check_output(cmd.split(" "))
+
+	except Exception as e:
+		print "Unexpected error:", sys.exc_info()[0], e
+		return 500
+
+	return 200
+
 	
 def process_request(self):
 	data = ""
@@ -107,6 +128,11 @@ def process_request(self):
 
 		elif self.path.startswith("/putCsr"):
 			data = putCsr(self)
+			self.send_response(data)
+			self.end_headers()
+
+		elif self.path.startswith("/registerSensor"):
+			data = registerSensor(self)
 			self.send_response(data)
 			self.end_headers()
 
