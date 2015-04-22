@@ -32,6 +32,9 @@ case "$1" in
 	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-auth-filter.sh" 0.0.0.0 49557 &
 	        echo $! >> /var/run/rediser.pid
 
+	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-wardenb-filter.sh" 0.0.0.0 49556 &
+	        echo $! >> /var/run/rediser.pid
+
 	        echo "done"
 	;;
 	stop)

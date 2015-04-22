@@ -8,10 +8,3 @@ if [ $TCNT -lt "2" ]; then
         /usr/bin/mysql kippo < /opt/kippo/doc/sql/mysql.sql
 fi
 
-WS=$(/puppet/metalib/avahi.findservice.sh _warden-server._tcp)
-if [ -z "$WS" ]; then
-	echo "ERROR: cannt discover warden_ca server"
-	exit 1
-fi
-curl http://$(facter fqdn):45444/registerSensor
-

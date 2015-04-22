@@ -162,6 +162,10 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-
+	exec { "register kippo sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh ${warden_server_real} kippo ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => Exec["clone kippo"],
+	}
 
 }

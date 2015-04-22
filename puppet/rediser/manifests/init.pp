@@ -55,13 +55,13 @@ class rediser {
 	}
 
 	#rediser
-	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev"]:
+	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev", "make"]:
 		ensure => installed,
 	}
 	package { 'hiredis':
 		ensure   => 'installed',
 		provider => 'gem',
-		require => Package["ruby-dev"]
+		require => Package["ruby-dev", "make"]
 	}
 	file { "/etc/init.d/rediser":
 		ensure => link,
