@@ -20,6 +20,14 @@ DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.2rediser'
 pp = pprint.PrettyPrinter(indent=4)
 
+import signal, time
+
+def handler(signum = None, frame = None):
+	print 'warden_2rediser shutting down...'
+	sys.exit(0)
+
+
+
 def fetch_and_send():
 	aconfig = read_cfg(DEFAULT_ACONFIG)
 	wconfig = read_cfg(aconfig.get('warden', DEFAULT_WCONFIG))
@@ -44,9 +52,22 @@ def fetch_and_send():
 			sock.sendall("\n")
 	finally:
 		sock.close()
+	
+	return len(ret)
+
+
 
 def main():
-	fetch_and_send()
+	signal.signal(signal.SIGTERM , handler)
+	while True:
+		try:
+			#fetch until queue drain and have a rest for while
+			while (fetch_and_send() != 0):
+				pass
+			time.sleep(60)
+		except:
+			pass
+
 
 if __name__ == "__main__":
 	main()

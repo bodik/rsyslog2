@@ -10,7 +10,7 @@ class warden3::2rediser (
 	$rediser_server = undef,
 	$rediser_server_auto = true,
 	$rediser_server_service = "_rediser._tcp",
-	$rediser_server_warden_port = 34564,
+	$rediser_server_warden_port = 49556,
 ) {
 	file { "${install_dir}":
 		ensure => directory,
@@ -49,8 +49,20 @@ class warden3::2rediser (
 	}
 	file { "${install_dir}/warden_2rediser.py":
 		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_2rediser.py",
-		owner => "root", group => "root", mode => "0640",
+		owner => "root", group => "root", mode => "0750",
 		require => File["${install_dir}"],
+	}
+
+
+	service { "warden_2rediser": 
+		enable => true,
+		ensure => running,
+		require => File["/etc/init.d/warden_2rediser"],
+	}
+	file { "/etc/init.d/warden_2rediser":
+		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_2rediser.init",
+		owner => "root", group => "root", mode => "0755",
+		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_2rediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_2rediser.py"], Exec["register warden_2rediser sensor"]],
 	}
 
 	exec { "register warden_2rediser sensor":

@@ -168,4 +168,9 @@ class hpkippo (
 		require => Exec["clone kippo"],
 	}
 
+	file { "/etc/cron.d/warden-kippo-sender":
+		content => template("${module_name}/warden-kippo-sender.cron.erb"),
+		owner => "root", group => "root", mode => "0644",
+	}
+
 }
