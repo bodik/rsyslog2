@@ -89,12 +89,17 @@ def registerSensor(self):
 		return 403
 
 	try:
+		qs = parse_qs(urlparse(self.path).query)
+		if 's' not in qs:
+			print "ERROR: service s not present"
+			return 400
+	
 		hostname = resolve_client_address(self.client_address[0])
 		hostname_rev = hostname.split(".")
 		hostname_rev.reverse()
 		hostname_rev = ".".join(hostname_rev)
 
-		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,s]), hostname)
+		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,qs['s'][0]]), hostname)
 		print "DEBUG:",cmd
 		data = subprocess.check_output(cmd.split(" "))
 
