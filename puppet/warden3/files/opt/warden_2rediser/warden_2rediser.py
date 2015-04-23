@@ -53,7 +53,7 @@ def fetch_and_send():
 			sock.sendall(json.dumps(e))
 			sock.sendall("\n")
 	finally:
-		sock.shutdown(SHUT_RDWR)
+		sock.shutdown(socket.SHUT_RDWR)
 		sock.close()
 	
 	return len(ret)
@@ -73,9 +73,12 @@ def main():
 			while (fetch_and_send() != 0):
 				pass
 			sleep(60)
-		except KeyboardInterrupt:
+		except KeyboardInterrupt as e:
 			break
-		except:
+		except Exception as e:
+			print e
+			#backoff
+			sleep(1)
 			pass
 
 
