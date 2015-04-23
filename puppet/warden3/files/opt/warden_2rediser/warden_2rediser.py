@@ -2,9 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from warden_client import Client, Error, read_cfg, format_timestamp
-from time import time, gmtime
+from time import time, gmtime, sleep
 import pprint
 import json
+import os
+
+import socket
+import sys
+
 ##from math import trunc
 ##from uuid import uuid4
 ##import string
@@ -12,16 +17,13 @@ import json
 ##from random import randint, randrange, choice, random;
 ##from base64 import b64encode;
 
-import socket
-import sys
 
 DEFAULT_ACONFIG = 'warden_2rediser.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.2rediser'
 pp = pprint.PrettyPrinter(indent=4)
 
-import signal, time
-
+import signal
 def handler(signum = None, frame = None):
 	print 'warden_2rediser shutting down...'
 	sys.exit(0)
@@ -42,8 +44,8 @@ def fetch_and_send():
 
 	start = time()
 	ret = wclient.getEvents(count=1000)
-	#print "Time: %f" % (time()-start)
-	#print "Got %i events" % len(ret)
+	print "Time: %f" % (time()-start)
+	print "Got %i events" % len(ret)
 	try:
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.connect( (aconfig['rediser_server'], aconfig['rediser_server_warden_port']) )
@@ -51,6 +53,7 @@ def fetch_and_send():
 			sock.sendall(json.dumps(e))
 			sock.sendall("\n")
 	finally:
+		sock.shutdown(SHUT_RDWR)
 		sock.close()
 	
 	return len(ret)
@@ -59,12 +62,19 @@ def fetch_and_send():
 
 def main():
 	signal.signal(signal.SIGTERM , handler)
+        if sys.stdout.name == '<stdout>':
+                sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+        if sys.stderr.name == '<stderr>':
+                sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
+
 	while True:
 		try:
 			#fetch until queue drain and have a rest for while
 			while (fetch_and_send() != 0):
 				pass
-			time.sleep(60)
+			sleep(60)
+		except KeyboardInterrupt:
+			break
 		except:
 			pass
 
