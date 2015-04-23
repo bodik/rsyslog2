@@ -134,6 +134,16 @@ class elk::lsl (
 	} else {
 		notice("input-rediser-auth passive")
 	}
+	if ( $rediser_server_real ) {
+		logstash::configfile { 'input-rediser-wardenb':
+	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-wardenb.conf.erb"),
+			order => 10,
+			notify => Service["logstash"],
+		}
+		notice("input-rediser-wardenb active")
+	} else {
+		notice("input-rediser-wardenb passive")
+	}
 
 
 
