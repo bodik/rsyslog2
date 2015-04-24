@@ -149,8 +149,6 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-
-
 	if ($warden_server) {
                 $warden_server_real = $warden_server
         } elsif ( $warden_server_auto == true ) {
@@ -167,10 +165,10 @@ class hpkippo (
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["clone kippo"],
 	}
-
 	file { "/etc/cron.d/warden-kippo-sender":
 		content => template("${module_name}/warden-kippo-sender.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
+		require => User["$kippo_user"],
 	}
 
 }
