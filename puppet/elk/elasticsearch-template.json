@@ -44,6 +44,25 @@
 				}
 			},
 
+			"wb" : {
+				"_all" : { "enabled" : true },
+				"properties" : {
+					"Source" : { 
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"IP4": {
+								"type": "ip", "index": "analyzed",
+								"fields": {
+									"raw": {"type": "string","index": "not_analyzed"}
+								}
+							}
+						}
+					}
+				}
+			},
+
 			"nz" : {
 				"_all" : { "enabled" : true },
 				"properties" : {
