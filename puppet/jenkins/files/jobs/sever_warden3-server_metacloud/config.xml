@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>export VMNAME=&quot;WS-$$&quot;
+/puppet/jenkins/bin/metacloud.init login
+/puppet/jenkins/bin/metacloud.init build
+/puppet/jenkins/bin/metacloud.init start
+/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; git checkout wardenb&apos;
+################
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3-server.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpkippo.install.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3-2rediser.install.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;ps faxu&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser/tests/rediser.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/warden-ca.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/warden-server.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpkippo/tests/hpkippo.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3/tests/warden-2rediser.sh&apos;
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>
