@@ -138,11 +138,11 @@ class hpkippo (
 		require => File["${install_dir}/warden"],
 	}
 	file { "${install_dir}/warden/warden3-kippo-sender.py":
-		source => "puppet:///modules/${module_name}/warden3-kippo-sender.py",
+		source => "puppet:///modules/${module_name}/hp-kippo/warden3-kippo-sender.py",
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$sensor_ip4 = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*$/.x.x/'")
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
 	file { "${install_dir}/warden/warden_client-kippo.cfg":
 		content => template("${module_name}/warden_client-kippo.cfg.erb"),

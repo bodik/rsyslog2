@@ -1,7 +1,9 @@
 {
     "warden": "warden_client.cfg",
     "name": "<%= fqdn_rev %>.kippo",
-    "sensor_ip4": "<%= sensor_ip4 %>",
+
+    "anonymised": "yes",
+    "target_net": "<%= anonymised_target_net %>",
 
     "dbhost": "<%= mysql_host %>",
     "dbuser": "<%= mysql_user %>",

@@ -11,6 +11,7 @@ from time import time, gmtime, strftime
 from math import trunc
 from uuid import uuid4
 from os import path
+import sys
 
 import MySQLdb as my
 import MySQLdb.cursors as mycursors
@@ -19,9 +20,11 @@ DEFAULT_ACONFIG = 'warden_client-kippo.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.test'
 DEFAULT_AWIN = 5
+DEFAULT_ANONYMISED = 'no'
+DEFAULT_TARGET_NET = '0.0.0.0/0'
 
 
-def gen_event_idea(client_name, detect_time, win_start_time, win_end_time, conn_count, src_ip4, dst_ip4, aggr_win):
+def gen_event_idea(client_name, detect_time, win_start_time, win_end_time, conn_count, src_ip, dst_ip, aggr_win, anonymised, target_net):
 
   event = {
      "Format": "IDEA0",
@@ -32,14 +35,9 @@ def gen_event_idea(client_name, detect_time, win_start_time, win_end_time, conn_
      "Category": ["Attempt.Login"],
      "Note": "SSH login attempt",
      "ConnCount": conn_count,
-     "Source": [
-        { 
-          "IP4": [src_ip4],
-        }
-     ],
+     "Source": [{}],
      "Target": [
         {
-           "IP4": [dst_ip4],
            "Proto": ["tcp", "ssh"],
            "Port" : [22]
         }
@@ -54,6 +52,16 @@ def gen_event_idea(client_name, detect_time, win_start_time, win_end_time, conn_
      ]
   }
 
+  af = "IP4" if not ':' in src_ip else "IP6"
+  event['Source'][0][af] = [src_ip]
+
+  if anonymised != 'omit':
+    if anonymised == 'yes':
+      event['Target'][0]['Anonymised'] = True
+      event['Target'][0][af] = [target_net]
+    else:
+      event['Target'][0][af] = [dst_ip]
+  
   return event
 
 def main():
@@ -66,13 +74,21 @@ def main():
 
   wclient = Client(**wconfig)   
 
+  aanonymised = aconfig.get('anonymised', DEFAULT_ANONYMISED)
+  if aanonymised not in ['no', 'yes', 'omit']:
+    wclient.logger.error("Configuration error: anonymised: '%s' - possible typo? use 'no', 'yes' or 'omit'" % aanonymised)
+    sys.exit(2)
+
+  atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
+  aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
+
   con = my.connect( host=aconfig['dbhost'], user=aconfig['dbuser'], passwd=aconfig['dbpass'],
                     db=aconfig['dbname'], port=aconfig['dbport'], cursorclass=mycursors.DictCursor)
   
   crs = con.cursor()
 
   events = []
-  query =  "SELECT UNIX_TIMESTAMP(s.starttime) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
+  query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, '+00:00', @@global.time_zone)) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
             FROM sessions s \
             LEFT JOIN sensors sn ON s.sensor=sn.id \
             WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
@@ -84,7 +100,7 @@ def main():
     dtime = format_timestamp(row['starttime'])
     etime = format_timestamp(time())
     stime = format_timestamp(time() - awin)
-    events.append(gen_event_idea(client_name = aname, detect_time = dtime, win_start_time = stime, win_end_time = etime, conn_count = row['attack_scale'], src_ip4 = row['ip'], dst_ip4 = row['sensor'], aggr_win = awin))
+    events.append(gen_event_idea(client_name = aname, detect_time = dtime, win_start_time = stime, win_end_time = etime, conn_count = row['attack_scale'], src_ip = row['ip'], dst_ip = row['sensor'], aggr_win = awin, anonymised = aanonymised, target_net = atargetnet))
       
   print "=== Sending ==="
   start = time()
