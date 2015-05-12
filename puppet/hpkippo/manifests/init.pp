@@ -133,7 +133,7 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client.py",
+		source => "puppet:///modules/${module_name}/warden_client/warden_client.py",
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
