@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `events` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `received` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `client_id` int(11) NOT NULL,
-  `data` text NOT NULL,
+  `data` longtext NOT NULL,
   `valid` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `id` (`id`,`client_id`)

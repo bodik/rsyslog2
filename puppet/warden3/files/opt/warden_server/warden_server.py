@@ -316,13 +316,9 @@ class X509Authenticator(NoAuthenticator):
         subj = cert.get_subject()
         commons = [n.get_data().as_text() for n in subj.get_entries_by_nid(subj.nid["CN"])]
 
-	altnames=[]
-	try:
-	        ext = cert.get_ext("subjectAltName")
-	        extstrs = [val.strip() for val in ext.get_value().split(",")]
-	        altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
-	except:
-		pass
+        ext = cert.get_ext("subjectAltName")
+        extstrs = [val.strip() for val in ext.get_value().split(",")]
+        altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
 
         # bit of mangling to get rid of duplicates and leave commonname first
         firstcommon = commons[0]
@@ -426,7 +422,8 @@ class JSONSchemaValidator(NoValidator):
 
 class MySQL(ObjectReq):
 
-    def __init__(self, req, host, user, password, dbname, port, retry_count, retry_pause, catmap_filename, tagmap_filename):
+    def __init__(self, req, host, user, password, dbname, port, retry_count,
+            retry_pause, event_size_limit, catmap_filename, tagmap_filename):
         ObjectReq.__init__(self, req)
         self.host = host
         self.user = user
@@ -435,6 +432,7 @@ class MySQL(ObjectReq):
         self.port = port
         self.retry_count = retry_count
         self.retry_pause = retry_pause
+        self.event_size_limit = event_size_limit
         self.catmap_filename = catmap_filename
         self.tagmap_filename = tagmap_filename
 
@@ -653,7 +651,18 @@ class MySQL(ObjectReq):
         else:
             maxid = self.getLastEventId()
 
-        events = [json.loads(r["data"]) for r in row]
+        events = []
+        for r in row:
+            try:
+                e = json.loads(r["data"])
+            except Exception:
+                # Note that we use Error object just for proper formatting,
+                # but do not raise it; from client perspective invalid
+                # events get skipped silently.
+                err = self.req.error(message="Unable to deserialize JSON event from db, id=%s" % r["id"], error=500,
+                    exc=sys.exc_info(), id=r["id"])
+                err.log(logging.getLogger(), prio=logging.WARNING)
+            events.append(e)
 
         return {
             "lastid": maxid,
@@ -662,8 +671,12 @@ class MySQL(ObjectReq):
 
 
     def store_event(self, client, event):
+        json_event = json.dumps(event)
+        if len(json_event) >= self.event_size_limit:
+            return [{"error": 413, "message": "Event too long (>%i B)" % self.event_size_limit}]
         try:
-            self.query("INSERT INTO events (received,client_id,data) VALUES (NOW(), %s, %s)", (client.id, json.dumps(event)), dml=True)
+            self.query("INSERT INTO events (received,client_id,data) VALUES (NOW(), %s, %s)",
+                (client.id, json_event), dml=True)
             lastid = self.crs.lastrowid
 
             catlist = event.get('Category', ["Other"])
@@ -714,20 +727,51 @@ class MySQL(ObjectReq):
 
     def load_maps(self):
         try:
-            self.query("DELETE FROM tags")
+            self.query("DELETE FROM tags", dml=True)
             for tag, num in self.tagmap.iteritems():
-                self.query("INSERT INTO tags(id, tag) VALUES (%s, %s)", (num, tag))
-            self.query("DELETE FROM categories")
+                self.query("INSERT INTO tags(id, tag) VALUES (%s, %s)", (num, tag), dml=True)
+            self.query("DELETE FROM categories", dml=True)
             for cat_subcat, num in self.catmap.iteritems():
                 catsplit = cat_subcat.split(".", 1)
                 category = catsplit[0]
                 subcategory = catsplit[1] if len(catsplit)>1 else None
                 self.query("INSERT INTO categories(id, category, subcategory, cat_subcat) VALUES (%s, %s, %s, %s)",
-                    (num, category, subcategory, cat_subcat))
+                    (num, category, subcategory, cat_subcat), dml=True)
             self.con.commit()
         except Exception as e:
             self.con.rollback()
             raise
+
+
+    def purge_lastlog(self, days):
+        try:
+            self.query(
+                "DELETE FROM last_events "
+                " USING last_events LEFT JOIN ("
+                "    SELECT MAX(id) AS last FROM last_events"
+                "    GROUP BY client_id"
+                " ) AS maxids ON last=id"
+                " WHERE timestamp < DATE_SUB(CURDATE(), INTERVAL %s DAY) AND last IS NULL",
+                days, dml=True)
+            affected = self.con.affected_rows()
+            self.con.commit()
+        except Exception as e:
+            self.con.rollback()
+            raise
+        return affected
+
+
+    def purge_events(self, days):
+        try:
+            self.query(
+                "DELETE FROM events WHERE received < DATE_SUB(CURDATE(), INTERVAL %s DAY)",
+                days, dml=True)
+            affected = self.con.affected_rows()
+            self.con.commit()
+        except Exception as e:
+            self.con.rollback()
+            raise
+        return affected
 
 
 
@@ -1144,6 +1188,7 @@ def build_server(conf):
             "port": {"type": natural, "default": 3306},
             "retry_pause": {"type": natural, "default": 5},
             "retry_count": {"type": natural, "default": 3},
+            "event_size_limit": {"type": natural, "default": 5*1024*1024},
             "catmap_filename": {"type": filepath, "default": path.join(path.dirname(__file__), "catmap_mysql.json")},
             "tagmap_filename": {"type": filepath, "default": path.join(path.dirname(__file__), "tagmap_mysql.json")}
         },
@@ -1323,6 +1368,17 @@ def load_maps():
     server.handler.db.load_maps()
 
 
+def purge(days=30, lastlog=None, events=None):
+    if lastlog is None and events is None:
+        lastlog = events = True
+    if lastlog:
+        count = server.handler.db.purge_lastlog(days)
+        print "Purged %d lastlog entries." % count
+    if events:
+        count = server.handler.db.purge_events(days)
+        print "Purged %d events." % count
+
+
 def add_client_args(subargp, mod=False):
     subargp.add_argument("--help", action="help", help="show this help message and exit")
     if mod:
@@ -1402,6 +1458,22 @@ def get_args():
         help="show this help message and exit")
     subargp_list.add_argument("--id", action="store", type=int,
         help="client id", default=None)
+
+    subargp_purge = subargp.add_parser("purge", add_help=False,
+        description=
+            "Purge old events or lastlog records."
+            " Note that lastlog purge retains at least one newest record for each"
+            " client, even if it is more than number of 'days' old.",
+        help="purge old events or lastlog records")
+    subargp_purge.set_defaults(command=purge)
+    subargp_purge.add_argument("--help", action="help",
+        help="show this help message and exit")
+    subargp_purge.add_argument("-l", "--lastlog", action="store_true", dest="lastlog", default=None,
+        help="purge lastlog records")
+    subargp_purge.add_argument("-e", "--events", action="store_true", dest="events", default=None,
+        help="purge events")
+    subargp_purge.add_argument("-d", "--days", action="store", dest="days", type=int, default=30,
+        help="records older than 'days' back from today will get purged")
 
     subargp_loadmaps = subargp.add_parser("loadmaps", add_help=False,
         description=

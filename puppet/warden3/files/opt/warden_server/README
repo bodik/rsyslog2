@@ -156,6 +156,7 @@ object from particular section list is used ("FileLogger" for example).
       port: database server port, default 3306
       retry_pause: retry in case of database errors, in seconds, defaults to 5
       retry_count: number of retries, defaults to 3
+      event_size_limit: max size of serialized event, defaults to 5 MB
       catmap_filename: IDEA category mapping to database ids, defaults to
                        "catmap_mysql.json" at installation directory
       tagmap_filename": IDEA node type mapping to database ids, defaults to
@@ -239,7 +240,21 @@ warden_server.py list [--help] [--id ID]
      --id ID  client id
 
 
-   warden_server.py loadmaps [--help]
+warden_server.py purge [--help] [-l] [-e] [-d DAYS]
+
+   Purge old events or lastlog records. Note that lastlog purge retains at
+   least one newest record for each client, even if it is more than number of
+   'days' old.
+
+   optional arguments:
+     --help                show this help message and exit
+     -l, --lastlog         purge lastlog records
+     -e, --events          purge events
+     -d DAYS, --days DAYS  records older than 'days' back from today will get
+                           purged
+
+
+warden_server.py loadmaps [--help]
 
    Load 'categories' and 'tags' table from 'catmap_mysql.json' and
    'tagmap_mysql.json'. Note that this is NOT needed for server at all, load
