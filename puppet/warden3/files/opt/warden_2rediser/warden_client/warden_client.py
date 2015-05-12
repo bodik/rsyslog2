@@ -588,7 +588,7 @@ def format_timestamp(epoch=None, utc=True, utcoffset=None):
     return format_time(*time.gmtime(epoch)[:6], microsec=us, utcoffset=utcoffset)
 
 
-def format_time(year, month, day, hour, minute, second, microsec=0, utcoffset=0):
+def format_time(year, month, day, hour, minute, second, microsec=0, utcoffset=None):
     if utcoffset is None:
         utcoffset = -(time.altzone if time.daylight else time.timezone)
     tstr = "%04d-%02d-%02dT%02d:%02d:%02d" % (year, month, day, hour, minute, second)
