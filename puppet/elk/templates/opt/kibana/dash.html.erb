@@ -70,6 +70,13 @@ document.write("<li></li>");
 a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/glastopf.json";
 document.write("<li> <a href=\""+a+"\">kibana3 glastopf</a> </li>");
 
+document.write("<li></li>");
+
+a = location.protocol+"//"+window.location.hostname+"/index.html#/dashboard/file/modules.json";
+document.write("<li> <a href=\""+a+"\">kibana3 modules analysis</a> </li>");
+
+document.write("<li></li>");
+
 document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>\"><%= kibana_elasticsearch_url %></a> </li>");
 document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_template?pretty=true\"><%= kibana_elasticsearch_url %>/_template?pretty=true\</a> </li>");
 document.write("<li> <a href=\"<%= kibana_elasticsearch_url %>/_plugin/head/\"><%= kibana_elasticsearch_url %>/_plugin/head/\</a> </li>");
