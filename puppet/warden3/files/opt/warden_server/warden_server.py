@@ -316,13 +316,12 @@ class X509Authenticator(NoAuthenticator):
         subj = cert.get_subject()
         commons = [n.get_data().as_text() for n in subj.get_entries_by_nid(subj.nid["CN"])]
 
-	altnames=[]
 	try:
-	        ext = cert.get_ext("subjectAltName")
-	        extstrs = [val.strip() for val in ext.get_value().split(",")]
-	        altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
-	except LookupError as e:
-		pass
+		extstrs = cert.get_ext("subjectAltName").get_value().split(",")
+	except LookupError:
+		extstrs = []
+	extstrs = [val.strip() for val in extstrs]
+	altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
 
         # bit of mangling to get rid of duplicates and leave commonname first
         firstcommon = commons[0]
