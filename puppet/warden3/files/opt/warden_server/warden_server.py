@@ -321,7 +321,7 @@ class X509Authenticator(NoAuthenticator):
 	        ext = cert.get_ext("subjectAltName")
 	        extstrs = [val.strip() for val in ext.get_value().split(",")]
 	        altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
-	except:
+	except LookupError as e:
 		pass
 
         # bit of mangling to get rid of duplicates and leave commonname first
