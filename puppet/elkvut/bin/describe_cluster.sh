@@ -12,7 +12,7 @@ sh /puppet/elkvut/bin/forall.sh 'ruby /puppet/elkvut/bin/describe_node.rb'
 echo "=== describe.rb end"
 
 echo "h3. === _nodes/_all begin"
-curl -XGET "http://$(facter ipaddress):39200/_nodes/_all/os,process,jvm,network,transport,http?pretty=true" 2>/dev/null
+curl -XGET "http://$(facter ipaddress):39200/_nodes/_all?pretty=true" 2>/dev/null
 echo "=== _nodes/_all end"
 
 echo "h3. === _template begin"
@@ -21,7 +21,7 @@ echo "=== _template end"
 
 echo "h3. === _all indexes mappings and settings begin"
 curl -XGET "http://$(facter ipaddress):39200/_all?pretty=true" 2>/dev/null
-echo "=== _all indexes mappings and settings begin"
+echo "=== _all indexes mappings and settings end"
 
 echo "h3. === show_nodes.sh begin"
 sh /puppet/elkvut/bin/show_nodes.sh
