@@ -121,7 +121,7 @@ class hpkippo (
 
 
 	#autotest
-	package { "medusa": ensure => installed, }
+	package { ["medusa","sshpass"]: ensure => installed, }
 
 
 
