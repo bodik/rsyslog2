@@ -25,7 +25,9 @@ DEFAULT_AWIN = 5
 DEFAULT_ANONYMISED = 'no'
 DEFAULT_TARGET_NET = '0.0.0.0/0'
 
-def anonymise(event, anonymised, target_net):
+def fill_addresses(event, src_ip, anonymised, target_net):
+  af = "IP4" if not ':' in src_ip else "IP6"
+  event['Source'][0][af] = [src_ip]
   if anonymised != 'omit':
     if anonymised == 'yes':
       event['Target'][0]['Anonymised'] = True
@@ -67,9 +69,7 @@ def gen_event_idea_auth(client_name, detect_time, conn_count, src_ip, dst_ip, an
 	}
      ]
   }
-  af = "IP4" if not ':' in src_ip else "IP6"
-  event['Source'][0][af] = [src_ip]
-  event = anonymise(event, anonymised, target_net)
+  event = fill_addresses(event, src_ip, anonymised, target_net)
   
   return event
 
@@ -104,11 +104,7 @@ def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, 
 	}
      ]
   }
-
-  af = "IP4" if not ':' in src_ip else "IP6"
-  event['Source'][0][af] = [src_ip]
-
-  event = anonymise(event, anonymised, target_net)
+  event = fill_addresses(event, src_ip, anonymised, target_net)
   
   return event
 
@@ -143,9 +139,7 @@ def gen_event_idea_download(client_name, detect_time, conn_count, src_ip, dst_ip
 	}
      ]
   }
-  af = "IP4" if not ':' in src_ip else "IP6"
-  event['Source'][0][af] = [src_ip]
-  event = anonymise(event, anonymised, target_net)
+  event = fill_addresses(event, src_ip, anonymised, target_net)
   
   return event
 
