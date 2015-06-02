@@ -182,7 +182,7 @@ def gen_event_idea_download(client_name, detect_time, conn_count, src_ip, dst_ip
   }
   af = "IP4" if not ':' in src_ip else "IP6"
   event['Source'][0][af] = [src_ip]
-  event = anonymise(event, anonymised, target_net)
+  event = fill_addresses(event, anonymised, target_net)
   
   return event
 
