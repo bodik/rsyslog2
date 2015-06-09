@@ -83,6 +83,11 @@ class warden3::server (
 		provider => "pip",
 		require => Package["python-pip"],
 	}
+	package { "functools32":
+		ensure => installed,
+		provider => "pip",
+		require => Package["python-pip"],
+	}
 	file { "$install_dir":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
