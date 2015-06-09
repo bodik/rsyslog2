@@ -221,6 +221,7 @@
             "Node.Name",
             "Category",
             "Source.IP4",
+            "sg.cc",
             "Target.IP4",
             "Target.Port",
             "Target.Proto",
