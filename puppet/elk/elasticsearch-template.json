@@ -59,6 +59,16 @@
 								}
 							}
 						}
+					},
+					"sg" : {
+						"type" : "object",
+						"dynamic": true,
+						"path": "full",
+						"properties" : {
+							"country_code2": { "index": "not_analyzed", "type": "string" },
+							"cc": { "index": "not_analyzed", "type": "string" },
+							"location" : { "type" : "geo_point" }
+						}
 					}
 				}
 			},
