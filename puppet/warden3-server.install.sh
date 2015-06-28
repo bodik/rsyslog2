@@ -9,10 +9,4 @@ if [ $TCNT -lt "2" ]; then
         /usr/bin/mysql warden3 < /puppet/warden3/files/opt/warden_server/warden_3.0.sql
 fi
 
-/opt/warden_server/warden_server.py list | grep $(facter fqdn) 1>/dev/null 2>/dev/null
-if [ $? -eq 0 ]; then
-	echo "WARN: client $(facter fqdn) already registered"
-else
-	echo "INFO: registrering self $(facter fqdn) as warden client"
-	/opt/warden_server/warden_server.py register -n puppet_test_client -h $(hostname -f) -r bodik@cesnet.cz
-fi
+/bin/sh /puppet/warden3/bin/register_sensor.sh -s localhost -n puppet_test_client -d /opt/warden_server

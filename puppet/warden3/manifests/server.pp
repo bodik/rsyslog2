@@ -137,12 +137,6 @@ class warden3::server (
 	        require => Package["apache2"]
 	}
 
-	#exec { "gen cert":
-	#	command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca_local.sh ${install_dir}/etc",
-	#	creates => "${install_dir}/etc/${fqdn}.crt",
-	#	#require => Class["warden3::ca"],
-	#	require => [File["${ca_dir}/puppet.conf"], File["${ca_dir}/warden_ca.sh"]],
-	#}
 	class { "warden3::hostcert": 
 		require => File["/etc/avahi/services/warden-server.service"],
 	}

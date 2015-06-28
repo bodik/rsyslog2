@@ -13,54 +13,68 @@ OPTS="--confdir $CADIR"
 
 usage() {
 	echo "$0 init"
-	echo "$0 show_ca"
 	echo "$0 get_ca_crt"
+	echo "$0 get_ca_crl"
 	echo "$0 list"
-	echo "$0 get_crl"
-	echo "$0 generate FQDN"
 	echo "$0 sign FQDN"
-	echo "$0 show_crt FQDN"
-	echo "$0 get_crt FQDN"
-	echo "$0 get_key FQDN"
 	echo "$0 revoke FQDN"
 	echo "$0 clean FQDN"
+	echo ""
+	echo "$0 show_crt FQDN"
+	echo "$0 get_crt FQDN"
+
+	####echo "$0 show_ca"
+	####echo "$0 generate FQDN"
+	####echo "$0 get_key FQDN"
 }
 
 case "$1" in
-	list|init)
-		puppet cert $OPTS list --all
-	;;
-	show_ca)
-		puppet ca print ca $OPTS
+	#ca initialization, in case of puppet, just listing is fine, missing ca cert will be generated on the fly
+	init)
+		$0 list
 	;;
 	get_ca_crt)
 		cat $CADIR/ssl/ca/ca_crt.pem
 	;;
-	get_crl)
+	get_ca_crl)
 		puppet certificate_revocation_list find dummy --terminus ca $OPTS
 	;;
-	generate)
-		puppet cert $OPTS generate $2
+	# list all certificates known by authority
+	list)
+		puppet cert $OPTS list --all
 	;;
 	sign)
 		puppet cert $OPTS sign $2
 	;;
-	get_crt)
-		puppet certificate find $2 --ca-location local $OPTS
-	;;
-	get_key)
-		#dunno why key find return such a ugly string
-		puppet key find $2 $OPTS | sed 's/\\n/\n/g' | sed 's/"//g' | egrep -v "^$"
-	;;
-	show_crt)
-		puppet cert $OPTS print $2
-	;;
 	revoke)
 		puppet cert $OPTS revoke $2
 	;;
+	#clean all data for given DN
 	clean)
 		puppet cert $OPTS clean $2
 	;;
+
+	show_crt)
+		puppet cert $OPTS print $2
+	;;
+	get_crt)
+		puppet certificate find $2 --ca-location local $OPTS
+	;;
+
+
+
+	#show_ca)
+	#	puppet ca print ca $OPTS
+	#;;
+	#generate)
+	#	puppet cert $OPTS generate $2
+	#;;
+	#get_key)
+	#	#dunno why key find return such a ugly string
+	#	puppet key find $2 $OPTS | sed 's/\\n/\n/g' | sed 's/"//g' | egrep -v "^$"
+	#;;
+
+
 	*)
 		usage
 	;;

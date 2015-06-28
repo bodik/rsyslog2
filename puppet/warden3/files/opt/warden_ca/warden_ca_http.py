@@ -10,54 +10,55 @@ import urllib
 import json
 from urlparse import urlparse, parse_qs
 
-def resolve_client_address(ip=None):
+def _resolve_client_address(ip=None):
 	if hasattr(socket, 'setdefaulttimeout'):
 		socket.setdefaulttimeout(5)
-
 	try:
 		hostname =  socket.gethostbyaddr(ip)
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
                 pass
-
 	return hostname[0]
 
 
 
 
-##def read_cfg(path):
-##	with open(path, "r") as f:
-##        	stripcomments = "\n".join((l for l in f if not l.lstrip().startswith(("#", "//"))))
-##		conf = json.loads(stripcomments)
-##	# Lowercase keys
-##	conf = dict((sect.lower(), dict(
-##		(subkey.lower(), val) for subkey, val in subsect.iteritems())
-##		) for sect, subsect in conf.iteritems())
-##	return conf
-
-
-
-
-def getCertificate(self):
-	hostname = resolve_client_address(self.client_address[0])
-	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_crt", hostname])
-	return data
-
-def getCaCertificate(self):
+def get_ca_crt(self):
 	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_ca_crt"])
 	return data
 
-def getCrl(self):
-	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_crl"])
+def get_ca_crl(self):
+	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_ca_crl"])
 	return data
 
-def putCsr(self):
-	hostname = resolve_client_address(self.client_address[0])
+def get_crt(self):
+	hostname = _resolve_client_address(self.client_address[0])
+	#TODO: validate in case attacker has very nasty PTR
+	data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "get_crt", hostname])
+	return data
+
+
+
+
+def _sign(self):
+	print ("WARN: autosigning for %s" % hostname)
+	try:
+		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
+	except Exception as e:
+		print "Unexpected error:", sys.exc_info()[0], e, data
+		raise
+	return 0
+
+
+
+def put_csr(self):
+	hostname = _resolve_client_address(self.client_address[0])
 	filename = "ssl/ca/requests/%s.pem" % hostname
 	try:
 		length = int(self.headers['Content-Length'])
         	post_data = urllib.unquote(self.rfile.read(length).decode('utf-8'))
 
+		#subseqent calls if we want to reissue certificate for same DN, cloud testing and such...
 		try:
 			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "revoke", hostname])
 			data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "clean", hostname])
@@ -70,12 +71,7 @@ def putCsr(self):
 		the_file.close()
 
 		if os.path.exists("AUTOSIGN"):
-			print ("WARN: autosigning for %s" % hostname)
-			try:
-				data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
-			except Exception as e:
-				print "Unexpected error:", sys.exc_info()[0], e, data
-				raise
+			_sign(self)
 
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
@@ -84,22 +80,22 @@ def putCsr(self):
 	return 200
 
 
-def registerSensor(self):
+def register_sensor(self):
 	if os.path.exists("AUTOSIGN") == False:
 		return 403
 
 	try:
 		qs = parse_qs(urlparse(self.path).query)
-		if 's' not in qs:
+		if 'sensor_name' not in qs:
 			print "ERROR: service s not present"
 			return 400
 	
-		hostname = resolve_client_address(self.client_address[0])
+		hostname = _resolve_client_address(self.client_address[0])
 		hostname_rev = hostname.split(".")
 		hostname_rev.reverse()
 		hostname_rev = ".".join(hostname_rev)
 
-		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,qs['s'][0]]), hostname)
+		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,qs['sensor_name'][0]]), hostname)
 		print "DEBUG:",cmd
 		data = subprocess.check_output(cmd.split(" "))
 
@@ -113,31 +109,31 @@ def registerSensor(self):
 def process_request(self):
 	data = ""
 	try:
-		if self.path.startswith("/getCertificate"):
-			data = getCertificate(self)
+		if self.path.startswith("/get_crt"):
+			data = get_crt(self)
 			self.send_response(200)
 			self.end_headers()
 			self.wfile.write(data)
 		
-		elif self.path.startswith("/getCaCertificate"):
-			data = getCaCertificate(self)
+		elif self.path.startswith("/get_ca_crt"):
+			data = get_ca_crt(self)
 			self.send_response(200)
 			self.end_headers()
 			self.wfile.write(data)
 
-		elif self.path.startswith("/getCrl"):
-			data = getCrl(self)
+		elif self.path.startswith("/get_ca_crl"):
+			data = get_ca_crl(self)
 			self.send_response(200)
 			self.end_headers()
 			self.wfile.write(data)
 
-		elif self.path.startswith("/putCsr"):
-			data = putCsr(self)
+		elif self.path.startswith("/put_csr"):
+			data = put_csr(self)
 			self.send_response(data)
 			self.end_headers()
 
-		elif self.path.startswith("/registerSensor"):
-			data = registerSensor(self)
+		elif self.path.startswith("/register_sensor"):
+			data = register_sensor(self)
 			self.send_response(data)
 			self.end_headers()
 
