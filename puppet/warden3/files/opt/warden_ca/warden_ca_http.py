@@ -40,12 +40,12 @@ def get_crt(self):
 
 
 
-def _sign(self):
-	print ("WARN: autosigning for %s" % hostname)
+def _sign(dn):
+	print ("WARN: autosigning for %s" % dn)
 	try:
-		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", hostname])
+		data = subprocess.check_output(["/bin/sh", "warden_ca.sh", "sign", dn])
 	except Exception as e:
-		print "Unexpected error:", sys.exc_info()[0], e, data
+		print "Unexpected error:", sys.exc_info()[0], e
 		raise
 	return 0
 
@@ -71,7 +71,7 @@ def put_csr(self):
 		the_file.close()
 
 		if os.path.exists("AUTOSIGN"):
-			_sign(self)
+			_sign(dn)
 
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
