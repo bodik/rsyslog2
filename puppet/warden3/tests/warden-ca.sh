@@ -10,7 +10,7 @@ if [ -z "$WS" ]; then
         exit 1
 fi
 
-curl -k "http://${WS}:45444/getCaCertificate" 1>/dev/null 2>/dev/null
+curl -k "http://${WS}:45444/get_ca_crt" 2>/dev/null | grep "BEGIN CERTIFICATE" 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 ca not running"
 fi
