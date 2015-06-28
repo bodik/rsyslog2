@@ -71,7 +71,7 @@ def put_csr(self):
 		the_file.close()
 
 		if os.path.exists("AUTOSIGN"):
-			_sign(dn)
+			_sign(hostname)
 
 	except Exception as e:
 		print "Unexpected error:", sys.exc_info()[0], e
