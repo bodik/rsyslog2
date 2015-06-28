@@ -66,7 +66,7 @@ class warden3::2rediser (
 	}
 
 	exec { "register warden_2rediser sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh ${warden_server_real} warden_2rediser ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n warden_2rediser -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
