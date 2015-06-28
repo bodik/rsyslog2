@@ -139,7 +139,7 @@ class warden3::server (
 
 	class { "warden3::hostcert":
 		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use localhost
-		warden_server => "localhost",
+		warden_server => $fqdn,
 		require => File["/etc/avahi/services/warden-server.service"],
 	}
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
