@@ -78,22 +78,17 @@ class warden3::server (
 
 	#server application
 	package { ["python-mysqldb", "python-m2crypto", "python-pip"]: ensure => installed, }
-	package { "jsonschema":
+	package { ["jsonschema", "functools32"]:
 		ensure => installed,
 		provider => "pip",
 		require => Package["python-pip"],
 	}
-	package { "functools32":
-		ensure => installed,
-		provider => "pip",
-		require => Package["python-pip"],
-	}
+
 	file { "$install_dir":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
 
-	#$sources = "/warden/warden3/warden_server/"
 	$sources = "puppet:///modules/${module_name}/opt/warden_server/"
 	file { "${install_dir}/warden_server.wsgi":
 		source => "${sources}warden_server.wsgi.dist",

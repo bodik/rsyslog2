@@ -19,6 +19,14 @@ class hpkippo (
 	$warden_server_service = "_warden-server._tcp",
 ) {
 
+	if ($warden_server) {
+                $warden_server_real = $warden_server
+        } elsif ( $warden_server_auto == true ) {
+                include metalib::avahi
+                $warden_server_real = avahi_findservice($warden_server_service)
+        }
+
+
 
 	#mysql server
 	#package { "mysql-server": ensure => installed, }
@@ -127,7 +135,7 @@ class hpkippo (
 
 
 
-	# warden_client pro kippo
+	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
@@ -137,29 +145,7 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	file { "${install_dir}/warden/warden3-kippo-sender.py":
-		source => "puppet:///modules/${module_name}/hp-kippo/warden3-kippo-sender.py",
-		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
-		require => File["${install_dir}/warden"],
-	}
-	file { "${install_dir}/warden/kippo-reporter.py":
-		source => "puppet:///modules/${module_name}/reporter/kippo-reporter.py",
-		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
-		require => File["${install_dir}/warden"],
-	}
-	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
-	file { "${install_dir}/warden/warden_client-kippo.cfg":
-		content => template("${module_name}/warden_client-kippo.cfg.erb"),
-		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
-		require => File["${install_dir}/warden"],
-	}
-	if ($warden_server) {
-                $warden_server_real = $warden_server
-        } elsif ( $warden_server_auto == true ) {
-                include metalib::avahi
-                $warden_server_real = avahi_findservice($warden_server_service)
-        }
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
@@ -173,10 +159,26 @@ class hpkippo (
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["clone kippo"],
 	}
+
+	file { "${install_dir}/warden/warden3-kippo-sender.py":
+		source => "puppet:///modules/${module_name}/hp-kippo/warden3-kippo-sender.py",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
+		require => File["${install_dir}/warden"],
+	}
+	file { "${install_dir}/warden/kippo-reporter.py":
+		source => "puppet:///modules/${module_name}/reporter/kippo-reporter.py",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0755",
+		require => File["${install_dir}/warden"],
+	}
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
+	file { "${install_dir}/warden/warden_client-kippo.cfg":
+		content => template("${module_name}/warden_client-kippo.cfg.erb"),
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/warden"],
+	}
 	file { "/etc/cron.d/warden-kippo":
 		content => template("${module_name}/warden-kippo.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => User["$kippo_user"],
 	}
-
 }
