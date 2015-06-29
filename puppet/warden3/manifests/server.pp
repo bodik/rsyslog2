@@ -138,7 +138,7 @@ class warden3::server (
 	}
 
 	class { "warden3::hostcert":
-		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use localhost
+		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use fqdn
 		warden_server => $fqdn,
 		require => File["/etc/avahi/services/warden-server.service"],
 	}
@@ -154,8 +154,8 @@ class warden3::server (
 	}
 
 	#tests
-	package { "curl": ensure => installed, }
-
+	#already in warden3::hostcert
+	#package { "curl": ensure => installed, }
 
 }
 
