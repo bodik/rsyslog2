@@ -12,6 +12,7 @@ class warden3::hostcert (
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
+	package { "curl": ensure => installed }
 
         if ($warden_server) {
                 $warden_server_real = $warden_server
@@ -22,6 +23,6 @@ class warden3::hostcert (
         exec { "gen cert":
                 command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -s ${warden_server_real} -d ${dest_dir}",
                 creates => "${dest_dir}/${fqdn}.crt",
-		require => File["$dest_dir"],
+		require => [File["$dest_dir"], Package["curl"]],
         }
 }
