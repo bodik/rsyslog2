@@ -9,4 +9,4 @@ if [ $TCNT -lt "2" ]; then
         /usr/bin/mysql warden3 < /puppet/warden3/files/opt/warden_server/warden_3.0.sql
 fi
 
-/bin/sh /puppet/warden3/bin/register_sensor.sh -s localhost -n puppet_test_client -d /opt/warden_server
+/bin/sh /puppet/warden3/bin/register_sensor.sh -s $(facter fqdn) -n puppet_test_client -d /opt/warden_server
