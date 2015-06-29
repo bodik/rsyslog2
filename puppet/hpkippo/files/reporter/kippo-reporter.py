@@ -38,7 +38,8 @@ def fill_addresses(event, src_ip, anonymised, target_net):
 	return event
 
 
-def gen_event_idea_auth(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, username, password, sessionid):
+def gen_event_idea_auth(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
+	username, password, sessionid):
 
 	event = {
 		"Format": "IDEA0",
@@ -63,7 +64,8 @@ def gen_event_idea_auth(client_name, detect_time, conn_count, src_ip, dst_ip, an
 	return event
 
 
-def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, sessionid, ttylog):
+def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
+	sessionid, ttylog):
 
 	event = {
 		"Format": "IDEA0",
@@ -87,7 +89,8 @@ def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, 
   
 	return event
 
-def gen_event_idea_download(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, sessionid, url, outfile):
+def gen_event_idea_download(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
+	sessionid, url, outfile):
 
 	event = {
 		"Format": "IDEA0",
@@ -160,6 +163,7 @@ def main():
 			dst_ip = row['sensor'],
 			anonymised = aanonymised, 
 			target_net = atargetnet,
+
 			username = row['username'],
 			password = row['password'],
 			sessionid = row['sessionid']
@@ -196,6 +200,7 @@ def main():
 			dst_ip = row['sensor'],
 			anonymised = aanonymised, 
 			target_net = atargetnet,
+
 			sessionid = row['sessionid'],
 			ttylog = row['ttylog']
 		)	
@@ -223,6 +228,7 @@ def main():
 			dst_ip = row['sensor'],
 			anonymised = aanonymised, 
 			target_net = atargetnet,
+
 			sessionid = row['sessionid'],
 			url = row['url'],
 			outfile = row['ofile']
