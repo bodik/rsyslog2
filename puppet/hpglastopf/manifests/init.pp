@@ -10,7 +10,7 @@
 #
 # bodik@cesnet.cz
 #
-class glastopf (
+class hpglastopf (
 	$install_dir = "/opt/glastopf",
 
 	$glastopf_user = "glastopf",
@@ -19,6 +19,14 @@ class glastopf (
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
 ) {
+
+	if ($warden_server) {
+                $warden_server_real = $warden_server
+        } elsif ( $warden_server_auto == true ) {
+                include metalib::avahi
+                $warden_server_real = avahi_findservice($warden_server_service)
+        }
+
 
 	#glastopf instal
 	package { 
