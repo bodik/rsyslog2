@@ -86,10 +86,10 @@ def main():
 	events = []
 
 
-	query =  "SELECT id, strftime('%%s',time) as time, source, request_url, request_raw, pattern, filename \
+	query =  "SELECT id, strftime('%%s',time ,'utc') as utime, source, request_url, request_raw, pattern, filename \
 			FROM events \
-			WHERE strftime('%%s', time) > (strftime('%%s', 'now')-%s)" % (awin)
-#	print "DEBUG: query=",query
+			WHERE cast(utime as integer) > (cast(strftime('%%s', 'now') as integer)-%s)" % (awin)
+	#print "DEBUG: query=",query
 
 	attempts = 0
 	while attempts < aconattempts:
@@ -112,8 +112,8 @@ def main():
 	stime = format_timestamp(time() - awin)
 
 	for row in rows:
-		#print row['time']
-		dtime = format_timestamp(float(row['time']))
+		#print row
+		dtime = format_timestamp(float(row['utime']))
 		source_info = row['source'].split(":")
 		a = gen_event_idea_g1(
 			client_name = aname, 
