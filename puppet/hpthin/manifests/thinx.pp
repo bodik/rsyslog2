@@ -1,13 +1,13 @@
 #!/usr/bin/puppet apply
 
 class hpthin::thinx (
-	$key => "1234",
+	$key = "1234",
 
-	$thin_tun_dev => "tunx",
-	$thin_tun_address => "10.0.0.2",
+	$thin_tun_dev = "tunx",
+	$thin_tun_address = "10.0.0.2",
 
-	$core_public_address => "147.251.253.58",
-	$core_tun_address => "10.0.0.1",
+	$core_public_address = "147.251.253.58",
+	$core_tun_address = "10.0.0.1",
 ) {
 	exec { "tunnel":
 		command => "/sbin/ip tunnel add ${thin_tun_dev} mode gre local ${ipaddress} remote ${core_public_address} key ${key}",
