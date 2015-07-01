@@ -46,6 +46,7 @@ class mongomine::lsl (
 	class { 'logstash':
 		manage_repo  => true,
 		repo_version => '1.4',
+		version => '1.4.2-*',
 		install_contrib => true,
 	}
 	file { '/etc/logstash/patterns/metacentrum':
