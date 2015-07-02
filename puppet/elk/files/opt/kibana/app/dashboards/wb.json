@@ -226,7 +226,8 @@
             "Target.Port",
             "Target.Proto",
             "Note",
-            "ConnCount"
+            "ConnCount",
+            "Attach.request_url"
           ],
           "localTime": true,
           "timeField": "@timestamp",
