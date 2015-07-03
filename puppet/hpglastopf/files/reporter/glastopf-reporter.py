@@ -129,7 +129,7 @@ def main():
 			filename = row['filename'],
 		)
 		a['Source'][0]['Port']=[int(source_info[1])]
-		print json.dumps(a)
+		#print json.dumps(a)
 		events.append(a)
 
 	print "=== Sending ==="
