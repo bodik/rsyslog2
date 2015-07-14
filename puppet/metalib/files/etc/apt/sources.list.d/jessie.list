@@ -1,0 +1,12 @@
+#Managed by Puppet
+#Only basic Debian repository
+#Other repositories are specified one per file in folder /etc/apt/sources.list.d
+
+# Debian repository
+deb http://ftp.zcu.cz/pub/linux/debian jessie main contrib non-free
+deb http://ftp.zcu.cz/pub/linux/debian jessie-updates main contrib non-free
+deb http://ftp.zcu.cz/pub/linux/debian-security jessie/updates main contrib non-free
+
+deb-src http://ftp.zcu.cz/pub/linux/debian jessie main contrib non-free
+deb-src http://ftp.zcu.cz/pub/linux/debian jessie-updates main contrib non-free
+deb-src http://ftp.zcu.cz/pub/linux/debian-security jessie/updates main contrib non-free
