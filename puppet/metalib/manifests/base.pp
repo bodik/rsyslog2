@@ -39,12 +39,22 @@ class metalib::base {
                 timeout => 900;
 	}
 
-	file { "/etc/apt/sources.list.d/wheezy.list":
-	        source => "puppet:///modules/metalib/etc/apt/sources.list.d/wheezy.list",
+	case $lsbmajdistrelease {
+		7: {
+			$file_sourceslist = "puppet:///modules/metalib/etc/apt/sources.list.d/wheezy.list"
+			$file_sourceslist_dst = "/etc/apt/sources.list.d/wheezy.list"
+		}
+		8: {
+			$file_sourceslist = "puppet:///modules/metalib/etc/apt/sources.list.d/jessie.list"
+			$file_sourceslist_dst = "/etc/apt/sources.list.d/jessie.list"
+		}
+	}
+	file { "$file_sourceslist_dst":
+	        source => $file_sourceslist,
 	        owner => "root", group => "root", mode => "0644",
 	        notify => Exec["apt-get update"],
 	}
-
+	
 	#cron { "apt":
 	#  command => "/usr/bin/aptitude update 1>/dev/null",
 	#  user    => root,
