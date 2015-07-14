@@ -60,7 +60,7 @@ DISK=[DEV_PREFIX="vd",IMAGE="METACLOUD-Debian-7.8.0-x86_64-201504051048@metaclou
 DISK=[DEV_PREFIX="vd",SIZE="4096",TYPE="swap"]
 DISK=[DEV_PREFIX="vd",FORMAT="ext3",SIZE="40960",TYPE="fs"]
 LOGO="images/logos/debian.png"
-MEMORY="1024"
+MEMORY="512"
 NIC=[NETWORK="metacloud-brno-public",NETWORK_UNAME="oneadmin"]
 RAW=[DATA="<!-- RAW data follows: --><cpu mode='host-model'></cpu> <devices><serial type='pty'><target port='0'/></serial><console type='pty'><target type='serial' port='0'/></console> <channel type='pty'><target type='virtio' name='org.qemu.guest_agent.0'/></channel></devices>",TYPE="kvm"]
 SUNSTONE_CAPACITY_SELECT="YES"
