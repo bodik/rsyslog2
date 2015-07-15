@@ -24,7 +24,7 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x nfdump.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog7_installed.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf/tests/glastopf.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x netflow/tests/nfdump.sh&apos;
