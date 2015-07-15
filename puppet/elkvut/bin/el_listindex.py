@@ -10,7 +10,7 @@ pp = pprint.PrettyPrinter(indent=4)
 def printf(format, *args):
     sys.stdout.write(format % args)
 
-url = 'http://100.64.24.81:39200/_status'
+url = 'http://147.228.242.149:39200/_status'
 
 params = dict()
 
