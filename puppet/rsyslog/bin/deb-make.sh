@@ -21,8 +21,8 @@ else
 fi
 
 if [ -z $RB_VERSION ]; then
-	git checkout debian/8.11.0-1
-	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=debian/8.11.0-1
+	git checkout debian/8.11.0.rb21
+	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=debian/8.11.0.rb21
 else 
 	git checkout $RB_VERSION
 	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RB_VERSION
