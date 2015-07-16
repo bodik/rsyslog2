@@ -164,8 +164,6 @@ metacloud_templates() {
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-metacloud
 	onetemplate delete rsyslog2-wheezy-small-metacloud 1>/dev/null
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-small-metacloud
-	onetemplate delete rsyslog2-wheezy-cerit-XL 1>/dev/null
-	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-cerit-XL
 }
 
 vm_list() {
