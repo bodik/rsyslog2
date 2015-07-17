@@ -36,7 +36,7 @@ class elk::esd (
 
 	class { 'elasticsearch':
 		manage_repo  => true,
-		repo_version => '1.4',
+		repo_version => '1.6',
 		java_install => true,
 		datadir => '/scratch',
 		init_defaults => $config_hash,
