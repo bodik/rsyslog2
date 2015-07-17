@@ -20,18 +20,6 @@ class rediser {
 
 	include metalib::apt-get-update
 
-	file { "/etc/apt/sources.list.d/wheezy-backports.list":
-	        source => "puppet:///modules/${module_name}/etc/apt/sources.list.d/wheezy-backports.list",
-	        owner => "root", group => "root", mode => "0644",
-	        notify => Exec["apt-get update"],
-	}
-	exec { "install_redis-server_force_version":
-		command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y -o DPkg::Options::=--force-confold  -t wheezy-backports redis-server",
-		timeout => 600,
-		onlyif => "/usr/bin/dpkg -l redis-server | grep ':2\\.4'",
-		require => [File["/etc/apt/sources.list.d/wheezy-backports.list"], Package["redis-server"]],
-	}
-
 	augeas { "/etc/redis/redis.conf" :
 		lens => 'Spacevars.lns',
 	        incl => "/etc/redis/redis.conf",
@@ -42,7 +30,7 @@ class rediser {
 			"set maxmemory 1024000000",
 			"rm save",
 	        ],
-	        require => [Package["redis-server"], Exec["install_redis-server_force_version"]],
+	        require => [Package["redis-server"], Exec["gem install hiredis"]],
        		notify => Service["redis-server"],
 	}
 
@@ -55,14 +43,21 @@ class rediser {
 	}
 
 	#rediser
-	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev"]:
+	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev", "make"]:
 		ensure => installed,
 	}
-	package { 'hiredis':
-		ensure   => 'installed',
-		provider => 'gem',
-		require => Package["ruby-dev"]
-	}
+
+	#gem provider strikes again -- invalid option: --include-dependencies
+	#package { 'hiredis':
+	#	ensure   => 'installed',
+	#	provider => 'gem',
+	#	require => Package["ruby-dev"]
+	#}
+	exec { "gem install hiredis":
+                command => "/usr/bin/gem install --no-rdoc --no-ri hiredis",
+                unless => "/usr/bin/gem list | grep hiredis",
+                require => [Package["ruby-dev"], Package["make"]],
+        }
 	file { "/etc/init.d/rediser":
 		ensure => link,
 		target => "/puppet/rediser/rediser.init",
@@ -70,6 +65,6 @@ class rediser {
 	service { "rediser":
 		enable => true,
 		ensure => running,
-		require => [File["/etc/init.d/rediser"], Package["hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
+		require => [File["/etc/init.d/rediser"], Exec["gem install hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
 	}
 }
