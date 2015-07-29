@@ -165,7 +165,7 @@ class elasticsearch::params {
       $service_hasstatus  = true
       $service_pattern    = $service_name
       $defaults_location  = '/etc/default'
-      if versioncmp($::operatingsystemmajrelease, '8') >= 0 {
+      if versioncmp($::operatingsystemmajrelease, '8') >= 0 or versioncmp($::lsbmajdistrelease, '8') >= 0 {
         $init_template     = 'elasticsearch.systemd.erb'
         $service_providers = 'systemd'
         $pid_dir           = '/var/run/elasticsearch'
