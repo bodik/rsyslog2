@@ -23,7 +23,7 @@ class elk::esd (
 	if ( $esd_heap_size ) {
 		$esd_heap_size_real = $esd_heap_size
 	} else {
-		$m = split($::memorytotal, " ")
+		$m = split($::memorysize, " ")
 		if ( $m[1] == "GB" ) {
 			$half = max(floor($m[0] / 2), 1)
 			$esd_heap_size_real = "${half}g"
