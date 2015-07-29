@@ -1,6 +1,6 @@
 #Elasticsearch Puppet module
 
-[![Build Status](https://travis-ci.org/elasticsearch/puppet-elasticsearch.png?branch=master)](https://travis-ci.org/elasticsearch/puppet-elasticsearch)
+[![Build Status](https://travis-ci.org/elastic/puppet-elasticsearch.png?branch=master)](https://travis-ci.org/elastic/puppet-elasticsearch)
 
 ####Table of Contents
 
@@ -41,11 +41,12 @@ This module has been tested against ES 1.0 and up.
 ###Requirements
 
 * The [stdlib](https://forge.puppetlabs.com/puppetlabs/stdlib) Puppet library.
+* Augeas
 
 #### Repository management
 When using the repository management you will need the following dependency modules:
 
-* Debian/Ubuntu: [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt)
+* Debian/Ubuntu: [Puppetlabs/apt](http://forge.puppetlabs.com/puppetlabs/apt) Version 1.8.x or lower.
 * OpenSuSE: [Darin/zypprepo](https://forge.puppetlabs.com/darin/zypprepo)
 
 ##Usage
@@ -56,7 +57,7 @@ When using the repository management you will need the following dependency modu
 
 ```puppet
 class { 'elasticsearch':
-  version => '1.2.1'
+  version => '1.4.2'
 }
 ```
 
@@ -85,7 +86,7 @@ class { 'elasticsearch':
 
 ###Instances
 
-This module works with the concept of instances.
+This module works with the concept of instances. For service to start you need to specify at least one instance.
 
 ####Quick setup
 ```puppet
@@ -110,30 +111,86 @@ See [Advanced features](#advanced-features) for more information
 
 ###Plug-ins
 
-Install [a variety of plugins](http://www.elasticsearch.org/guide/plugins/):
+Install [a variety of plugins](http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/modules-plugins.html#known-plugins). Note that `module_dir` is where the plugin will install itself to and must match that published by the plugin author; it is not where you would like to install it yourself.
 
 ####From official repository
 ```puppet
 elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
-  module_dir => 'kopf'
+  instances  => 'instance_name'
 }
 ```
 ####From custom url
 ```puppet
-elasticsearch::plugin{ 'elasticsearch-jetty':
-  module_dir => 'jetty',
-  url        => 'https://oss-es-plugins.s3.amazonaws.com/elasticsearch-jetty/elasticsearch-jetty-1.2.1.zip'
+elasticsearch::plugin{ 'jetty':
+  url        => 'https://oss-es-plugins.s3.amazonaws.com/elasticsearch-jetty/elasticsearch-jetty-1.2.1.zip',
+  instances  => 'instance_name'
 }
 ```
+
+
+####Using a proxy
+You can also use a proxy if required by setting the `proxy_host` and `proxy_port` options:
+```puppet
+elasticsearch::plugin { 'lmenezes/elasticsearch-kopf',
+  instances  => 'instance_name',
+  proxy_host => 'proxy.host.com',
+  proxy_port => 3128
+}
+```
+
+#####Plugin name could be:
+* `elasticsearch/plugin/version` for official elasticsearch plugins (download from download.elasticsearch.org)
+* `groupId/artifactId/version`   for community plugins (download from maven central or oss sonatype)
+* `username/repository`          for site plugins (download from github master)
+
+####Upgrading plugins
+When you specify a certain plugin version, you can upgrade that plugin by specifying the new version.
+
+```puppet
+elasticsearch::plugin { 'elasticsearch/elasticsearch-cloud-aws/2.1.1':
+}
+```
+
+And to upgrade, you would simply change it to
+
+```puppet
+elasticsearch::plugin { 'elasticsearch/elasticsearch-cloud-aws/2.4.1':
+}
+```
+
+Please note that this does not work when you specify 'latest' as a version number.
+
+###Scripts
+
+Install [scripts](http://www.elastic.co/guide/en/elasticsearch/reference/1.x/modules-scripting.html) to be used by Elasticsearch.
+These scripts are shared accross all defined instances on the same host.
+
+```puppet
+elasticsearch::script { 'myscript':
+  ensure => 'present',
+  source => 'puppet:///path/to/my/script.groovy'
+}
+```
+
 ###Templates
 
-#### Add a new template
+#### Add a new template using a file
 
 This will install and/or replace the template in Elasticsearch:
 
 ```puppet
 elasticsearch::template { 'templatename':
   file => 'puppet:///path/to/template.json'
+}
+```
+
+#### Add a new template using content
+
+This will install and/or replace the template in Elasticsearch:
+
+```puppet
+elasticsearch::template { 'templatename':
+  content => '{"template":"*","settings":{"number_of_replicas":0}}'
 }
 ```
 
@@ -158,7 +215,7 @@ elasticsearch::template { 'templatename':
 
 ###Bindings / Clients
 
-Install a variety of [clients/bindings](http://www.elasticsearch.org/guide/clients/):
+Install a variety of [clients/bindings](http://www.elasticsearch.org/guide/en/elasticsearch/client/community/current/clients.html):
 
 ####Python
 
@@ -169,6 +226,25 @@ elasticsearch::python { 'rawes': }
 ####Ruby
 ```puppet
 elasticsearch::ruby { 'elasticsearch': }
+```
+
+###Connection Validator
+
+This module offers a way to make sure an instance has been started and is up and running before
+doing a next action. This is done via the use of the `es_instance_conn_validator` resource.
+```puppet
+es_instance_conn_validator { 'myinstance' :
+  server => 'es.example.com',
+  port   => '9200',
+}
+```
+
+A common use would be for example :
+
+```puppet
+class { 'kibana4' :
+  require => Es_Instance_Conn_Validator['myinstance'],
+}
 ```
 
 ###Package installation
@@ -183,7 +259,7 @@ The `repo_version` corresponds with the major version of Elasticsearch.
 ```puppet
 class { 'elasticsearch':
   manage_repo  => true,
-  repo_version => '1.2',
+  repo_version => '1.4',
 }
 ```
 
@@ -194,27 +270,32 @@ When a repository is not available or preferred you can install the packages fro
 #####http/https/ftp
 ```puppet
 class { 'elasticsearch':
-  package_url => 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.2.1.deb'
+  package_url       => 'https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.2.deb',
+  proxy_url         => 'http://proxy.example.com:8080/',
 }
 ```
+Setting proxy_url to a location will enable download using the provided proxy
+server. This parameter is also used by elasticsearch::plugin. Setting the port
+in the proxy_url is mandatory. proxy_url defaults to undef (proxy disabled). 
 
 #####puppet://
 ```puppet
 class { 'elasticsearch':
-  package_url => 'puppet:///path/to/elasticsearch-1.2.1.deb'
+  package_url => 'puppet:///path/to/elasticsearch-1.4.2.deb'
 }
 ```
 
 #####Local file
 ```puppet
 class { 'elasticsearch':
-  package_url => 'file:/path/to/elasticsearch-1.2.1.deb'
+  package_url => 'file:/path/to/elasticsearch-1.4.2.deb'
 }
 ```
 
 ###Java installation
 
 Most sites will manage Java separately; however, this module can attempt to install Java as well.
+This is done by using the [puppetlabs-java](https://forge.puppetlabs.com/puppetlabs/java) module.
 
 ```puppet
 class { 'elasticsearch':
@@ -262,6 +343,20 @@ Note: `init_defaults` hash can be passed to the main class and to the instance.
 
 ##Advanced features
 
+###Package version pinning
+
+The module supports pinning the package version to avoid accidental upgrades that are not done by Puppet.
+To enable this feature:
+
+```puppet
+class { 'elasticsearch':
+  package_pin => true,
+  version     => '1.5.2',
+}
+```
+
+In this example we pin the package version to 1.5.2.
+
 
 ###Data directories
 
@@ -273,7 +368,7 @@ By default we use:
 
 `/usr/share/elasticsearch/data/$instance_name`
 
-Which provides a data directory per instance. 
+Which provides a data directory per instance.
 
 
 ####Single global data directory
@@ -290,7 +385,7 @@ Creates the following for each instance:
 ####Multiple Global data directories
 
 ```puppet
-class { 'elasticsearch:
+class { 'elasticsearch':
   datadir => [ '/var/lib/es-data1', '/var/lib/es-data2']
 }
 ```
@@ -351,7 +446,7 @@ elasticsearch::instance { 'es-02':
 
 This example merges the `cluster.name` together with the `node.name` option.
 
-#### Overriding 
+#### Overriding
 
 When duplicate options are provided, the option in the instance config overrides the ones from the main class.
 
@@ -394,7 +489,7 @@ class { 'elasticsearch':
   }
 }
 ```
-##### Short hash writeu
+##### Short hash writeup
 ```puppet
 class { 'elasticsearch':
   config => {
@@ -409,14 +504,20 @@ class { 'elasticsearch':
 
 ##Limitations
 
-This module has been built on and tested against Puppet 2.7 and higher.
+This module has been built on and tested against Puppet 3.2 and higher.
 
 The module has been tested on:
 
-* Debian 6/7
-* CentOS 6
-* Ubuntu 12.04, 13.x, 14.x
-* OpenSuSE 12.x
+* Debian 6/7/8
+* CentOS 6/7
+* Ubuntu 12.04, 14.04
+* OpenSuSE 13.x
+
+Other distro's that have been reported to work:
+
+* RHEL 6
+* OracleLinux 6
+* Scientific 6
 
 Testing on other platforms has been light and cannot be guaranteed.
 
@@ -425,4 +526,4 @@ Testing on other platforms has been light and cannot be guaranteed.
 
 ##Support
 
-Need help? Join us in [#elasticsearch](https://webchat.freenode.net?channels=%23elasticsearch) on Freenode IRC or subscribe to the [elasticsearch@googlegroups.com](https://groups.google.com/forum/#!forum/elasticsearch) mailing list.
+Need help? Join us in [#elasticsearch](https://webchat.freenode.net?channels=%23elasticsearch) on Freenode IRC or on the [discussion forum](https://discuss.elastic.co/).
