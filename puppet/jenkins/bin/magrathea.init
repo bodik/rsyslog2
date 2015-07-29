@@ -81,7 +81,8 @@ vm_start() {
 		rreturn $? "magrathea vm already running"
 	fi
 
-        front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME -m abe"
+        #front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME -m abe"
+        front_ssh "echo ''|qsub -q reserved -l nodes=debian80 -l cluster=create -N $VMNAME -m abe"
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/bin/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
@@ -126,7 +127,7 @@ vm_fixup() {
 	/puppet/jenkins/bin/magrathea.init ssh '
 /etc/init.d/rsyslog stop; /etc/init.d/crond stop; 
 rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list; 
-apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common perun-slave-meta-key;
+apt-get purge -y rsyslog rsyslog-gssapi perun-slave-meta-key;
 apt-get clean;apt-get update'
 	rreturn $? "$0 fixup"
 }
