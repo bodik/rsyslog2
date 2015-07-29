@@ -56,23 +56,18 @@ class elk::esd (
 	elasticsearch::instance { 'es01': }
 	
 	elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
-		module_dir => 'kopf',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'royrusso/elasticsearch-HQ':
-		module_dir => 'HQ',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'lukas-vlcek/bigdesk':
-		module_dir => 'bigdesk',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'mobz/elasticsearch-head':
-		module_dir => 'head',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'karmi/elasticsearch-paramedic':
-		module_dir => 'paramedic',
 		instances  => 'es01'
 	}
 
