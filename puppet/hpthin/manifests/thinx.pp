@@ -18,7 +18,7 @@ define hpthin::thinx ($core_tun_number, $core_public_address) {
 		onlyif => "/sbin/ip tunnel show | /bin/grep ${thin_tun_dev}",
 	}
 	exec { "${hashkey} tunnel":
-		command => "/sbin/ip tunnel add ${thin_tun_dev} mode gre local ${ipaddress} remote ${core_public_address} key ${key}",
+		command => "/sbin/ip tunnel add ${thin_tun_dev} mode gre local ${ipaddress} remote ${core_public_address}",
 	}
 	exec { "${hashkey} tunnel link":
 		command => "/sbin/ip link set dev ${thin_tun_dev} up",
