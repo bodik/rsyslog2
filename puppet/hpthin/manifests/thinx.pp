@@ -1,29 +1,37 @@
 #!/usr/bin/puppet apply
 
-class hpthin::thinx (
-	$key = "1234",
+define hpthin::thinx ($core_tun_number, $core_public_address) {
 
-	$thin_tun_dev = "tunx",
-	$thin_tun_address = "10.0.0.2",
+	$thin_tun_dev = "tunx"
 
-	$core_public_address = "147.251.253.57",
-	$core_tun_address = "10.0.0.1",
-) {
-	exec { "tunnel":
+        $core_tun_address_octet = ($core_tun_number*4)+1
+        $thin_tun_address_octet = ($core_tun_number*4)+2
+	$core_tun_address = "10.0.0.${core_tun_address_octet}"
+	$thin_tun_address = "10.0.0.${thin_tun_address_octet}"
+	notice($core_tun_address)
+	notice($thin_tun_address)
+	$hashkey = "$core_tun_number -- $core_public_address"
+	notice($hashkey)
+
+	exec { "${hashkey} tunnel del":
+		command => "/sbin/ip tunnel del ${thin_tun_dev}",
+		onlyif => "/sbin/ip tunnel show | /bin/grep ${thin_tun_dev}",
+	}
+	exec { "${hashkey} tunnel":
 		command => "/sbin/ip tunnel add ${thin_tun_dev} mode gre local ${ipaddress} remote ${core_public_address} key ${key}",
 	}
-	exec { "tunnel link":
+	exec { "${hashkey} tunnel link":
 		command => "/sbin/ip link set dev ${thin_tun_dev} up",
 	}
-	exec { "tunnel address":
+	exec { "${hashkey} tunnel address":
 		command => "/sbin/ip address add ${thin_tun_address}/30 dev ${thin_tun_dev}",
 		unless => "/sbin/ip addr | /bin/grep ${thin_tun_address}",
 	}
-	exec { "iptables redirect":
+	exec { "${hashkey} iptables redirect":
 		command => "/sbin/iptables -t nat -A PREROUTING -p tcp --dport 222 -j DNAT --to-destination ${core_tun_address}:22",
 	}
-	exec { "ip forwarding":
+	exec { "${hashkey} ip forwarding":
 		command => "/bin/echo 1 > /proc/sys/net/ipv4/ip_forward",
 	}
-	Exec["tunnel"]->Exec["tunnel link"]->Exec["tunnel address"]->Exec["iptables redirect"]->Exec["ip forwarding"]
+	Exec["${hashkey} tunnel del"]->Exec["${hashkey} tunnel"]->Exec["${hashkey} tunnel link"]->Exec["${hashkey} tunnel address"]->Exec["${hashkey} iptables redirect"]->Exec["${hashkey} ip forwarding"]
 }
