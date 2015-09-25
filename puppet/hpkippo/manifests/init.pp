@@ -109,6 +109,11 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb", "python-simplejson"], File["${install_dir}/dl", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 	}
+	file { "${install_dir}/data/userdb.txt":
+		source => "puppet:///modules/${module_name}/userdb.txt",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/kippo.cfg"],
+	}
 
 	service { "fail2ban": }
 	file { "/etc/fail2ban/jail.local":
