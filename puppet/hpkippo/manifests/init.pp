@@ -79,10 +79,11 @@ class hpkippo (
 
 	# application
 	exec { "clone kippo":
-		command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
+		#command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
+		command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
 		creates => "${install_dir}/start.sh",
 	}
-	package { ["python-twisted", "python-mysqldb"]: 
+	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
 		ensure => installed, 
 	}
 	# no cap needed now, using prerouting in kippo.init
@@ -106,7 +107,7 @@ class hpkippo (
 	file { "${install_dir}/kippo.cfg":
 		content => template("${module_name}/kippo.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
-		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb"], File["${install_dir}/dl", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
+		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb", "python-simplejson"], File["${install_dir}/dl", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 	}
 
 	service { "fail2ban": }

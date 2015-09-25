@@ -3,9 +3,16 @@
 . /puppet/metalib/lib.sh
 
 INSTALL_DIR=/opt/kippo
-for all in $(cat $INSTALL_DIR/data/userdb.txt); do
+
+#default kippo
+#for all in $(cat $INSTALL_DIR/data/userdb.txt); do
+	#U=$(echo $all | awk -F':' '{print $1}')
+	#P=$(echo $all | awk -F':' '{print $3}')
+
+#enhanced kippo+cowrie from cznic
+for all in $(cat $INSTALL_DIR/data/userdb.txt | grep "root:" | grep -v '!'); do
 	U=$(echo $all | awk -F':' '{print $1}')
-	P=$(echo $all | awk -F':' '{print $3}')
+	P="testingpass"
 	medusa -h $(facter ipaddress) -u $U -p $P -M ssh -n 45356 | grep "ACCOUNT FOUND" 1>/dev/null
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 failed to login to hpkippo"
