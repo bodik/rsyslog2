@@ -65,7 +65,7 @@ def gen_event_idea_auth(client_name, detect_time, conn_count, src_ip, dst_ip, an
 
 
 def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
-	sessionid, ttylog):
+	sessionid, ttylog, iinput):
 
 	event = {
 		"Format": "IDEA0",
@@ -83,7 +83,7 @@ def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, 
 				"SW": ["Kippo"],
 			}
 		],
-		"Attach": [ { "sessionid": sessionid, "ttylog": ttylog } ]
+		"Attach": [ { "sessionid": sessionid, "ttylog": ttylog, "iinput": iinput } ]
   	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
   
@@ -175,8 +175,8 @@ def main():
 
 
 
-	query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, '+00:00', @@global.time_zone)) as starttime, s.ip as sourceip, sn.ip as sensor, t.session as sessionid, t.ttylog as ttylog \
-		FROM ttylog t JOIN sessions s ON s.id=t.session JOIN sensors sn ON s.sensor=sn.id \
+	query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, '+00:00', @@global.time_zone)) as starttime, s.ip as sourceip, sn.ip as sensor, t.session as sessionid, t.ttylog as ttylog, inp.input as iinput \
+		FROM ttylog t JOIN sessions s ON s.id=t.session JOIN sensors sn ON s.sensor=sn.id JOIN input inp ON inp.session=t.session \
 		WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 		ORDER BY s.starttime ASC;"
 	crs.execute(query, awin)
@@ -202,7 +202,8 @@ def main():
 			target_net = atargetnet,
 
 			sessionid = row['sessionid'],
-			ttylog = row['ttylog']
+			ttylog = row['ttylog'],
+			iinput = row['iinput']
 		)	
 		#print json.dumps(a)
 		events.append(a)
