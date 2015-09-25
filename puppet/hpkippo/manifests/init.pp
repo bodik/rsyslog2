@@ -100,14 +100,14 @@ class hpkippo (
 		home => "${install_dir}",
 		require => [Exec["clone kippo"]],
 	}
-	file { ["${install_dir}/dl", "${install_dir}/data", "${install_dir}/log", "${install_dir}/log/tty"]:
+	file { ["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data", "${install_dir}/log", "${install_dir}/log/tty"]:
 		owner => "$kippo_user", group => "$kippo_user", mode => "0755",
 		require => [Exec["clone kippo"], User["$kippo_user"]],
 	}
 	file { "${install_dir}/kippo.cfg":
 		content => template("${module_name}/kippo.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
-		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb", "python-simplejson"], File["${install_dir}/dl", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
+		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb", "python-simplejson"], File["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
 	}
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
