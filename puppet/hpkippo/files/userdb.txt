@@ -9,3 +9,6 @@
 root:0:admin
 root:0:test123
 root:0:654321
+guest:1003:guest
+ubnt:1004:ubnt
+cisco:1005:cisco123
