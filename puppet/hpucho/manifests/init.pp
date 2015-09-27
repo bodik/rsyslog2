@@ -40,7 +40,7 @@ class hpucho (
 	service { "ucho": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/ucho"],
+		require => File["/etc/init.d/ucho", "${install_dir}/ucho.py"],
 	}
 
 

@@ -51,7 +51,7 @@ def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, an
 				"SW": ["Ucho"],
 			}
 		],
-		"Attach": [{ "data": data }]
+		"Attach": [{ "data": hexdump(data), "datalen": len(data) }]
 	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
   
@@ -70,6 +70,16 @@ def fill_addresses(event, src_ip, anonymised, target_net):
 	return event
 
 
+def hexdump(src, length=16):
+	FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
+	N=0; result=''
+	while src:
+		s,src = src[:length],src[length:]
+		hexa = ' '.join(["%02X"%ord(x) for x in s])
+		s = s.translate(FILTER)
+		result += "%04X   %-*s   %s\n" % (N, length*3, hexa, s)
+		N+=length
+	return result
 
 
 
@@ -81,17 +91,6 @@ import json
 import socket
 
 class Ucho(Protocol):
-	def dump(self, src, length=16):
-		FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
-		N=0
-		result=''
-		while src:
-			s,src = src[:length],src[length:]
-			hexa = ' '.join(["%02X"%ord(x) for x in s])
-			s = s.translate(FILTER)
-			result += "%04X   %-*s   %s\n" % (N, length*3, hexa, s)
-			N+=length
-		return result
 
    	def connectionMade(self):
 		self._peer = self.transport.getPeer()
@@ -118,7 +117,7 @@ class Ucho(Protocol):
 			ucho_port = self._socket[1],
 			dst_ip = self._socket[0],
 
-			data = self.dump( ''.join(self._data))
+			data = ''.join(self._data)
 		)
 		#print "DEBUG: %s" % json.dumps(a, indent=3)
 		ret = wclient.sendEvents([a])
