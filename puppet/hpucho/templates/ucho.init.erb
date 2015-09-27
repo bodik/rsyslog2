@@ -1,0 +1,53 @@
+#!/bin/sh
+
+BASE=<%= install_dir %>
+NAME="ucho"
+PYTHON=`which python`
+PIDFILE="/var/run/ucho.pid"
+
+cd $BASE || exit 1
+
+killwaitpids() {
+        PID="$@"
+	if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+case "$1" in
+
+	start)
+        	echo -n "Starting $NAME: "
+		
+		$PYTHON ${BASE}/ucho.py 1>ucho.log 2>&1 &
+	        echo $! > $PIDFILE
+
+	        echo "done"
+	;;
+	stop)
+	        echo -n "Stopping $NAME: "
+		if [ -f $PIDFILE ]; then
+		        killwaitpids $(cat $PIDFILE)
+		        rm $PIDFILE
+		fi
+	        killwaitpids $(pgrep -f ${BASE}/ucho.py)
+	        echo "done"
+	;;
+	status)
+		pgrep -f ${BASE}/ucho.py 1>/dev/null
+                if [ $? -eq 0 ]; then
+                        rreturn 0 "running"
+                fi
+		rreturn 1 "not running"
+	;;
+	*)
+		ps faxu | grep ${BASE}/ucho.py
+		exit 1
+	;;
+esac
+
