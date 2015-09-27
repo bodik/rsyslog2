@@ -16,6 +16,7 @@ PYTHON=`which python`
 PIDFILE="/var/run/ucho.pid"
 
 cd $BASE || exit 1
+ulimit -n 65535
 
 killwaitpids() {
         PID="$@"
