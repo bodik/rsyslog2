@@ -136,7 +136,15 @@ class Ucho(Protocol):
 factory = Factory()
 factory.protocol = Ucho
 
+skipports = aconfig.get('port_skip', [])
+wclient.logger.debug(skipports)
+
 for i in range(aconfig.get('port_start', 9999), aconfig.get('port_end', 9999)):
+	#skipt configured ports
+	if i in skipports:
+		continue
+
+	#try to open the rest
 	try:
 		reactor.listenTCP(i, factory)
 	except CannotListenError:

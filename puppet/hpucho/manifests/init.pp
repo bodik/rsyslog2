@@ -5,6 +5,7 @@ class hpucho (
 	
 	$port_start = 1,
 	$port_end = 9999,
+	$port_skip = "[1433,65535]",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -27,6 +28,7 @@ class hpucho (
 		source => "puppet:///modules/${module_name}/ucho.py",
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
+		notify => Service["ucho"],
 	}
 	package { ["python-twisted"]: 
 		ensure => installed, 
@@ -67,6 +69,7 @@ class hpucho (
 		content => template("${module_name}/warden_client-ucho.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
+		notify => Service["ucho"],
 	}
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
