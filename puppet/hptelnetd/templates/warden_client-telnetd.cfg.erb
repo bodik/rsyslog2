@@ -1,0 +1,9 @@
+{
+    "warden": "warden_client.cfg",
+    "name": "<%= fqdn_rev %>.telnetd",
+
+    "anonymised": "yes",
+    "target_net": "<%= anonymised_target_net %>",
+
+    "twisted_port_spec": "tcp:<%= telnetd_port %>"
+}
