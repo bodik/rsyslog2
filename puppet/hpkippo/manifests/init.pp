@@ -114,6 +114,21 @@ class hpkippo (
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => File["${install_dir}/kippo.cfg"],
 	}
+	file { "${install_dir}/honeyfs/etc/motd":
+		source => "puppet:///modules/${module_name}/motd",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/kippo.cfg"],
+	}
+	file { "${install_dir}/honeyfs/etc/passwd":
+		source => "puppet:///modules/${module_name}/pas-swd",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/kippo.cfg"],
+	}
+	file { "${install_dir}/honeyfs/etc/shadow":
+		source => "puppet:///modules/${module_name}/sha-dow",
+		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
+		require => File["${install_dir}/kippo.cfg"],
+	}
 
 	service { "fail2ban": }
 	file { "/etc/fail2ban/jail.local":
