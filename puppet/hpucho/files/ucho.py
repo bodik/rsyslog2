@@ -81,7 +81,7 @@ import json
 import socket
 
 class Ucho(Protocol):
-	def dump(self, src, length=8):
+	def dump(self, src, length=16):
 		FILTER=''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
 		N=0
 		result=''
