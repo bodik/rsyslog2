@@ -1,4 +1,14 @@
 #!/bin/sh
+### BEGIN INIT INFO
+# Provides:          ucho
+# Required-Start:    $remote_fs $network
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: ucho
+# Description:       This script starts and stops the ucho
+### END INIT INFO
+
 
 BASE=<%= install_dir %>
 NAME="ucho"
