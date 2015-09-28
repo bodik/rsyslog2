@@ -85,8 +85,8 @@ def proto_detection(event, data):
 	res = re.match("([A-Z]{3,20}) (.*) HTTP/", data)
 	if res:
 		event["Attach"][0]["http"] = {}
-		event["Attach"][0]["http"]["method"] = res.group(0)
-		event["Attach"][0]["http"]["uri"] = res.group(1)
+		event["Attach"][0]["http"]["method"] = res.group(1)
+		event["Attach"][0]["http"]["uri"] = res.group(2)
 		event["Attach"][0]["data"] = data
 		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["http"]
 		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["http"]
@@ -129,7 +129,7 @@ class Ucho(Protocol):
 
 			data = ''.join(self._data)
 		)
-		#wclient.logger.debug("event %s" % json.dumps(a, indent=2))
+		wclient.logger.debug("event %s" % json.dumps(a, indent=2))
 		ret = wclient.sendEvents([a])
 		if 'saved' in ret:
 			wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
