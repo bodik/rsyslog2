@@ -129,7 +129,7 @@ class Ucho(Protocol):
 
 			data = ''.join(self._data)
 		)
-		wclient.logger.debug("event %s" % json.dumps(a, indent=2))
+		#wclient.logger.debug("event %s" % json.dumps(a, indent=2))
 		ret = wclient.sendEvents([a])
 		if 'saved' in ret:
 			wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
