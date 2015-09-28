@@ -42,8 +42,8 @@ def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, an
 		"Category": ["Intrusion"],
 		"Note": "Ucho event",
 		"ConnCount": conn_count,
-		"Source": [{ "Proto": [peer_proto], "Port": [peer_port] }],
-		"Target": [{ "Proto": [peer_proto], "Port": [ucho_port] }],
+		"Source": [{ "Proto": peer_proto, "Port": [peer_port] }],
+		"Target": [{ "Proto": peer_proto, "Port": [ucho_port] }],
 		"Node": [
 			{
 				"Name": client_name,
@@ -54,6 +54,7 @@ def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, an
 		"Attach": [{ "data": hexdump(data), "datalen": len(data) }]
 	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
+	event = proto_detection(event, data)
   
 	return event
 
@@ -66,7 +67,6 @@ def fill_addresses(event, src_ip, anonymised, target_net):
 			event['Target'][0][af] = [target_net]
 		else:
 			event['Target'][0][af] = [dst_ip]
-
 	return event
 
 
@@ -81,14 +81,24 @@ def hexdump(src, length=16):
 		N+=length
 	return result
 
+def proto_detection(event, data):
+	res = re.match("[A-Z]{3,20} (.*) HTTP/(\d+).(\d+)", data)
+	if res:
+		event["Attach"][0]["http"] = {}
+		event["Attach"][0]["http"]["method"] = res.group(0)
+		event["Attach"][0]["http"]["uri"] = res.group(1)
+		event["Attach"][0]["data"] = data
+		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["http"]
+		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["http"]
+	return event
+
 
 
 #ucho
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.internet.error import CannotListenError
-import json
-import socket
+import json, socket, re
 
 class Ucho(Protocol):
 
@@ -109,7 +119,7 @@ class Ucho(Protocol):
 			anonymised = aanonymised, 
 			target_net = atargetnet,
 
-			peer_proto = self._peer.type.lower(),
+			peer_proto = [ self._peer.type.lower() ],
 
 			src_ip = self._peer.host, 
 			peer_port = self._peer.port,
@@ -119,7 +129,7 @@ class Ucho(Protocol):
 
 			data = ''.join(self._data)
 		)
-		#print "DEBUG: %s" % json.dumps(a, indent=3)
+		wclient.logger.debug("event %s" % json.dumps(a, indent=2))
 		ret = wclient.sendEvents([a])
 		if 'saved' in ret:
 			wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
@@ -129,6 +139,8 @@ class Ucho(Protocol):
 		self._data.append(data)
 		#import pdb; pdb.set_trace()
 		#print "DATA: ", self.dump(data)
+
+	
 
 
 
