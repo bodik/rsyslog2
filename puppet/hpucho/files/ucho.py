@@ -82,7 +82,7 @@ def hexdump(src, length=16):
 	return result
 
 def proto_detection(event, data):
-	res = re.match("[A-Z]{3,20} (.*) HTTP/(\d+).(\d+)", data)
+	res = re.match("([A-Z]{3,20}) (.*) HTTP/", data)
 	if res:
 		event["Attach"][0]["http"] = {}
 		event["Attach"][0]["http"]["method"] = res.group(0)
