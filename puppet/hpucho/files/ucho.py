@@ -82,14 +82,22 @@ def hexdump(src, length=16):
 	return result
 
 def proto_detection(event, data):
-	res = re.match("([A-Z]{3,20}) (.*) HTTP/", data)
+	res = re.match("([A-Za-z]{3,20}) (.*) HTTP/", data)
 	if res:
+		event["Attach"][0]["smart"] = res.group(1)+" "+res.group(2)
 		event["Attach"][0]["http"] = {}
 		event["Attach"][0]["http"]["method"] = res.group(1)
 		event["Attach"][0]["http"]["uri"] = res.group(2)
-		event["Attach"][0]["data"] = data
+		event["Attach"][0]["http"]["data"] = data
 		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["http"]
 		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["http"]
+
+	res = re.match("^(SSH-.*)\r\n", data)
+	if res:
+		event["Attach"][0]["smart"] = res.group(1)
+		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["ssh"]
+		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["ssh"]
+
 	return event
 
 
