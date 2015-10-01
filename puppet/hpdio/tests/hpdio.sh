@@ -3,7 +3,7 @@
 . /puppet/metalib/lib.sh
 
 
-for PORT in 3306 80 21 443 445; do 
+for PORT in 3306 21 445; do 
 	netstat -nlpa | grep "/dionaea" | grep LISTEN | grep :$PORT
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 dionaea $PORT listener"
