@@ -124,13 +124,14 @@ class hpkippo (
                 } else {
        			$seed = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
 	                $kippo_ssh_version_string_real = $kippo_ssh_version_strings[ fqdn_rand(size($kippo_ssh_version_strings), $seed) ]
-       			notice("INFO: kippo ssh version string generated")
+       			notice("INFO: kippo ssh version string generated as '$kippo_ssh_version_string_real'")
                 }
         }
 	file { "${install_dir}/kippo.cfg":
 		content => template("${module_name}/kippo.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
 		require => [Exec["clone kippo"], Package["python-twisted", "python-mysqldb", "python-simplejson"], File["${install_dir}/dl", "${install_dir}/dl/tty", "${install_dir}/data","${install_dir}/log", "${install_dir}/log/tty"]],
+		notify => Service["kippo"],
 	}
 	file { "${install_dir}/data/userdb.txt":
 		source => "puppet:///modules/${module_name}/userdb.txt",
