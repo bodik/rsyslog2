@@ -5,7 +5,7 @@ class hpkippo (
 	$install_dir = "/opt/kippo",
 	
 	$kippo_port = 45356,
-	$kippo_ssh_version_string = "SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2",
+	$kippo_ssh_version_string = undef,
 	$kippo_user = "kippo",
 
 	$mysql_host = "localhost",
@@ -104,6 +104,29 @@ class hpkippo (
 		owner => "$kippo_user", group => "$kippo_user", mode => "0755",
 		require => [Exec["clone kippo"], User["$kippo_user"]],
 	}
+
+	$kippo_ssh_version_strings = [
+		"SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2",
+		"SSH-1.99-OpenSSH_4.7",
+		"SSH-2.0-OpenSSH_5.5p1 Debian-6+squeeze2",
+		"SSH-2.0-Cisco-1.25",
+		"SSH-2.0-OpenSSH_5.5 FIPS",
+		"SSH-2.0-OpenSSH_6.6",
+		"SSH-2.0-OpenSSH_5.9 FIPS",
+		"SSH-2.0-V-ij-eMDESX231d"
+	]
+
+        if ( $kippo_ssh_version_string ) {
+                $kippo_ssh_version_string_real = $kippo_ssh_version_string
+        } else {
+        	if ( file_exists("${install_dir}/kippo.cfg") == 1 ) {
+                	$kippo_ssh_version_string_real = myexec("/bin/grep ^ssh_version_string ${install_dir}/kippo.cfg | /usr/bin/awk -F'= ' '{print \$2}'")
+                } else {
+       			$seed = myexec("/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print \$1}'")
+	                $kippo_ssh_version_string_real = $kippo_ssh_version_strings[ fqdn_rand(size($kippo_ssh_version_strings), $seed) ]
+       			notice("INFO: kippo ssh version string generated")
+                }
+        }
 	file { "${install_dir}/kippo.cfg":
 		content => template("${module_name}/kippo.cfg.erb"),
 		owner => "${kippo_user}", group => "${kippo_user}", mode => "0640",
