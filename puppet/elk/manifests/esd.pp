@@ -23,7 +23,7 @@ class elk::esd (
 	if ( $esd_heap_size ) {
 		$esd_heap_size_real = $esd_heap_size
 	} else {
-		$m = split($::memorytotal, " ")
+		$m = split($::memorysize, " ")
 		if ( $m[1] == "GB" ) {
 			$half = max(floor($m[0] / 2), 1)
 			$esd_heap_size_real = "${half}g"
@@ -36,7 +36,8 @@ class elk::esd (
 
 	class { 'elasticsearch':
 		manage_repo  => true,
-		repo_version => '1.4',
+		repo_version => '1.6',
+		version => "1.6.*",
 		java_install => true,
 		datadir => '/scratch',
 		init_defaults => $config_hash,
@@ -56,23 +57,18 @@ class elk::esd (
 	elasticsearch::instance { 'es01': }
 	
 	elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
-		module_dir => 'kopf',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'royrusso/elasticsearch-HQ':
-		module_dir => 'HQ',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'lukas-vlcek/bigdesk':
-		module_dir => 'bigdesk',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'mobz/elasticsearch-head':
-		module_dir => 'head',
 		instances  => 'es01'
 	}
 	elasticsearch::plugin{'karmi/elasticsearch-paramedic':
-		module_dir => 'paramedic',
 		instances  => 'es01'
 	}
 
