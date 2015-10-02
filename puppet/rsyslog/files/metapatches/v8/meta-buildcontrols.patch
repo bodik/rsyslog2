@@ -1,20 +1,27 @@
+commit 6f39ceaaa61cfce6727b218214af8323d58cd357
+Author: root <root@minos47-2.zcu.cz>
+Date:   Thu Jul 16 03:19:50 2015 +0200
+
+    meta-buildcontrols.patch
+    changelog, control author, notest(fails), noquilt
+
 diff --git a/debian/changelog b/debian/changelog
-index d80395c..9392078 100644
+index 0b01623..66ae525 100644
 --- a/debian/changelog
 +++ b/debian/changelog
 @@ -1,3 +1,10 @@
-+rsyslog (8.11.0.rb21) unstable; urgency=medium
++rsyslog (8.4.2+deb8u1.rb30) jessie; urgency=medium
 +
 +  * Non maintainer upload
 +  * metacentrum.cz specific changes
 +
 + -- Radoslav Bodo <bodik@cesnet.cz>  Mon, 23 Jun 2014 13:44:55 +0200
 +
- rsyslog (8.11.0-1) unstable; urgency=medium
+ rsyslog (8.4.2-1+deb8u1) jessie; urgency=medium
  
-   * New upstream release.
+   * Disable transactions in ompgsql as they were not working properly.
 diff --git a/debian/control b/debian/control
-index 7d3352a..f192271 100644
+index 1eb7f6c..eee2999 100644
 --- a/debian/control
 +++ b/debian/control
 @@ -1,7 +1,7 @@
@@ -26,18 +33,6 @@ index 7d3352a..f192271 100644
  Build-Depends: debhelper (>= 8),
                 dpkg-dev (>= 1.16.1),
                 dh-autoreconf,
-diff --git a/debian/rules b/debian/rules
-index cc36bc9..d08d696 100755
---- a/debian/rules
-+++ b/debian/rules
-@@ -44,7 +44,6 @@ override_dh_auto_configure:
- 		--enable-mmpstrucdata \
- 		--enable-mmsequence \
- 		--disable-libgcrypt \
--		--enable-testbench \
- 		--enable-imdiag \
- 		--disable-generate-man-pages \
- 		--with-systemdsystemunitdir=/lib/systemd/system
 diff --git a/debian/source/format b/debian/source/format
 index 163aaf8..89ae9db 100644
 --- a/debian/source/format

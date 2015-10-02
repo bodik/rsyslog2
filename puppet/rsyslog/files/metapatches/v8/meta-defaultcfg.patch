@@ -1,8 +1,15 @@
+commit 95d382819500ac9b8cad358e275bcfdffbd6dd96
+Author: root <root@minos47-2.zcu.cz>
+Date:   Thu Jul 16 03:30:38 2015 +0200
+
+    meta-defaultcfg.patch
+    preservefqdn, stats, ratelimit
+
 diff --git a/debian/rsyslog.conf b/debian/rsyslog.conf
-index 9ab48bd..90031a7 100644
+index 0e33f48..803024c 100644
 --- a/debian/rsyslog.conf
 +++ b/debian/rsyslog.conf
-@@ -3,6 +3,7 @@
+@@ -3,14 +3,24 @@
  #			For more information see
  #			/usr/share/doc/rsyslog-doc/html/rsyslog_conf.html
  
@@ -10,11 +17,13 @@ index 9ab48bd..90031a7 100644
  
  #################
  #### MODULES ####
-@@ -10,7 +11,16 @@
+ #################
  
- module(load="imuxsock") # provides support for local system logging
- module(load="imklog")   # provides kernel logging support
--#module(load="immark")  # provides --MARK-- message capability
+-$ModLoad imuxsock # provides support for local system logging
+-$ModLoad imklog   # provides kernel logging support
+-#$ModLoad immark  # provides --MARK-- message capability
++module(load="imuxsock") # provides support for local system logging
++module(load="imklog")   # provides kernel logging support
 +module(load="immark")  # provides --MARK-- message capability
 +
 +$ModLoad impstats
@@ -27,4 +36,4 @@ index 9ab48bd..90031a7 100644
 +$RepeatedMsgReduction on
  
  # provides UDP syslog reception
- #module(load="imudp")
+ #$ModLoad imudp

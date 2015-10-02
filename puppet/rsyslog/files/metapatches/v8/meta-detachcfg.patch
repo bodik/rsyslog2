@@ -1,12 +1,20 @@
+commit f47fef2c6e3b8edf5e180430dc9c625ef88c21a0
+Author: root <root@minos47-2.zcu.cz>
+Date:   Thu Jul 16 03:29:21 2015 +0200
+
+    meta-detachcfg.patch
+    meta example forwarding
+
 diff --git a/debian/meta-remote.conf-DISABLED b/debian/meta-remote.conf-DISABLED
 new file mode 100644
-index 0000000..b5c2a83
+index 0000000..07e8fa5
 --- /dev/null
 +++ b/debian/meta-remote.conf-DISABLED
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,25 @@
 +#vzdalene logovani
 +$ModLoad omgssapi
 +$GSSForwardServiceName host
++$gssmode encryption
 +
 +$ActionQueueType LinkedList        # use asynchronous processing
 +$ActionQueueFileName omgssapi1      # set file name, also enables disk mode
