@@ -55,9 +55,9 @@ class rsyslog::install (
 				owner => "root", group => "root", mode => "0644",
 		 	}
 			exec { "install_rsyslog":
-				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=8.11.0.rb21 rsyslog-gssapi=8.11.0.rb21 rsyslog-relp=8.11.0.rb21",
+				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=8.4.2+deb8u1.rb30 rsyslog-gssapi=8.4.2+deb8u1.rb30 rsyslog-relp=8.4.2+deb8u1.rb30",
 				timeout => 600,
-				unless => "/usr/bin/dpkg -l rsyslog | grep ' 8.11.0.rb21'",
+				unless => "/usr/bin/dpkg -l rsyslog | grep ' 8.4.2+deb8u1.rb30'",
 				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
 			}
 		}
