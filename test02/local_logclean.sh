@@ -1,9 +1,9 @@
 #!/bin/sh
 
-/etc/init.d/rsyslog stop
+service rsyslog stop
 rm -r /var/log/hosts/*
 rm /var/log/syslog
 #rm /scratch/bodik/rsyslogddebug.log 2>/dev/null
-/etc/init.d/rsyslog start
+service rsyslog start
 echo "INFO: logs cleaned"
 

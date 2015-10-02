@@ -39,11 +39,11 @@ done
 echo "INFO: VMCOUNT $VMCOUNT"
 
 #reconnect all clients
-/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog stop'
-/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog start'
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog stop'
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog start'
 for all in $VMLIST; do
 	echo "INFO: client $all restart"
-	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "/etc/init.d/rsyslog restart"
+	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "service rsyslog restart"
 done
 sleep 10
 CONNS=$(/puppet/jenkins/bin/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | grep ESTA | awk "{print \$4}" | grep "51[456]" | wc -l' | head -n1)
@@ -85,7 +85,7 @@ WAITRECOVERY=230
 (
 sleep 10; 
 echo "INFO: restart begin";
-/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog restart'
 echo "INFO: restart end";
 )
 WAITRECOVERY=230
@@ -95,7 +95,7 @@ WAITRECOVERY=230
 sleep 10; 
 echo "INFO: killserver begin";
 /puppet/jenkins/bin/$CLOUD.init sshs 'kill -9 `pidof rsyslogd`'
-/puppet/jenkins/bin/$CLOUD.init sshs '/etc/init.d/rsyslog restart'
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog restart'
 echo "INFO: killserver end";
 )
 WAITRECOVERY=230
