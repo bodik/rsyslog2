@@ -119,7 +119,7 @@ class hpdio (
 		warden_server => $warden_server_real,
 	}
 	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n dio -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n dionaea -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["do install"],
 	}
