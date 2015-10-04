@@ -75,7 +75,7 @@
           "value_field": null,
           "auto_int": true,
           "resolution": 100,
-          "interval": "1h",
+          "interval": "5m",
           "fill": 3,
           "linewidth": 3,
           "timezone": "browser",
@@ -243,12 +243,10 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
-            "Node.Name",
             "Source.IP4",
             "sg.cc",
-            "Target.Port",
-            "Target.Proto",
-            "Note"
+            "Note",
+            "Attach.iinput"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -330,8 +328,7 @@
       "notice": false,
       "query": "*",
       "pinned": true,
-      "history": [
-      ],
+      "history": [],
       "remember": 10,
       "enable": true
     },
