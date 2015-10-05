@@ -1,10 +1,10 @@
 {
-  "title": "wb",
+  "title": "dio",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\"",
+          "query": "_type:\"wb\" AND Node.SW:\"Dionaea\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
@@ -44,7 +44,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 4,
+          "span": 6,
           "editable": true,
           "group": [
             "default"
@@ -184,6 +184,66 @@
           "tstat": "total",
           "valuefield": "ConnCount",
           "title": "Attack sources"
+        }
+      ],
+      "notice": false
+    },
+    {
+      "title": "Events",
+      "height": "350px",
+      "editable": true,
+      "collapse": false,
+      "collapsable": true,
+      "panels": [
+        {
+          "title": "All events",
+          "error": false,
+          "span": 10,
+          "editable": true,
+          "group": [
+            "default"
+          ],
+          "type": "table",
+          "size": 100,
+          "pages": 5,
+          "offset": 0,
+          "sort": [
+            "@timestamp",
+            "desc"
+          ],
+          "style": {
+            "font-size": "9pt"
+          },
+          "overflow": "min-height",
+          "fields": [
+            "@timestamp",
+            "Node.Name",
+            "Category",
+            "Source.IP4",
+            "sg.cc",
+            "Target.IP4",
+            "Target.Port",
+            "Target.Proto",
+            "Note"
+          ],
+          "localTime": true,
+          "timeField": "@timestamp",
+          "highlight": [],
+          "sortable": true,
+          "header": true,
+          "paging": true,
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "field_list": false,
+          "status": "Stable",
+          "trimFactor": 600,
+          "normTimes": true,
+          "all_fields": false
         },
         {
           "error": false,
@@ -191,11 +251,11 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "Node.SW",
+          "field": "Target.Port",
           "exclude": [],
           "missing": true,
           "other": true,
-          "size": 10,
+          "size": 30,
           "order": "count",
           "style": {
             "font-size": "10pt"
@@ -216,70 +276,7 @@
           "tmode": "terms",
           "tstat": "total",
           "valuefield": "",
-          "title": "SW"
-        }
-      ],
-      "notice": false
-    },
-    {
-      "title": "Events",
-      "height": "350px",
-      "editable": true,
-      "collapse": false,
-      "collapsable": true,
-      "panels": [
-        {
-          "title": "All events",
-          "error": false,
-          "span": 12,
-          "editable": true,
-          "group": [
-            "default"
-          ],
-          "type": "table",
-          "size": 100,
-          "pages": 5,
-          "offset": 0,
-          "sort": [
-            "@timestamp",
-            "desc"
-          ],
-          "style": {
-            "font-size": "9pt"
-          },
-          "overflow": "min-height",
-          "fields": [
-            "@timestamp",
-            "DetectTime",
-            "Node.Name",
-            "Category",
-            "Source.IP4",
-            "sg.cc",
-            "Target.IP4",
-            "Target.Port",
-            "Target.Proto",
-            "Note",
-            "ConnCount",
-            "Attach.request_url"
-          ],
-          "localTime": true,
-          "timeField": "@timestamp",
-          "highlight": [],
-          "sortable": true,
-          "header": true,
-          "paging": true,
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "field_list": false,
-          "status": "Stable",
-          "trimFactor": 600,
-          "normTimes": true,
-          "all_fields": false
+          "title": "Ports"
         }
       ],
       "notice": false
@@ -302,17 +299,14 @@
       "notice": false,
       "query": "*",
       "pinned": true,
-      "history": [
-        "_type:\"wb\"",
-        "_type:\"syslog\""
-      ],
+      "history": [],
       "remember": 10,
       "enable": true
     },
     {
       "type": "filtering",
       "collapse": true,
-      "notice": true,
+      "notice": false,
       "enable": true
     }
   ],
