@@ -1,6 +1,6 @@
 #!/usr/bin/puppet apply
 
-class hpuchotcp (
+class hpucho::tcp (
 	$install_dir = "/opt/uchotcp",
 	
 	$port_start = 1,
