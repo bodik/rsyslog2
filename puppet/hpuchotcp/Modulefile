@@ -1,4 +1,4 @@
-name    'flab-hpucho'
+name    'flab-hpuchotcp'
 version '0.0.1'
 source 'UNKNOWN'
 author 'rsyslog2'

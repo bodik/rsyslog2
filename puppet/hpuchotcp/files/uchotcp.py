@@ -11,7 +11,7 @@ import os
 import sys
 
 
-DEFAULT_ACONFIG = 'warden_client-ucho.cfg'
+DEFAULT_ACONFIG = 'warden_client-uchotcp.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.test'
 DEFAULT_AWIN = 5
@@ -32,23 +32,23 @@ if aanonymised not in ['no', 'yes', 'omit']:
 atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
 aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
 
-def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
-	peer_proto, peer_port, ucho_port, data):
+def gen_event_idea_uchotcp(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
+	peer_proto, peer_port, uchotcp_port, data):
 
 	event = {
 		"Format": "IDEA0",
 		"ID": str(uuid4()),
 		"DetectTime": detect_time,
 		"Category": ["Intrusion"],
-		"Note": "Ucho event",
+		"Note": "Uchotcp event",
 		"ConnCount": conn_count,
 		"Source": [{ "Proto": peer_proto, "Port": [peer_port] }],
-		"Target": [{ "Proto": peer_proto, "Port": [ucho_port] }],
+		"Target": [{ "Proto": peer_proto, "Port": [uchotcp_port] }],
 		"Node": [
 			{
 				"Name": client_name,
 				"Tags": ["Honeypot", "Connection"],
-				"SW": ["Ucho"],
+				"SW": ["Uchotcp"],
 			}
 		],
 		"Attach": [{ "data": hexdump(data), "datalen": len(data) }]
@@ -102,7 +102,7 @@ def proto_detection(event, data):
 
 
 
-#ucho
+#uchotcp
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.internet.error import CannotListenError
@@ -120,7 +120,7 @@ class Ucho(Protocol):
 	def connectionLost(self, reason):
 		wclient.logger.debug("disconnected %s" % self._peer)
 		#print "DATA: %s" % self.dump( ''.join(self._data))
-		a = gen_event_idea_ucho(
+		a = gen_event_idea_uchotcp(
 			client_name = aname, 
 			detect_time = self._dtime,
 			conn_count = 1, 
@@ -132,7 +132,7 @@ class Ucho(Protocol):
 			src_ip = self._peer.host, 
 			peer_port = self._peer.port,
 
-			ucho_port = self._socket[1],
+			uchotcp_port = self._socket[1],
 			dst_ip = self._socket[0],
 
 			data = ''.join(self._data)
@@ -152,7 +152,7 @@ class Ucho(Protocol):
 
 
 
-#ucho
+#uchotcp
 factory = Factory()
 factory.protocol = Ucho
 
