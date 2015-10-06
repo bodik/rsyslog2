@@ -87,6 +87,13 @@ class hpglastopf (
 		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"], Package["python-dev"]],
         }
 
+	file { "/opt/glastopf/data":
+		source => "puppet:///modules/${module_name}/data",
+		recurse => true,
+		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0644",
+		require => [File["${install_dir}"], Exec["pip install glastopf"]],
+	}
+
 
 	#perun mi ji krade
  	package { ["perun-slave", "perun-slave-meta"]: ensure => absent }	
