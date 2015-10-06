@@ -5,7 +5,7 @@ class hpucho::udp (
 	
 	$port_start = 1,
 	$port_end = 32768,
-	$port_skip = "[67, 137, 138, 1433, 65535]",
+	$port_skip = "[67, 137, 138, 1433, 5678, 65535]",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
