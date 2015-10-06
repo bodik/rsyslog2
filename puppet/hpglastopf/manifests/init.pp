@@ -87,10 +87,11 @@ class hpglastopf (
 		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"], Package["python-dev"]],
         }
 
-	file { "/opt/glastopf/data":
+	file { "/usr/local/lib/python2.7/dist-packages/glastopf/modules/handlers/emulators/data":
 		source => "puppet:///modules/${module_name}/data",
 		recurse => true,
-		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0644",
+		purge => false,
+		owner => "root", group => "root", mode => "0644",
 		require => [File["${install_dir}"], Exec["pip install glastopf"]],
 	}
 
