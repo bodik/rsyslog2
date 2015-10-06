@@ -1,11 +1,11 @@
 #!/usr/bin/puppet apply
 
-class hpucho (
-	$install_dir = "/opt/ucho",
+class hpucho::udp (
+	$install_dir = "/opt/uchoudp",
 	
 	$port_start = 1,
-	$port_end = 9999,
-	$port_skip = "[1433,65535]",
+	$port_end = 32768,
+	$port_skip = "[67, 137, 138, 1433, 5678, 65535]",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -24,25 +24,25 @@ class hpucho (
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
-	file { "${install_dir}/ucho.py":
-		source => "puppet:///modules/${module_name}/ucho.py",
+	file { "${install_dir}/uchoudp.py":
+		source => "puppet:///modules/${module_name}/uchoudp.py",
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
-		notify => Service["ucho"],
+		notify => Service["uchoudp"],
 	}
 	package { ["python-twisted"]: 
 		ensure => installed, 
 	}
 
-	file { "/etc/init.d/ucho":
-		content => template("${module_name}/ucho.init.erb"),
+	file { "/etc/init.d/uchoudp":
+		content => template("${module_name}/uchoudp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/ucho.py", "${install_dir}/warden_client-ucho.cfg"],
+		require => File["${install_dir}/uchoudp.py", "${install_dir}/warden_client-uchoudp.cfg"],
 	}
-	service { "ucho": 
+	service { "uchoudp": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/ucho", "${install_dir}/ucho.py"],
+		require => File["/etc/init.d/uchoudp", "${install_dir}/uchoudp.py"],
 	}
 
 
@@ -65,17 +65,17 @@ class hpucho (
 		require => File["${install_dir}"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-ucho.cfg":
-		content => template("${module_name}/warden_client-ucho.cfg.erb"),
+	file { "${install_dir}/warden_client-uchoudp.cfg":
+		content => template("${module_name}/warden_client-uchoudp.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
-		notify => Service["ucho"],
+		notify => Service["uchoudp"],
 	}
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
-	exec { "register ucho sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ucho -d ${install_dir}",
+	exec { "register uchoudp sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchoudp -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
