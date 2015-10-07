@@ -11,7 +11,7 @@ import os
 import sys
 
 
-DEFAULT_ACONFIG = 'warden_client-ucho.cfg'
+DEFAULT_ACONFIG = 'warden_client-uchoudp.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.test'
 DEFAULT_AWIN = 5
@@ -32,8 +32,15 @@ if aanonymised not in ['no', 'yes', 'omit']:
 atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
 aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
 
-def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
-	peer_proto, peer_port, ucho_port, data):
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #0x8915 - SIOCGIFADDR
+    return socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,struct.pack('256s', ifname[:15]))[20:24])
+
+def gen_event_idea_uchoudp(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
+	peer_proto, peer_port, uchoudp_port, data):
+	
+	###print "DEBUG:", "AAA", data
 
 	event = {
 		"Format": "IDEA0",
@@ -43,12 +50,12 @@ def gen_event_idea_ucho(client_name, detect_time, conn_count, src_ip, dst_ip, an
 		"Note": "Ucho event",
 		"ConnCount": conn_count,
 		"Source": [{ "Proto": peer_proto, "Port": [peer_port] }],
-		"Target": [{ "Proto": peer_proto, "Port": [ucho_port] }],
+		"Target": [{ "Proto": peer_proto, "Port": [uchoudp_port] }],
 		"Node": [
 			{
 				"Name": client_name,
 				"Tags": ["Honeypot", "Connection"],
-				"SW": ["Ucho"],
+				"SW": ["Uchoudp"],
 			}
 		],
 		"Attach": [{ "data": hexdump(data), "datalen": len(data) }]
@@ -81,81 +88,74 @@ def hexdump(src, length=16):
 		N+=length
 	return result
 
-def proto_detection(event, data):
-	res = re.match("([A-Za-z]{3,20}) (.*) HTTP/", data)
-	if res:
-		event["Attach"][0]["smart"] = res.group(1)+" "+res.group(2)
-		event["Attach"][0]["http"] = {}
-		event["Attach"][0]["http"]["method"] = res.group(1)
-		event["Attach"][0]["http"]["uri"] = res.group(2)
-		event["Attach"][0]["http"]["data"] = data
-		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["http"]
-		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["http"]
 
-	res = re.match("^(SSH-.*)\r\n", data)
-	if res:
-		event["Attach"][0]["smart"] = res.group(1)
-		event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["ssh"]
-		event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["ssh"]
+def proto_detection(event, data):
+	try:
+		if 161 in event["Target"][0]["Port"]:
+			parse = scapy.all.SNMP(data)
+			event["Attach"][0]["datadecoded"] = repr(parse)
+			event["Attach"][0]["smart"] = parse.community.val
+			event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["snmp"]
+			event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["snmp"]
+
+		if 53 in event["Target"][0]["Port"]:
+			parse = scapy.all.DNS(data)
+			#import pdb; pdb.set_trace()
+			event["Attach"][0]["datadecoded"] = repr(parse)
+			event["Attach"][0]["smart"] = repr(parse.qd)
+			event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["dns"]
+			event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["dns"]
+	
+	except Exception as e:
+		pass
 
 	return event
 
 
-
-#ucho
-from twisted.internet.protocol import Protocol, Factory
-from twisted.internet import reactor
+#uchoudp
 from twisted.internet.error import CannotListenError
-import json, socket, re
+from twisted.internet.protocol import DatagramProtocol
+from twisted.internet import reactor
+import socket, fcntl, struct, json, re
 
-class Ucho(Protocol):
+import scapy.all
+from cStringIO import StringIO
 
-   	def connectionMade(self):
-		self._peer = self.transport.getPeer()
-		self._socket = self.transport.socket.getsockname()
-		self._dtime = format_timestamp()
-		self._data = []
-		wclient.logger.debug("connected %s" % self._peer)
+class UchoUDP(DatagramProtocol):
+    	def datagramReceived(self, data, (host, port)):
 
-	def connectionLost(self, reason):
-		wclient.logger.debug("disconnected %s" % self._peer)
-		#print "DATA: %s" % self.dump( ''.join(self._data))
-		a = gen_event_idea_ucho(
+		if re.match("autotest.*", data):
+			#import pdb; pdb.set_trace()
+			self.transport.write(data, (host, port))
+
+	#	import pdb; pdb.set_trace()
+		wclient.logger.debug("received from %s:%s, len %d" % (host, port, len(data)))
+   	
+		a = gen_event_idea_uchoudp(
 			client_name = aname, 
-			detect_time = self._dtime,
+			detect_time = format_timestamp(),
 			conn_count = 1, 
 			anonymised = aanonymised, 
 			target_net = atargetnet,
 
-			peer_proto = [ self._peer.type.lower() ],
+			peer_proto = [proto],
 
-			src_ip = self._peer.host, 
-			peer_port = self._peer.port,
+			src_ip = host, 
+			peer_port = port,
 
-			ucho_port = self._socket[1],
-			dst_ip = self._socket[0],
+			uchoudp_port = self.transport.socket.getsockname()[1],
+			dst_ip = dst_ip,
 
-			data = ''.join(self._data)
+			data = data
 		)
 		wclient.logger.debug("event %s" % json.dumps(a, indent=2))
 		ret = wclient.sendEvents([a])
 		if 'saved' in ret:
 			wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
-	
-	def dataReceived(self, data):
-		wclient.logger.debug("received from %s, len %d" % (self._peer, len(data)))
-		self._data.append(data)
-		#import pdb; pdb.set_trace()
-		#print "DATA: ", self.dump(data)
 
-	
-
-
-
-#ucho
-factory = Factory()
-factory.protocol = Ucho
-
+#uchoudp
+proto = 'UDP'
+dst_ip = get_ip_address('eth0')
 skipports = aconfig.get('port_skip', [])
 wclient.logger.debug(skipports)
 
@@ -166,9 +166,9 @@ for i in range(aconfig.get('port_start', 9999), aconfig.get('port_end', 9999)):
 
 	#try to open the rest
 	try:
-		reactor.listenTCP(i, factory)
-	except CannotListenError:
-		pass
-	
+		reactor.listenUDP(i, UchoUDP())
+	except:
+		pass	
+
 reactor.run()
 

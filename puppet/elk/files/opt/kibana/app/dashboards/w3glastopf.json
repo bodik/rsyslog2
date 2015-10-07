@@ -1,10 +1,10 @@
 {
-  "title": "wb",
+  "title": "w3glastopf",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\"",
+          "query": "_type:\"wb\" AND Node.SW:\"Glastopf\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
@@ -44,7 +44,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 4,
+          "span": 6,
           "editable": true,
           "group": [
             "default"
@@ -184,39 +184,6 @@
           "tstat": "total",
           "valuefield": "ConnCount",
           "title": "Attack sources"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "Node.SW",
-          "exclude": [],
-          "missing": true,
-          "other": true,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "table",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "SW"
         }
       ],
       "notice": false
@@ -250,7 +217,6 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
-            "DetectTime",
             "Node.Name",
             "Category",
             "Source.IP4",
@@ -259,7 +225,6 @@
             "Target.Port",
             "Target.Proto",
             "Note",
-            "ConnCount",
             "Attach.smart"
           ],
           "localTime": true,
@@ -303,8 +268,6 @@
       "query": "*",
       "pinned": true,
       "history": [
-        "_type:\"wb\"",
-        "_type:\"syslog\""
       ],
       "remember": 10,
       "enable": true

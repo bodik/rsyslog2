@@ -56,6 +56,11 @@ def gen_event_idea_g1(client_name, detect_time, conn_count, src_ip, anonymised, 
 		"Attach": [{ "request_url": request_url, "request_raw": request_raw, "pattern": pattern, "filename": filename }]
 	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
+	try:
+		event["Attach"][0]["smart"] = request_raw.split("\n")[0]
+	except:
+		pass
+	
   
 	return event
 
