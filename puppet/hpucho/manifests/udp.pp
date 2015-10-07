@@ -30,7 +30,7 @@ class hpucho::udp (
 		require => File["${install_dir}"],
 		notify => Service["uchoudp"],
 	}
-	package { ["python-twisted"]: 
+	package { ["python-twisted", "python-scapy"]: 
 		ensure => installed, 
 	}
 
