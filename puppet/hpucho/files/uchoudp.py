@@ -39,6 +39,8 @@ def get_ip_address(ifname):
 
 def gen_event_idea_uchoudp(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
 	peer_proto, peer_port, uchoudp_port, data):
+	
+	###print "DEBUG:", "AAA", data
 
 	event = {
 		"Format": "IDEA0",
@@ -86,7 +88,37 @@ def hexdump(src, length=16):
 		N+=length
 	return result
 
+
 def proto_detection(event, data):
+	try:
+		if 161 in event["Target"][0]["Port"]:
+			parse = scapy.all.SNMP(data)
+			# catching show() output which uses print directly instead of sprintf
+			old_stdout = sys.stdout
+			sys.stdout = mystdout = StringIO()
+			parse.show()	
+			sys.stdout = old_stdout
+			event["Attach"][0]["datadecoded"] = mystdout.getvalue()
+			event["Attach"][0]["smart"] = parse.community.val
+			event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["snmp"]
+			event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["snmp"]
+
+		if 53 in event["Target"][0]["Port"]:
+			parse = scapy.all.DNS(data)
+			# catching show() output which uses print directly instead of sprintf
+			old_stdout = sys.stdout
+			sys.stdout = mystdout = StringIO()
+			parse.show()	
+			sys.stdout = old_stdout
+			#import pdb; pdb.set_trace()
+			event["Attach"][0]["datadecoded"] = mystdout.getvalue()
+			#event["Attach"][0]["smart"] = parse.community.val
+			event["Source"][0]["Proto"] = event["Source"][0]["Proto"] + ["dns"]
+			event["Target"][0]["Proto"] = event["Target"][0]["Proto"] + ["dns"]
+	
+	except Exception as e:
+		pass
+
 	return event
 
 
@@ -95,6 +127,9 @@ from twisted.internet.error import CannotListenError
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 import socket, fcntl, struct, json, re
+
+import scapy.all
+from cStringIO import StringIO
 
 class UchoUDP(DatagramProtocol):
     	def datagramReceived(self, data, (host, port)):
