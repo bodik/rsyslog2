@@ -55,7 +55,7 @@ class hpdio (
 		ensure => installed,
 	}
 	file { "/etc/init.d/p0f":
-		source => "puppet:///modules/${module_name}/p0f.init",
+		content => template("${module_name}/p0f.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => Package["p0f"],
 	}
