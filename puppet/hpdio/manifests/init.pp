@@ -77,16 +77,31 @@ class hpdio (
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}/var"], File["/etc/init.d/p0f"]],
 	}
-	file { "${install_dir}/etc//dionaea/dionaea.conf":
+	file { "${install_dir}/etc/dionaea/dionaea.conf":
 		content => template("${module_name}/dionaea.conf.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => File["/etc/init.d/dio"],
 		notify => Service["dio"],
 	}
+	exec { "install selfcert":
+		command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh ${install_dir}/etc/dioanea",
+		creates => "${install_dir}/etc/dioanea/${fqdn}.crt",
+		require => File["${install_dir}/etc/dionaea/dionaea.conf"],
+	}
+	file { "${install_dir}/etc/dionaea/server.key":
+		ensure => link,
+		target => "${install_dir}/etc/dionaea/${fqdn}.key",
+		require => Exec["install selfcert"],
+	}
+	file { "${install_dir}/etc/dionaea/server.crt":
+		ensure => link,
+		target => "${install_dir}/etc/dionaea/${fqdn}.crt",
+		require => Exec["install selfcert"],
+	}
 	service { "dio": 
 		enable => true,
 		ensure => running,
-		require => [ File["/etc/init.d/dio"], File["${install_dir}/etc//dionaea/dionaea.conf"] ],
+		require => [ File["/etc/init.d/dio"], File["${install_dir}/etc/dionaea/dionaea.conf"], File["${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"] ],
 	}
 
 
