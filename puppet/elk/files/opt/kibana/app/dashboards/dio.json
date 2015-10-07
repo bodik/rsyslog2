@@ -44,7 +44,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 6,
+          "span": 4,
           "editable": true,
           "group": [
             "default"
@@ -184,6 +184,39 @@
           "tstat": "total",
           "valuefield": "ConnCount",
           "title": "Attack sources"
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "Category.raw",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 10,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "table",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Categories"
         }
       ],
       "notice": false
@@ -306,7 +339,7 @@
     {
       "type": "filtering",
       "collapse": true,
-      "notice": false,
+      "notice": true,
       "enable": true
     }
   ],
@@ -359,5 +392,5 @@
     "load_local": true,
     "hide": false
   },
-  "refresh": "1m"
+  "refresh": false
 }
