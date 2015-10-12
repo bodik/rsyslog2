@@ -84,8 +84,8 @@ class hpdio (
 		notify => Service["dio"],
 	}
 	exec { "install selfcert":
-		command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh ${install_dir}/etc/dioanea",
-		creates => "${install_dir}/etc/dioanea/${fqdn}.crt",
+		command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh ${install_dir}/etc/dionaea",
+		creates => "${install_dir}/etc/dionaea/${fqdn}.crt",
 		require => File["${install_dir}/etc/dionaea/dionaea.conf"],
 	}
 	file { "${install_dir}/etc/dionaea/server.key":
