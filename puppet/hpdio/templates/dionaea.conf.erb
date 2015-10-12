@@ -162,10 +162,9 @@ listen =
 		 note: ipv6 does not work with surfids yet, 
 		 as ipv6 addresses are mapped to ipv4 and surfids fails to retrieve the sensor id for ::ffff:1.2.3.4
 	*/
-	     
-	mode = "getifaddrs"
-	//addrs = { eth0 = ["::"] }
-	addrs = { eth1 = ["0.0.0.0"] }
+	
+	mode = "manual"
+        addrs = { eth0 = ["0.0.0.0"] }
 }
 
 modules = {
