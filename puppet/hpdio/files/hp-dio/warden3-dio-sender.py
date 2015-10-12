@@ -15,6 +15,7 @@ from os import path
 import base64
 import sqlite3
 import sys
+import re
 
 DEFAULT_ACONFIG = 'warden_client-dio.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
@@ -27,14 +28,15 @@ DEFAULT_CON_ATTEMPTS = 3
 DEFAULT_CON_RETRY_INTERVAL = 5
 DEFAULT_ATTACH_NAME = 'att1'
 DEFAULT_HASHTYPE = 'md5'
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-DEFAULT_CONTENT_ENCODING = 'base64'
 DEFAULT_ANONYMISED = 'no'
 DEFAULT_TARGET_NET = '0.0.0.0/0'
 DEFAULT_SECRET = ''
+DEFAULT_CONTENT_ENCODING = 'base64'
 
+CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream'
+CONTENT_TYPE_TEXT_PLAIN = 'text/plain'
 
-def gen_attach_idea(logger, report_binaries, binaries_path, filename, hashtype, hashdigest, vtpermalink, avref):
+def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashtype, hashdigest, vtpermalink, avref):
     
   refs = []
   attach = { 
@@ -60,12 +62,23 @@ def gen_attach_idea(logger, report_binaries, binaries_path, filename, hashtype, 
       fpath = path.join(binaries_path, hashdigest)
       with open(fpath, "r") as f:
         fdata = f.read()
-        attach['ContentType'] = DEFAULT_CONTENT_TYPE
+        attach['ContentType'] = CONTENT_TYPE_OCTET_STREAM
         attach['ContentEncoding'] = DEFAULT_CONTENT_ENCODING
         attach['Size'] = len(fdata)
         attach['Content'] = base64.b64encode(fdata)
     except (IOError) as e:
       logger.info("Reading id file \"%s\" with malware failed, information will not be attached." % (fpath))
+
+  return attach
+
+def gen_attach_idea_mysql(logger, mysql_query):
+  
+  attach = {} 
+  attach["Handle"] = DEFAULT_ATTACH_NAME
+  attach["Type"] = ["Malware"]
+  attach['ContentType'] = CONTENT_TYPE_TEXT_PLAIN
+  attach['Size'] = len(mysql_query)
+  attach['Content'] = mysql_query
 
   return attach
 
@@ -94,34 +107,37 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
   # Determine IP address family
   af = "IP4" if not ':' in data['src_ip'] else "IP6"
   
-  # Extract & save proto and service name
+  # Save TCP/UDP proto
   proto = [data['proto']]
-
-  if data['service'] in ['mysql', 'mssql']:
-    proto.append(data['service'])
-  elif data['service'] in ['httpd', 'smbd']:
-    proto.append(data['service'][:-1])
-
-  # Choose correct category
-  if data['service'] != 'pcap':
-    category.append('Attempt.Exploit')
-  else:
-    category.append('Recon.Scanning')
 
   # smbd allows save malware
   if data['service'] == 'smbd' and data['download_md5_hash'] is not None:
+    category.append('Attempt.Exploit')
     category.append('Malware')
+    proto.append('smb')
+
     event['Source'][0]['URL'] = [data['download_url']]
     filename = data['download_url'].split('/')[-1]
 
     if filename != '' and data['download_md5_hash'] != '':
-      # Generate "Attach" part of IDEA
-      a = gen_attach_idea(logger, report_binaries, binaries_path, filename, DEFAULT_HASHTYPE, data['download_md5_hash'], data['virustotal_permalink'], data['scan_result'])
+      # Generate "SMB Attach" part of IDEA
+      a = gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, DEFAULT_HASHTYPE, data['download_md5_hash'], data['virustotal_permalink'], data['scan_result'])
     
       event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
       event['Attach'] = [a]
+  
+  if data['service'] == 'mysqld':
+    #Clean exported data 
+    mysql_data = re.sub("select @@version_comment limit 1,?", "", data['mysql_query']) 
+    if mysql_data != "":
+    	# Generate "MySQL Attach" part of IDEA
+    	a = gen_attach_idea_mysql(logger, mysql_data)
 
-
+	category.append('Attempt.Exploit')
+	proto.append('mysql')
+    	event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
+    	event['Attach'] = [a]
+	
   event['Source'][0][af]      = [data['src_ip']]
   event['Source'][0]['Port']  = [data['src_port']]
 
@@ -135,6 +151,10 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
   event['Target'][0]['Port']  = [data['dst_port']]
   event['Target'][0]['Proto'] = proto
 
+  # Add default category
+  if not category:
+  	category.append('Recon.Scanning')
+  
   event['Category'] = category
 
   return event
@@ -167,20 +187,21 @@ def main():
   atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
   aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
 
-
-
   con = sqlite3.connect(adbfile)
   con.row_factory = sqlite3.Row
   crs = con.cursor()
 
   events = []
-  
-  query =  "SELECT c.connection_timestamp AS timestamp, c.remote_host AS src_ip, c.remote_port AS src_port, c.connection_transport AS proto, \
+ 
+  query = "SELECT c.connection_timestamp AS timestamp, c.remote_host AS src_ip, c.remote_port AS src_port, c.connection_transport AS proto, \
             c.local_host AS dst_ip, c.local_port AS dst_port, COUNT(c.connection) as attack_scale, c.connection_protocol AS service, d.download_url, d.download_md5_hash, \
-            v.virustotal_permalink, GROUP_CONCAT('urn:' || vt.virustotalscan_scanner || ':' || vt.virustotalscan_result,';') AS scan_result \
+            v.virustotal_permalink, GROUP_CONCAT('urn:' || vt.virustotalscan_scanner || ':' || vt.virustotalscan_result,';') AS scan_result, \
+            group_concat(mca.mysql_command_arg_data) as mysql_query \
             FROM connections AS c LEFT JOIN downloads AS d ON c.connection = d.connection \
             LEFT JOIN virustotals AS v ON d.download_md5_hash = v.virustotal_md5_hash \
             LEFT JOIN virustotalscans vt ON v.virustotal = vt.virustotal \
+            LEFT JOIN mysql_commands mc ON c.connection = mc.connection  \
+            LEFT JOIN mysql_command_args mca ON mc.mysql_command = mca.mysql_command \
             WHERE datetime(connection_timestamp,'unixepoch') > datetime('now','-%d seconds') AND c.remote_host != '' \
             GROUP BY c.remote_host, c.local_port ORDER BY c.connection_timestamp ASC;" % (awin)
 
@@ -211,11 +232,12 @@ def main():
       
   print "=== Sending ==="
   start = time()
+
   ret = wclient.sendEvents(events)
   
-  if ret:
-    wclient.logger.info("%d event(s) successfully delivered." % len(rows))
-
+  if 'saved' in ret:
+    wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
+  
   print "Time: %f" % (time() - start)
 
 
