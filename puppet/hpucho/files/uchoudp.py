@@ -91,7 +91,7 @@ def hexdump(src, length=16):
 
 def proto_detection(event, data):
 	try:
-		if 161 in event["Target"][0]["Port"]:
+		if (161 in event["Target"][0]["Port"]) or (162 in event["Target"][0]["Port"]):
 			parse = scapy.all.SNMP(data)
 			event["Attach"][0]["datadecoded"] = repr(parse)
 			event["Attach"][0]["smart"] = parse.community.val
