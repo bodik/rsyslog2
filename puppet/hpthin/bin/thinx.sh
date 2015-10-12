@@ -34,7 +34,7 @@ shift $((OPTIND-1))
 
 thin_tun_dev="tunx"
 core_tun_address_octet=$(( (${core_tun_number} * 4) + 1 ))
-core_tun_address_octet=$(( (${core_tun_number} * 4) + 2 ))
+thin_tun_address_octet=$(( (${core_tun_number} * 4) + 2 ))
 core_tun_address="10.0.0.${core_tun_address_octet}"
 thin_tun_address="10.0.0.${thin_tun_address_octet}"
 hashkey="$core_tun_number--$core_public_address"
