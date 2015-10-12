@@ -154,7 +154,7 @@ class UchoUDP(DatagramProtocol):
 			wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
 
 #uchoudp
-proto = 'UDP'
+proto = 'udp'
 dst_ip = get_ip_address('eth0')
 skipports = aconfig.get('port_skip', [])
 wclient.logger.debug(skipports)
