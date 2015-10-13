@@ -244,6 +244,7 @@
           "fields": [
             "@timestamp",
             "Source.IP4",
+            "Source.hostname",
             "sg.cc",
             "Note",
             "Attach.iinput"
