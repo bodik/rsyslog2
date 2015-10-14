@@ -5,7 +5,6 @@ class hpucho::web (
 	
 	$port = 8080,
 	$personality = "Apache Tomcat/7.0.56 (Debian)",
-	$output_dir = "/opt/uchoweb/spool",
 	$content = "content-tomcat.tgz",
 	
 	$warden_server = undef,
@@ -24,17 +23,9 @@ class hpucho::web (
 	package { ["python-flask"]: 
 		ensure => installed, 
 	}
-	file { ["${install_dir}", "${install_dir}/spool"]:
+	file { ["${install_dir}"]:
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
-	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
-	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/uchoweb.cfg":
-		content => template("${module_name}/uchoweb.cfg.erb"),
-		owner => "root", group => "root", mode => "0644",
-		require => File["${install_dir}"],
-		notify => Service["uchoweb"],
 	}
 	file { "${install_dir}/uchoweb.py":
 		source => "puppet:///modules/${module_name}/uchoweb/uchoweb.py",
@@ -56,7 +47,7 @@ class hpucho::web (
 	file { "/etc/init.d/uchoweb":
 		content => template("${module_name}/uchoweb.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/uchoweb.py", "${install_dir}/uchoweb.cfg"], Exec["content"]],
+		require => [File["${install_dir}/uchoweb.py", "${install_dir}/warden_client-uchoweb.cfg"], Exec["content"]],
 	}
 	service { "uchoweb": 
 		enable => true,
@@ -78,26 +69,26 @@ class hpucho::web (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
 	}
-#	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-#	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-#	file { "${install_dir}/warden_client-uchotcp.cfg":
-#		content => template("${module_name}/warden_client-uchotcp.cfg.erb"),
-#		owner => "root", group => "root", mode => "0640",
-#		require => File["${install_dir}"],
-#		notify => Service["uchotcp"],
-#	}
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
+	file { "${install_dir}/warden_client-uchoweb.cfg":
+		content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
+		owner => "root", group => "root", mode => "0640",
+		require => File["${install_dir}"],
+		notify => Service["uchotcp"],
+	}
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
-#	exec { "register uchotcp sensor":
-#		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchotcp -d ${install_dir}",
-#		creates => "${install_dir}/registered-at-warden-server",
-#		require => File["${install_dir}"],
-#	}
+	exec { "register uchotcp sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchoweb -d ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => File["${install_dir}"],
+	}
 
 }
