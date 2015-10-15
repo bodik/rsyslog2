@@ -1,40 +1,20 @@
 {
-  "title": "kippo",
+  "title": "w3-uchoweb",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND NOT Note:\"SSH login attempt\"",
+          "query": "_type:\"wb\" AND Node.SW:\"Uchoweb\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
           "pin": false,
           "type": "lucene",
           "enable": true
-        },
-        "1": {
-          "id": 1,
-          "color": "#EAB839",
-          "alias": "",
-          "pin": true,
-          "type": "lucene",
-          "enable": true,
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"SSH login attempt\""
-        },
-        "2": {
-          "id": 2,
-          "color": "#6ED0E0",
-          "alias": "",
-          "pin": true,
-          "type": "lucene",
-          "enable": true,
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"Kippo download\""
         }
       },
       "ids": [
-        0,
-        1,
-        2
+        0
       ]
     },
     "filter": {
@@ -64,7 +44,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 5,
+          "span": 6,
           "editable": true,
           "group": [
             "default"
@@ -93,9 +73,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1,
-              2
+              0
             ]
           },
           "title": "Events over time",
@@ -143,7 +121,7 @@
         },
         {
           "error": false,
-          "span": 4,
+          "span": 3,
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
@@ -166,9 +144,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1,
-              2
+              0
             ]
           },
           "tmode": "terms",
@@ -201,9 +177,7 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0,
-              1,
-              2
+              0
             ]
           },
           "tmode": "terms_stats",
@@ -224,7 +198,7 @@
         {
           "title": "All events",
           "error": false,
-          "span": 8,
+          "span": 12,
           "editable": true,
           "group": [
             "default"
@@ -243,11 +217,15 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
+            "Node.Name",
+            "Category",
             "Source.IP4",
             "Source.hostname",
             "sg.cc",
+            "Target.Port",
+            "Target.Proto",
             "Note",
-            "Attach.iinput"
+            "Attach.smart"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -257,7 +235,7 @@
           "paging": true,
           "spyable": true,
           "queries": {
-            "mode": "unpinned",
+            "mode": "all",
             "ids": [
               0
             ]
@@ -267,46 +245,6 @@
           "trimFactor": 600,
           "normTimes": true,
           "all_fields": false
-        },
-        {
-          "error": false,
-          "span": 4,
-          "editable": true,
-          "type": "table",
-          "loadingEditor": false,
-          "size": 100,
-          "pages": 5,
-          "offset": 0,
-          "sort": [
-            "_score",
-            "desc"
-          ],
-          "overflow": "min-height",
-          "fields": [
-            "@timestamp",
-            "Attach.url"
-          ],
-          "highlight": [],
-          "sortable": true,
-          "header": true,
-          "paging": true,
-          "field_list": false,
-          "all_fields": false,
-          "trimFactor": 300,
-          "localTime": false,
-          "timeField": "@timestamp",
-          "spyable": true,
-          "queries": {
-            "mode": "selected",
-            "ids": [
-              2
-            ]
-          },
-          "style": {
-            "font-size": "9pt"
-          },
-          "normTimes": true,
-          "title": "Downloads"
         }
       ],
       "notice": false
@@ -329,7 +267,8 @@
       "notice": false,
       "query": "*",
       "pinned": true,
-      "history": [],
+      "history": [
+      ],
       "remember": 10,
       "enable": true
     },

@@ -1,10 +1,10 @@
 {
-  "title": "w3glastopf",
+  "title": "w3-uchotcp",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\" AND Node.SW:\"Glastopf\"",
+          "query": "_type:\"wb\" AND Node.SW:\"Uchotcp\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
@@ -198,7 +198,7 @@
         {
           "title": "All events",
           "error": false,
-          "span": 12,
+          "span": 10,
           "editable": true,
           "group": [
             "default"
@@ -218,13 +218,13 @@
           "fields": [
             "@timestamp",
             "Node.Name",
-            "Category",
             "Source.IP4",
             "Source.hostname",
             "sg.cc",
             "Target.Port",
             "Target.Proto",
             "Note",
+            "Attach.datalen",
             "Attach.smart"
           ],
           "localTime": true,
@@ -245,6 +245,39 @@
           "trimFactor": 600,
           "normTimes": true,
           "all_fields": false
+        },
+        {
+          "error": false,
+          "span": 2,
+          "editable": true,
+          "type": "terms",
+          "loadingEditor": false,
+          "field": "Target.Port",
+          "exclude": [],
+          "missing": true,
+          "other": true,
+          "size": 30,
+          "order": "count",
+          "style": {
+            "font-size": "10pt"
+          },
+          "donut": false,
+          "tilt": false,
+          "labels": true,
+          "arrangement": "horizontal",
+          "chart": "table",
+          "counter_pos": "above",
+          "spyable": true,
+          "queries": {
+            "mode": "all",
+            "ids": [
+              0
+            ]
+          },
+          "tmode": "terms",
+          "tstat": "total",
+          "valuefield": "",
+          "title": "Ports"
         }
       ],
       "notice": false
@@ -268,6 +301,9 @@
       "query": "*",
       "pinned": true,
       "history": [
+        "_type:\"wb\" AND Node.SW:\"Ucho\"",
+        "_type:\"wb\"",
+        "_type:\"syslog\""
       ],
       "remember": 10,
       "enable": true
@@ -275,7 +311,7 @@
     {
       "type": "filtering",
       "collapse": true,
-      "notice": true,
+      "notice": false,
       "enable": true
     }
   ],
