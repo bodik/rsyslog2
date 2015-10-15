@@ -25,8 +25,10 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpkippo.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpkippo/tests/hpkippo.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/hpucho.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-tcp.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/tcp.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-udp.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/udp.sh&apos;
 
 </command>
     </hudson.tasks.Shell>

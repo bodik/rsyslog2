@@ -178,6 +178,15 @@ metacloud_update() {
 	done
 }
 
+all_warden3_nodes() {
+	CMD=$1
+
+	for all in $( /puppet/jenkins/bin/metacloud.init list | egrep "(WS-|H[A-Z]+-)" | awk '{print $4}' ); do
+                VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh "$CMD"
+	done
+	rreturn 0 "$0 aw3"
+}
+
 case "$1" in
 	creds)
 		metacloud_creds
@@ -238,6 +247,9 @@ case "$1" in
 	;;
 	update)
 		metacloud_update
+	;;
+	aw3)
+		all_warden3_nodes "$2"
 	;;
 	id)
 		vm_id
