@@ -52,7 +52,7 @@ def gen_event_idea_uchoweb(client_name, detect_time, conn_count, src_ip, dst_ip,
 				"SW": ["Uchoweb"],
 			}
 		],
-		"Attach": [{ "data": data, "datalen": len(data) }]
+		"Attach": [{ "request": data, "smart": data["url"] }]
 	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
   

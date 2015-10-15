@@ -80,12 +80,12 @@ class hpucho::web (
 		content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
-		notify => Service["uchotcp"],
+		notify => Service["uchoweb"],
 	}
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
-	exec { "register uchotcp sensor":
+	exec { "register uchoweb sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchoweb -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
