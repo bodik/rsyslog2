@@ -1,20 +1,40 @@
 {
-  "title": "dio",
+  "title": "w3-kippo",
   "services": {
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\" AND Node.SW:\"Dionaea\"",
+          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND NOT Note:\"SSH login attempt\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
           "pin": false,
           "type": "lucene",
           "enable": true
+        },
+        "1": {
+          "id": 1,
+          "color": "#EAB839",
+          "alias": "",
+          "pin": true,
+          "type": "lucene",
+          "enable": true,
+          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"SSH login attempt\""
+        },
+        "2": {
+          "id": 2,
+          "color": "#6ED0E0",
+          "alias": "",
+          "pin": true,
+          "type": "lucene",
+          "enable": true,
+          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"Kippo download\""
         }
       },
       "ids": [
-        0
+        0,
+        1,
+        2
       ]
     },
     "filter": {
@@ -44,7 +64,7 @@
       "collapsable": true,
       "panels": [
         {
-          "span": 4,
+          "span": 5,
           "editable": true,
           "group": [
             "default"
@@ -73,7 +93,9 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0
+              0,
+              1,
+              2
             ]
           },
           "title": "Events over time",
@@ -121,7 +143,7 @@
         },
         {
           "error": false,
-          "span": 3,
+          "span": 4,
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
@@ -144,7 +166,9 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0
+              0,
+              1,
+              2
             ]
           },
           "tmode": "terms",
@@ -177,46 +201,15 @@
           "queries": {
             "mode": "all",
             "ids": [
-              0
+              0,
+              1,
+              2
             ]
           },
           "tmode": "terms_stats",
           "tstat": "total",
           "valuefield": "ConnCount",
           "title": "Attack sources"
-        },
-        {
-          "error": false,
-          "span": 2,
-          "editable": true,
-          "type": "terms",
-          "loadingEditor": false,
-          "field": "Category.raw",
-          "exclude": [],
-          "missing": true,
-          "other": true,
-          "size": 10,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "table",
-          "counter_pos": "above",
-          "spyable": true,
-          "queries": {
-            "mode": "all",
-            "ids": [
-              0
-            ]
-          },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Categories"
         }
       ],
       "notice": false
@@ -231,7 +224,7 @@
         {
           "title": "All events",
           "error": false,
-          "span": 10,
+          "span": 8,
           "editable": true,
           "group": [
             "default"
@@ -250,14 +243,11 @@
           "overflow": "min-height",
           "fields": [
             "@timestamp",
-            "Node.Name",
-            "Category",
             "Source.IP4",
             "Source.hostname",
             "sg.cc",
-            "Target.Port",
-            "Target.Proto",
-            "Note"
+            "Note",
+            "Attach.iinput"
           ],
           "localTime": true,
           "timeField": "@timestamp",
@@ -267,7 +257,7 @@
           "paging": true,
           "spyable": true,
           "queries": {
-            "mode": "all",
+            "mode": "unpinned",
             "ids": [
               0
             ]
@@ -280,36 +270,43 @@
         },
         {
           "error": false,
-          "span": 2,
+          "span": 4,
           "editable": true,
-          "type": "terms",
+          "type": "table",
           "loadingEditor": false,
-          "field": "Target.Port",
-          "exclude": [],
-          "missing": true,
-          "other": true,
-          "size": 30,
-          "order": "count",
-          "style": {
-            "font-size": "10pt"
-          },
-          "donut": false,
-          "tilt": false,
-          "labels": true,
-          "arrangement": "horizontal",
-          "chart": "table",
-          "counter_pos": "above",
+          "size": 100,
+          "pages": 5,
+          "offset": 0,
+          "sort": [
+            "_score",
+            "desc"
+          ],
+          "overflow": "min-height",
+          "fields": [
+            "@timestamp",
+            "Attach.url"
+          ],
+          "highlight": [],
+          "sortable": true,
+          "header": true,
+          "paging": true,
+          "field_list": false,
+          "all_fields": false,
+          "trimFactor": 300,
+          "localTime": false,
+          "timeField": "@timestamp",
           "spyable": true,
           "queries": {
-            "mode": "all",
+            "mode": "selected",
             "ids": [
-              0
+              2
             ]
           },
-          "tmode": "terms",
-          "tstat": "total",
-          "valuefield": "",
-          "title": "Ports"
+          "style": {
+            "font-size": "9pt"
+          },
+          "normTimes": true,
+          "title": "Downloads"
         }
       ],
       "notice": false
@@ -392,5 +389,5 @@
     "load_local": true,
     "hide": false
   },
-  "refresh": false
+  "refresh": "1m"
 }
