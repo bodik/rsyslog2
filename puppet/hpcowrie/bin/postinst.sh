@@ -1,7 +1,8 @@
 #!/bin/sh
 
 if [ -z $1 ]; then
-	echo "ERROR: install_dir missing
+	echo "ERROR: install_dir missing"
+	exit 1
 fi
 install_dir=$1
 
