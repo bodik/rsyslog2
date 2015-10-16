@@ -4,7 +4,7 @@
     "query": {
       "list": {
         "0": {
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND NOT Note:\"SSH login attempt\"",
+          "query": "_type:\"wb\" AND (Node.SW:\"Kippo\" OR Node.SW:\"Cowrie\") AND NOT Note:\"SSH login attempt\"",
           "alias": "",
           "color": "#7EB26D",
           "id": 0,
@@ -19,7 +19,7 @@
           "pin": true,
           "type": "lucene",
           "enable": true,
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"SSH login attempt\""
+          "query": "_type:\"wb\" AND (Node.SW:\"Kippo\" OR Node.SW:\"Cowrie\") AND Note:\"SSH login attempt\""
         },
         "2": {
           "id": 2,
@@ -28,7 +28,7 @@
           "pin": true,
           "type": "lucene",
           "enable": true,
-          "query": "_type:\"wb\" AND Node.SW:\"Kippo\" AND Note:\"Kippo download\""
+          "query": "_type:\"wb\" AND (Node.SW:\"Kippo\" OR Node.SW:\"Cowrie\") AND Note:\"Kippo download\""
         }
       },
       "ids": [
