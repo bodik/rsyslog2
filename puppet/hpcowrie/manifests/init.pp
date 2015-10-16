@@ -158,6 +158,11 @@ class hpcowrie (
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/cowrie.cfg"],
 	}
+	file { "${install_dir}/cowrie/commands/uname.py":
+		source => "puppet:///modules/${module_name}/uname.py",
+		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		require => File["${install_dir}/cowrie.cfg"],
+	}
 
 	service { "fail2ban": }
 	file { "/etc/fail2ban/jail.local":
