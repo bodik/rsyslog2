@@ -20,7 +20,10 @@ class hpucho::web (
         }
 
 	# application
-	package { ["python-flask"]: 
+	package { "python-flask": #uchoweb1
+		ensure => installed, 
+	}
+	package { "python-jinja2": #uchoweb2
 		ensure => installed, 
 	}
 	file { ["${install_dir}"]:
@@ -28,7 +31,7 @@ class hpucho::web (
 		owner => "root", group => "root", mode => "0755",
 	}
 	file { "${install_dir}/uchoweb.py":
-		source => "puppet:///modules/${module_name}/uchoweb/uchoweb.py",
+		source => "puppet:///modules/${module_name}/uchoweb/uchoweb2.py",
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}"], Package["python-flask"]],
 		notify => Service["uchoweb"],
