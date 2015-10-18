@@ -28,7 +28,7 @@
           "pin": true,
           "type": "lucene",
           "enable": true,
-          "query": "_type:\"wb\" AND (Node.SW:\"Kippo\" OR Node.SW:\"Cowrie\") AND Note:\"Kippo download\""
+          "query": "_type:\"wb\" AND (Node.SW:\"Kippo\" OR Node.SW:\"Cowrie\") AND (Note:\"Kippo download\" OR Note:\"Cowrie download\")"
         }
       },
       "ids": [
