@@ -61,6 +61,7 @@ do_start()
 	# to handle requests from services started subsequently which depend
 	# on this one.  As a last resort, sleep for some time.
 	iptables -t nat -I PREROUTING 1 ! -s 78.128.214.3/32 -p tcp --dport 22 -j REDIRECT --to-port <%= cowrie_port %>
+	iptables -t nat -I PREROUTING 1 ! -s 78.128.214.3/32 -p tcp --dport 2222 -j REDIRECT --to-port <%= cowrie_port %>
 }
 
 #
@@ -73,6 +74,7 @@ do_stop()
 	# Many daemons don't delete their pidfiles when they exit.
 	rm -f $PIDFILE
 	iptables -t nat -D PREROUTING ! -s 78.128.214.3/32 -p tcp --dport 22 -j REDIRECT --to-port <%= cowrie_port %>
+	iptables -t nat -D PREROUTING ! -s 78.128.214.3/32 -p tcp --dport 2222 -j REDIRECT --to-port <%= cowrie_port %>
 }
 
 #
