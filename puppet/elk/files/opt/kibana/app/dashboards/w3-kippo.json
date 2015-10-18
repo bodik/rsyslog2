@@ -247,7 +247,7 @@
             "Source.hostname",
             "sg.cc",
             "Note",
-            "Attach.iinput"
+            "Attach.smart"
           ],
           "localTime": true,
           "timeField": "@timestamp",
