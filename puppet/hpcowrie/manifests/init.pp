@@ -175,6 +175,7 @@ class hpcowrie (
 		content => template("${module_name}/cowrie.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/cowrie.cfg"],
+		notify => Service["cowrie"],
 	}
 	service { "cowrie": 
 		enable => true,
