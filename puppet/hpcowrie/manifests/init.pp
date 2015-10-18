@@ -80,9 +80,9 @@ class hpcowrie (
 	exec { "clone cowrie":
 		#command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
 		#command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
-		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}",
+		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/start.sh",
-	}
+	}	
 	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
 		ensure => installed, 
 	}
@@ -150,6 +150,16 @@ class hpcowrie (
 	}
 	file { "${install_dir}/honeyfs/etc/shadow":
 		source => "puppet:///modules/${module_name}/sha-dow",
+		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		require => File["${install_dir}/cowrie.cfg"],
+	}
+	file { "${install_dir}/cowrie/commands/base.py":
+		source => "puppet:///modules/${module_name}/base.py",
+		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
+		require => File["${install_dir}/cowrie.cfg"],
+	}
+	file { "${install_dir}/cowrie/commands/uname.py":
+		source => "puppet:///modules/${module_name}/uname.py",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/cowrie.cfg"],
 	}
