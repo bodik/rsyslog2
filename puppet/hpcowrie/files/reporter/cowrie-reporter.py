@@ -92,7 +92,7 @@ def gen_event_idea_ttylog(client_name, detect_time, conn_count, src_ip, dst_ip, 
 				"SW": ["Cowrie"],
 			}
 		],
-		"Attach": [ { "sessionid": sessionid, "ttylog": ttylog, "iinput": iinput } ]
+		"Attach": [ { "sessionid": sessionid, "ttylog": ttylog, "iinput": iinput, "smart": iinput } ]
   	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
   
@@ -117,7 +117,7 @@ def gen_event_idea_download(client_name, detect_time, conn_count, src_ip, dst_ip
 				"SW": ["Cowrie"],     
 			}
 			],
-		"Attach": [{ "sessionid": sessionid, "url": url, "outfile": outfile }]
+		"Attach": [{ "sessionid": sessionid, "url": url, "outfile": outfile, "smart": url }]
 	}
 	event = fill_addresses(event, src_ip, anonymised, target_net)
 	
