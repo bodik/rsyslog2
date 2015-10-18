@@ -1,2 +1,2 @@
-*/5 * * * * <%= cowrie_user %> /usr/bin/python <%= install_dir %>/warden/warden3-kippo-sender.py 1>><%= install_dir %>/warden/warden-kippo-sender.log 2>&1
+*/5 * * * * <%= cowrie_user %> /usr/bin/python <%= install_dir %>/warden/warden3-cowrie-sender.py 1>><%= install_dir %>/warden/warden-cowrie-sender.log 2>&1
 */5 * * * * <%= cowrie_user %> /usr/bin/python <%= install_dir %>/warden/cowrie-reporter.py 1>><%= install_dir %>/warden/cowrie-reporter.log 2>&1

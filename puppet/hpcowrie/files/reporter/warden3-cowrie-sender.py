@@ -88,10 +88,20 @@ def main():
   crs = con.cursor()
 
   events = []
-  query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, '+00:00', @@global.time_zone)) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
+
+  #kippo vs cowrie
+  #cowrie/core/dblog.py:    def nowUnix(self):
+  #cowrie/core/dblog.py-        """return the current UTC time as an UNIX timestamp"""
+  #cowrie/core/dblog.py-        return int(time.time())
+  #kippo/core/dblog.py:    def nowUnix(self):
+  #kippo/core/dblog.py-        """return the current UTC time as an UNIX timestamp"""
+  #kippo/core/dblog.py-        return int(time.mktime(time.gmtime()[:-1] + (-1,)))
+  # k sozalenju 
+  # >>> int(time.mktime(time.gmtime()[:-1] + (-1,)))-int(time.time()) != 0
+  query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00')) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
             FROM sessions s \
             LEFT JOIN sensors sn ON s.sensor=sn.id \
-            WHERE s.starttime > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+            WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
             GROUP BY s.ip ORDER BY s.starttime ASC;"
 
   crs.execute(query, awin)

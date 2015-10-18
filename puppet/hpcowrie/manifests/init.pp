@@ -215,8 +215,8 @@ class hpcowrie (
 		require => Exec["clone cowrie"],
 	}
 
-	file { "${install_dir}/warden/warden3-kippo-sender.py":
-		source => "puppet:///modules/${module_name}/hp-kippo/warden3-kippo-sender.py",
+	file { "${install_dir}/warden/warden3-cowrie-sender.py":
+		source => "puppet:///modules/${module_name}/reporter/warden3-cowrie-sender.py",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
