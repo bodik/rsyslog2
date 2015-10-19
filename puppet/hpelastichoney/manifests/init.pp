@@ -73,6 +73,7 @@ class hpelastichoney (
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
+	package { ["python-dateutil"]: ensure => installed, }
 	file { "${install_dir}/elastichoney-reporter.py":
 		source => "puppet:///modules/${module_name}/elastichoney-reporter.py",
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
