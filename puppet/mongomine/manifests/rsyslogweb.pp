@@ -27,7 +27,7 @@ class mongomine::rsyslogweb (
 	$mta_package = "postfix",
 	$mta_fix_cloud_sender = true,
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	package { ["apache2", "libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
 		ensure => installed,

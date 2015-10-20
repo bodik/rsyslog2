@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 /usr/lib/nagios/plugins/check_procs -C mongod  -c 5:
 if [ $? -ne 0 ]; then

@@ -1,4 +1,4 @@
-puppet apply --modulepath=/puppet -e 'include mongomine::database'
-puppet apply --modulepath=/puppet -e 'include mongomine::lsl'
-puppet apply --modulepath=/puppet -e 'include mongomine::rsyslogweb'
+pa.sh -e 'include mongomine::database'
+pa.sh -e 'include mongomine::lsl'
+pa.sh -e 'include mongomine::rsyslogweb'
 

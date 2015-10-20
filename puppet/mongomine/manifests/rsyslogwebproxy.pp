@@ -25,7 +25,7 @@ class mongomine::rsyslogwebproxy (
 	$mongomine_auto = true,
 	$mongomine_service = "_mongomine._tcp",
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($mongomine_server) {
                 $mongomine_server_real = $mongomine_server
