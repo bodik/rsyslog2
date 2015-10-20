@@ -20,20 +20,28 @@
 class elk::esc (
 	$cluster_name = "mry",
 	$network_host = undef,
+	$esd_heap_size = undef,
 ) {
 	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
-	$m = split($::memorytotal, " ")
-	if ( $m[1] == "GB" ) {
-		$half = max(floor($m[0] / 2), 1)
-		$config_hash = {
-		  'ES_HEAP_SIZE' => "${half}g",
+	if ( $esd_heap_size ) {
+		$esd_heap_size_real = $esd_heap_size
+	} else {
+		$m = split($::memorysize, " ")
+		if ( $m[1] == "GB" ) {
+			$half = max(floor($m[0] / 2), 1)
+			$esd_heap_size_real = "${half}g"
 		}
+	}
+
+	$config_hash = {
+		  'ES_HEAP_SIZE' => $esd_heap_size_real,
 	}
 
 	class { 'elasticsearch':
 		manage_repo  => true,
-		repo_version => '1.4',
+		repo_version => '1.6',
+		version => "1.6.*",
 		java_install => true,
 		datadir => '/scratch',
 		init_defaults => $config_hash,
@@ -53,7 +61,6 @@ class elk::esc (
 			'node.client' => 'true',
 		 }
 	}
-
 	if $network_host {
 		elasticsearch::instance { 'es01': 
 			config => { 'network.host' => $network_host }
@@ -83,11 +90,6 @@ class elk::esc (
 		ensure => installed,
 	}
 
-	#https://tickets.puppetlabs.com/browse/PUP-1073
-	#package { 'elasticsearch':
-        #        ensure   => 'installed',
-        #        provider => 'gem',
-        #}
 	exec { "gem install elasticsearch":
 		command => "/usr/bin/gem install elasticsearch",
 		unless => "/usr/bin/gem list | /bin/grep elasticsearch",

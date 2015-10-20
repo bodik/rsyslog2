@@ -1,7 +1,7 @@
 input {
 	redis {
 		data_type => "list"
-		host => "<%= rediser_server_real %>"
+		host => "<%= @rediser_server_real %>"
 		key => "syslog"
 		port => 16379
 		type => "syslog"

@@ -1,6 +1,6 @@
 output {
         elasticsearch {
-                cluster => "<%= output_es_cluster_name %>"
+                cluster => "<%= @output_es_cluster_name %>"
 		bind_port => 39500
                 port => "39300-39400"
 		protocol => "node"
@@ -10,7 +10,7 @@ output {
                 #idle_flush_time => 10
 
                 manage_template => true
-                template => "/puppet/elk/elasticsearch-template.json"
+                template => "/puppet/elk/files/elasticsearch-template.json"
                 template_overwrite => "true"
         }
 

@@ -16,9 +16,10 @@
 #
 class elk::esd (
 	$cluster_name = "mry",
+	$network_host = undef,
 	$esd_heap_size = undef,
 ) {
-	notice($name)
+	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
 	if ( $esd_heap_size ) {
 		$esd_heap_size_real = $esd_heap_size
@@ -54,7 +55,13 @@ class elk::esd (
 			###'index.number_of_shards' => '8',
 		 }
 	}
-	elasticsearch::instance { 'es01': }
+	if $network_host {
+		elasticsearch::instance { 'es01': 
+			config => { 'network.host' => $network_host }
+		}
+	} else {
+		elasticsearch::instance { 'es01': }
+	}
 	
 	elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 		instances  => 'es01'
@@ -77,11 +84,6 @@ class elk::esd (
 		ensure => installed,
 	}
 
-	#https://tickets.puppetlabs.com/browse/PUP-1073
-	#package { 'elasticsearch':
-        #        ensure   => 'installed',
-        #        provider => 'gem',
-        #}
 	exec { "gem install elasticsearch":
 		command => "/usr/bin/gem install elasticsearch",
 		unless => "/usr/bin/gem list | /bin/grep elasticsearch",

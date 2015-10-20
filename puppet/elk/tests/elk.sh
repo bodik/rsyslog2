@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 
 /usr/lib/nagios/plugins/check_procs --argument-array=org.elasticsearch.bootstrap.Elasticsearch -c 1:1
