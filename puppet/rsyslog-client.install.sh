@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -vd -e 'include rsyslog::client'
+pa.sh -vd -e 'include rsyslog::client'
 
