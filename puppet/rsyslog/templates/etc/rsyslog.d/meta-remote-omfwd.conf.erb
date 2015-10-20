@@ -1,7 +1,5 @@
 #vzdalene logovani
 
-$WorkDirectory /var/spool/rsyslog  # default location for work (spool) files
-
 #forward1
 #$ActionQueueType LinkedList        # use asynchronous processing
 #$ActionQueueFileName srvrfwd-omfwd1      # set file name, also enables disk mode
@@ -9,11 +7,11 @@ $WorkDirectory /var/spool/rsyslog  # default location for work (spool) files
 #$ActionQueueSaveOnShutdown on      # save in-memory data if rsyslog shuts down
 #$ActionQueueMaxDiskSpace 100m      # limit disk cache
 #$ActionQueueTimeoutEnqueue 100     # dont block worker indefinitely when cache fills up
-#*.* :omgssapi:<%= rsyslog_server_real %>:514
+#*.* :omgssapi:<%= @rsyslog_server_real %>:514
 
 *.* action(type="omfwd"
         protocol="tcp"
-        target="<%= rsyslog_server_real %>"
+        target="<%= @rsyslog_server_real %>"
         port="514"
         queue.FileName="omfwd1"
         queue.Type="LinkedList"

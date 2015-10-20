@@ -9,11 +9,11 @@ $ActionResumeRetryCount -1         # infinite retries on insert failure
 $ActionQueueSaveOnShutdown on      # save in-memory data if rsyslog shuts down
 $ActionQueueMaxDiskSpace 100m      # limit disk cache
 $ActionQueueTimeoutEnqueue 100     # dont block worker indefinitely when cache fills up
-*.* :omgssapi:<%= rsyslog_server_real %>:515
+*.* :omgssapi:<%= @rsyslog_server_real %>:515
 
 #module(load="omgssapi")
 #*.* action(type="omgssapi"
-#        target="<%= rsyslog_server_real %>"
+#        target="<%= @rsyslog_server_real %>"
 #        port="515"
 #        queue.FileName="omgssapi1"
 #        queue.Type="LinkedList"
