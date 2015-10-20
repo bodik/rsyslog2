@@ -50,7 +50,7 @@ task :doc do
   require 'puppet'
   require 'puppet/util/rdoc'
 
-  out = '<link href="../metalib/style.css" rel="stylesheet"></link>'
+  out = '<link href="../metalib/files/style.css" rel="stylesheet"></link>'
   out += GitHub::Markup.render("README.rdoc", File.read("README.rdoc"))
   files = Dir.glob(["manifests/*.pp", "lib/facter/*.rb"])
   unless files.empty?

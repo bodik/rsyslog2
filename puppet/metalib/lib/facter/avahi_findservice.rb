@@ -2,7 +2,7 @@
 require "puppet"
 module Puppet::Parser::Functions
 	newfunction(:avahi_findservice, :type => :rvalue) do |args|
-		out= Facter::Util::Resolution.exec('/puppet/metalib/avahi.findservice.sh '+args[0])
+		out= Facter::Util::Resolution.exec('/puppet/metalib/bin/avahi.findservice.sh '+args[0])
 		if out.nil?
 			return :undef
 		else

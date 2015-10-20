@@ -1,7 +1,7 @@
 # == Class: metalib::base
 #
 # Class for ensuring basic setting of managed machine such as: editors, git,
-# puppet, hostname, krb5 client lib, sources list.
+# puppet, hostname, krb5 client lib, sysctl
 #
 # === Examples
 #
@@ -12,6 +12,8 @@ class metalib::base {
 
 	# globals
 	contain metalib::wget
+	contain metalib::sysctl-hardnet
+	contain metalib::fail2ban
 
 	# generic debianization from next,next,next,... install
 	package { ["nfs-common","rpcbind"]: ensure => absent, }
