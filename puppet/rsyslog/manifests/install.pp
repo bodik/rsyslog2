@@ -5,19 +5,7 @@
 # === Parameters
 #
 # [*version*] 
-#   specific version to install. Valid values: "meta", "bpo", "jessie"
-#
-# === Examples
-#
-# install default version
-#
-#   include rsyslog::install
-#
-# install rsyslog from jessie, forward logs to designated server node
-#
-#   class { "rsyslog::install": 
-#     version => "jessie", 
-#   }
+#   specific version to install. Valid values: "meta", "jessie"
 #
 class rsyslog::install ( 
 	$version = "meta" 
@@ -29,23 +17,11 @@ class rsyslog::install (
 
 	case $version {
 		"jessie": { 
-			$src = "puppet:///modules/rsyslog/etc/apt/sources.list.d/jessie.list"
 			file { "/etc/apt/apt.conf.d/99auth": ensure => absent, } 
 			exec { "install_rsyslog":
 				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold  -t jessie rsyslog/jessie rsyslog-gssapi/jessie rsyslog-relp/jessie",
 				timeout => 600,
 				unless => "/usr/bin/dpkg -l rsyslog | grep ' 8.4'",
-				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
-			}
-		}
-		"bpo": { 
-			$src = "puppet:///modules/rsyslog/etc/apt/sources.list.d/wheezy-backports.list"
-			file { "/etc/apt/apt.conf.d/99auth": ensure => absent, } 
-			exec { "install_rsyslog":
-				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold  -t wheezy-backports rsyslog/wheezy-backports rsyslog-gssapi/wheezy-backports rsyslog-relp/wheezy-backports",
-				timeout => 600,
-				unless => "/usr/bin/dpkg -l rsyslog | grep ' ~bpo70'",
-				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
 			}
 		}
 		"meta": { 
@@ -54,23 +30,22 @@ class rsyslog::install (
 				content => "APT::Get::AllowUnauthenticated yes;\n",
 				owner => "root", group => "root", mode => "0644",
 		 	}
+			$myver="8.4.2+deb8u1.rb30"
 			exec { "install_rsyslog":
-				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=8.4.2+deb8u1.rb30 rsyslog-gssapi=8.4.2+deb8u1.rb30 rsyslog-relp=8.4.2+deb8u1.rb30",
+				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold rsyslog=${myver} rsyslog-gssapi=${myver} rsyslog-relp=${myver}",
 				timeout => 600,
-				unless => "/usr/bin/dpkg -l rsyslog | grep ' 8.4.2+deb8u1.rb30'",
+				unless => "/usr/bin/dpkg -l rsyslog | grep ' ${myver}'",
 				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
+			}
+			file { "/etc/apt/sources.list.d/meta-rsyslog.list":
+			        source => $src,
+		        	owner => "root", group => "root", mode => "0644",
+			        notify => Exec["apt-get update"],
 			}
 		}
 	} 
-	file { "/etc/apt/sources.list.d/meta-rsyslog.list":
-	        source => $src,
-	        owner => "root", group => "root", mode => "0644",
-	        notify => Exec["apt-get update"],
-	}
 
-	#relp. dela velke trable instalaci z meta repozitare kde relp neni
-	#package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
-	package { ["rsyslog", "rsyslog-gssapi"]:
+	package { ["rsyslog", "rsyslog-gssapi", "rsyslog-relp"]:
 		ensure => installed,
 	}
 }
