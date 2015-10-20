@@ -19,6 +19,11 @@ class metalib::base {
 	package { ["nfs-common","rpcbind"]: ensure => absent, }
 	package { ["joe","nano", "pico"]: ensure => absent, }
 	package { ["vim", "mc", "git", "puppet", "augeas-lenses", "nagios-plugins-basic", "screen", "psmisc"]: ensure => installed, }
+	
+	file { "/usr/local/bin/pa.sh":
+		ensure => link,
+		target => "/puppet/metalib/bin/pa.sh",
+	}
 
 	package { "krb5-user": ensure => installed, }
 	metalib::wget::download { "/etc/krb5.conf":
