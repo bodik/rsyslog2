@@ -17,6 +17,7 @@
 /puppet/jenkins/bin/magrathea.init login
 /puppet/jenkins/bin/magrathea.init build
 /puppet/jenkins/bin/magrathea.init start
+/puppet/jenkins/bin/magrathea.init fixup
 /puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############</command>
     </hudson.tasks.Shell>

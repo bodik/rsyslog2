@@ -13,11 +13,11 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;RDEVCLIENTX&quot;
+      <command>export VMNAME=&quot;FDDEVX&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
-/puppet/jenkins/bin/metacloud.init start rsyslog2-jessie-metacloud
-/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init start rsyslog2-jessie-small-metacloud
+/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/puppet-fdistdump.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############</command>
     </hudson.tasks.Shell>
   </builders>

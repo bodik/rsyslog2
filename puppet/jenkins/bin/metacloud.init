@@ -50,13 +50,6 @@ vm_destroy() {
 	rreturn $? "$0 destroy $@"
 }
 
-vm_destroy_cache() {
-	rreturn 0 "$0 destroy_cache $@"
-}
-vm_make_cache() {
-	rreturn $? "$0 make_cache $@"
-}
-
 vm_ssh() {
 	VMIP=$(onevm show $(/puppet/jenkins/bin/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
 	if [ -z "$VMIP" ]; then
@@ -68,7 +61,7 @@ vm_ssh() {
 
 vm_start() {
 	if [ -z $1 ]; then
-		TEMPLATE="rsyslog2-wheezy-metacloud"
+		TEMPLATE="rsyslog2-jessie-metacloud"
 	else
 		TEMPLATE=$1
 	fi
@@ -121,8 +114,8 @@ vm_shutdown() {
 		rreturn $? "shutdown vm not running"
 	fi
 
-	echo "INFO: sending halt"
-	/puppet/jenkins/bin/metacloud.init ssh halt
+	echo "INFO: sending poweroff"
+	timeout 60 /puppet/jenkins/bin/metacloud.init ssh poweroff
 	if [ $? -ne 0 ]; then
 		rreturn $? "shutdown cannot shutdown vm"
 	fi
@@ -164,8 +157,11 @@ metacloud_templates() {
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-metacloud
 	onetemplate delete rsyslog2-wheezy-small-metacloud 1>/dev/null
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-wheezy-small-metacloud
+
 	onetemplate delete rsyslog2-jessie-metacloud 1>/dev/null
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-jessie-metacloud
+	onetemplate delete rsyslog2-jessie-small-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.rsyslog2-jessie-small-metacloud
 }
 
 vm_list() {
@@ -214,12 +210,6 @@ case "$1" in
 	;;
 	destroy)
 		vm_destroy
-	;;
-	destroy_cache)
-		vm_destroy_cache
-	;;
-	make_cache)
-		vm_make_cache
 	;;
 	ssh)
 		vm_ssh "$2"

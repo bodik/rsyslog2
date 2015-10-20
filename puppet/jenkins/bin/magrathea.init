@@ -48,13 +48,6 @@ vm_destroy() {
 	rreturn 1 "$0 destroy failed"
 }
 
-vm_destroy_cache() {
-	rreturn 0 "$0 destroy_cache $@"
-}
-vm_make_cache() {
-	rreturn $? "$0 make_cache $@"
-}
-
 vm_ssh() {
 	VMID=$(/puppet/jenkins/bin/magrathea.init id)
 	if [ -z "$VMID" ]; then
@@ -76,13 +69,18 @@ vm_ssh() {
 }
 
 vm_start() {
+	if [ -z $1 ]; then
+		TEMPLATE="debian80"
+	else
+		TEMPLATE=$1
+	fi
+
 	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
 	if [ $? -eq 0 ]; then
 		rreturn $? "magrathea vm already running"
 	fi
 
-        #front_ssh "echo ''|qsub -q reserved -l nodes=debian7 -l cluster=create -N $VMNAME -m abe"
-        front_ssh "echo ''|qsub -q reserved -l nodes=debian80 -l cluster=create -N $VMNAME -m abe"
+        front_ssh "echo ''|qsub -q reserved -l nodes=${TEMPLATE} -l cluster=create -N $VMNAME -m abe"
 	RET=1
 	for i in `seq 1 600`; do
 		/puppet/jenkins/bin/magrathea.init ssh /bin/true 1>/dev/null && RET=$? && break 1>/dev/null
@@ -96,25 +94,6 @@ vm_start() {
 	rreturn 0 "$0 start"
 }
 
-vm_startpriv() {
-	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME " | grep " [RTQ] "
-	if [ $? -eq 0 ]; then
-		rreturn $? "magrathea vm already running"
-	fi
-
-        front_ssh "echo ''|qsub -q reserved -l nodes=vmes1:cl_minos -l cluster=create -N $VMNAME -m abe"
-	RET=1
-	
-	#TODO: ip resolution in gated environment
-
-	if [ $RET -ne 0 ]; then
-		rreturn $RET "$0 start failed $VMNAME"
-	fi
-
-	rreturn 0 "$0 start"
-}
-
-
 
 
 vm_status() {
@@ -126,8 +105,8 @@ vm_fixup() {
 	/puppet/jenkins/bin/magrathea.init list | grep " $VMNAME "
 	/puppet/jenkins/bin/magrathea.init ssh '
 /etc/init.d/rsyslog stop; /etc/init.d/crond stop; 
-rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list; 
-apt-get purge -y rsyslog rsyslog-gssapi perun-slave-meta-key;
+rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list /etc/apt/preferences.d/puppet27; 
+apt-get purge -y rsyslog rsyslog-gssapi perun-slave-meta-key puppet puppet-common;
 apt-get clean;apt-get update'
 	rreturn $? "$0 fixup"
 }
@@ -208,10 +187,7 @@ case "$1" in
 		vm_build
 	;;
 	start)
-		vm_start
-	;;
-	startpriv)
-		vm_startpriv
+		vm_start "$2"
 	;;
 	status)
 		vm_status
@@ -221,12 +197,6 @@ case "$1" in
 	;;
 	destroy)
 		vm_destroy
-	;;
-	destroy_cache)
-		vm_destroy_cache
-	;;
-	make_cache)
-		vm_make_cache
 	;;
 	ssh)
 		vm_ssh "$2"
