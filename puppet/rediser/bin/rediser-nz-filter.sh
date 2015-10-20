@@ -1,5 +1,5 @@
 #!/bin/bash
-BASE=/puppet/rediser
+BASE=/puppet/rediser/bin
 cd /tmp || exit 1
 
 export A=`${BASE}/getpgrp`

@@ -1,8 +1,8 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
-BASE=/puppet/rediser
+BASE=/puppet/rediser/bin
 
 cd /tmp || exit 1
 
@@ -44,7 +44,7 @@ case "$1" in
 	        echo "done"
 	;;
 	status)
-		pgrep -f /puppet/rediser/ncat 1>/dev/null
+		pgrep -f ${BASE}/ncat 1>/dev/null
                 if [ $? -eq 0 ]; then
                         rreturn 0 "running"
                 fi

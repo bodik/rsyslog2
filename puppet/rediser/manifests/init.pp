@@ -1,8 +1,7 @@
 # == Class: rediser
 #
-# Class will install redis server and rediser. Currently is redis installation
-# enforced from wheezy-backports because of scripts support used by logstash
-# input redis. Rediser will announce itself to others using avahi.
+# Class will install redis server and rediser. 
+# Rediser will announce itself to others using avahi.
 #
 # === Examples
 #
@@ -17,9 +16,6 @@ class rediser {
 	service { "redis-server":
 		ensure => running,
 	}
-
-	include metalib::apt-get-update
-
 	augeas { "/etc/redis/redis.conf" :
 		lens => 'Spacevars.lns',
 	        incl => "/etc/redis/redis.conf",
@@ -46,13 +42,6 @@ class rediser {
 	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev", "make"]:
 		ensure => installed,
 	}
-
-	#gem provider strikes again -- invalid option: --include-dependencies
-	#package { 'hiredis':
-	#	ensure   => 'installed',
-	#	provider => 'gem',
-	#	require => Package["ruby-dev"]
-	#}
 	exec { "gem install hiredis":
                 command => "/usr/bin/gem install --no-rdoc --no-ri hiredis",
                 unless => "/usr/bin/gem list | grep hiredis",
@@ -60,11 +49,12 @@ class rediser {
         }
 	file { "/etc/init.d/rediser":
 		ensure => link,
-		target => "/puppet/rediser/rediser.init",
+		target => "/puppet/rediser/bin/rediser.init",
 	}
 	service { "rediser":
 		enable => true,
 		ensure => running,
+		provider => init,
 		require => [File["/etc/init.d/rediser"], Exec["gem install hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
 	}
 }
