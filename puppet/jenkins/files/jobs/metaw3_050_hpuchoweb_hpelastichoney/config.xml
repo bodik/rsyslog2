@@ -13,7 +13,7 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;HD-$$&quot;
+      <command>export VMNAME=&quot;HE-$$&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start rsyslog2-wheezy-small-metacloud
@@ -22,9 +22,11 @@
 ################
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpdio.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpdio/tests/hpdio.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-web.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/web.sh&apos;
 
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney/tests/hpelastichoney.sh&apos;
 
 </command>
     </hudson.tasks.Shell>
