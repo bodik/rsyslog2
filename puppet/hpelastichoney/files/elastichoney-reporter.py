@@ -55,7 +55,7 @@ def gen_event_idea_elastichoney(client_name, detect_time, conn_count, src_ip, ds
 		"Format": "IDEA0",
 		"ID": str(uuid4()),
 		"DetectTime": detect_time,
-		"Category": ["Malware.Virus"],
+		"Category": ["Recon.Scanning"],
 		"Note": "Elastichoney event",
 		"ConnCount": conn_count,
 		"Source": [{}],
