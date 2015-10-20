@@ -106,7 +106,7 @@ vm_fixup() {
 	/puppet/jenkins/bin/magrathea.init ssh '
 /etc/init.d/rsyslog stop; /etc/init.d/crond stop; 
 rm -rf /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet /etc/cron.d/meta_puppet/meta_puppet_reload /etc/rsyslog.d/meta-remote.conf /etc/apt/sources.list.d/meta_depot.list /etc/apt/preferences.d/puppet27; 
-apt-get purge -y rsyslog rsyslog-gssapi perun-slave-meta-key puppet puppet-common;
+apt-get purge -y rsyslog rsyslog-gssapi perun-slave-meta-key puppet puppet-common augeas-lenses;
 apt-get clean;apt-get update'
 	rreturn $? "$0 fixup"
 }
