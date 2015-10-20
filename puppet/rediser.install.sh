@@ -1,3 +1,3 @@
-puppet apply --modulepath=/puppet -e 'include rediser'
+pa.sh -e 'include rediser'
 
 

@@ -1,1 +1,1 @@
-puppet apply --modulepath=/puppet -e 'include rsyslog::server'
+pa.sh -e 'include rsyslog::server'
