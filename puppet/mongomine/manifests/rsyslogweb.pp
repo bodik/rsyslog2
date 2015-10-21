@@ -48,12 +48,17 @@ class mongomine::rsyslogweb (
 		owner => "root", group => "root", mode => "0644",
 		notify => Service["apache2"],
 	}
+	exec { "a2enmod wsgi":
+		command => "/usr/sbin/a2enmod wsgi",
+		unless => "/usr/sbin/a2query -m wsgi",
+		notify => Service["apache2"],
+	}
 	
-	file  { "/etc/apache2/conf.d/rsyslogweb.conf":
+	file  { "/etc/apache2/conf-enabled/rsyslogweb.conf":
 		ensure => link,
 		source => "puppet:///modules/${module_name}/opt/rsyslogweb/apache-proxy-bottle.conf",
 		owner => "root", group => "root", mode => "0644",
-		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"]],
+		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"], Exec["a2enmod wsgi"]],
 		notify => Service["apache2"],
 	}
 
@@ -111,8 +116,8 @@ class mongomine::rsyslogweb (
 		require => [Package["php5-dev"], Package["php-pear"]],
 		notify => Service["apache2"],
 	}
-	file { "/etc/php5/conf.d/mongo.ini":
-		source => "puppet:///modules/${module_name}/etc/php5/conf.d/mongo.ini",
+	file { "/etc/php5/apache2/conf.d/mongo.ini":
+		source => "puppet:///modules/${module_name}/etc/php5/apache2/conf.d/mongo.ini",
 		owner => "root", group => "root", mode => "0644",
 		require => [Package["libapache2-mod-php5"], Exec["pecl install mongo"]],
 		notify => Service["apache2"],
