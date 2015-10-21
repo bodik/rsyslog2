@@ -92,11 +92,6 @@ class elk::lsl (
 	#	order => 10,
 	}
 
-	logstash::configfile { 'netflow':
-		content => template("${module_name}/etc/logstash/conf.d/input-netflow.conf"),
-		order => 10,
-	}
-
 
 
 	if ($rediser_server) {
@@ -156,23 +151,6 @@ class elk::lsl (
 		order => 30,
 		notify => Service["logstash"],
 	}
-
-	logstash::configfile { 'filter-nf':
-		content => template("${module_name}/etc/logstash/conf.d/filter-nf.conf"),
-		order => 40,
-		notify => Service["logstash"],
-	}
-	logstash::configfile { 'filter-nf-tcpflags':
-		content => template("${module_name}/etc/logstash/conf.d/filter-nf-tcpflags.conf"),
-		order => 41,
-		notify => Service["logstash"],
-	}
-	logstash::configfile { 'filter-nf-proto':
-		content => template("${module_name}/etc/logstash/conf.d/filter-nf-proto.conf"),
-		order => 41,
-		notify => Service["logstash"],
-	}
-
 
 
 
