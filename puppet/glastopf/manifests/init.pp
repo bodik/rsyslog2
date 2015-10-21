@@ -23,18 +23,6 @@ class glastopf {
 		ensure => installed,
 	}
 
-	#package { "distribute":
-	#	ensure => latest,
-	#	provider => "pip",
-	#	require => Package["python-pip"],
-	#}
-	#package { "greenlet":
-	#	ensure => latest,
-	#	provider => "pip",
-	#	require => Package["python-pip"],
-	#}
-	#pip provider just stopper to work with
-	#Could not evaluate: Could not get latest version: HTTP-Error: 503 Service Temporarily Unavailable
 	exec { "pip install distribute":
 		command => "/usr/bin/pip install --upgrade distribute",
 		creates => "/usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/installed-files.txt"
@@ -58,12 +46,6 @@ class glastopf {
 		require => [Package["php5"], Exec["/puppet/glastopf/bin/make-bfr.sh"]],
 	}
 
-	#err: Could not prefetch package provider 'pip':
-	#package { "glastopf":
-	#	ensure => installed,
-	#	provider => "pip",
-	#	require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"]],
-	#}
 	exec { "pip install glastopf":
                 command => "/usr/bin/pip install glastopf",
                 creates => "/usr/local/lib/python2.7/dist-packages/glastopf/glastopf.cfg.dist",
