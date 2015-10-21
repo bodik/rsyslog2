@@ -65,6 +65,7 @@ class mongomine::database (
 	exec { "setup-mongomine.py":
 		command => "/usr/bin/python /puppet/mongomine/bin/setup-mongomine.py $shards",
 		refreshonly => true,
+		timeout => 600,
 		require => [Mongodb::Mongod["mongod_config"], Mongodb::Mongos["mongos_shardproxy"], Mongomineshard[$shards_real]],
 	}
 

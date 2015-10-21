@@ -45,6 +45,7 @@ define mongodb::mongos (
         enable     => $mongos_enable,
         hasstatus  => true,
         hasrestart => true,
+	provider   => init,
         require    => [
           File["/etc/mongos_${mongos_instance}.conf"],
           File["/etc/init.d/mongos_${mongos_instance}"],

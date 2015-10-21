@@ -58,6 +58,7 @@ define mongodb::mongod (
         enable     => $mongod_enable,
         hasstatus  => true,
         hasrestart => true,
+	provider   => init,
         require    => [
             File["/etc/mongod_${mongod_instance}.conf", "/etc/init.d/mongod_${mongod_instance}"],
             Service[$::mongodb::old_servicename]

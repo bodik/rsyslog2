@@ -47,6 +47,9 @@
 #                    functionality are the goals for the project.
 ### END INIT INFO
 
+#hackign lazy/non deterministic reloads
+systemctl daemon-reload
+
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 DAEMON=/usr/bin/mongos
 DESC=database
