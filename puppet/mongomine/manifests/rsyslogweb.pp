@@ -51,13 +51,13 @@ class mongomine::rsyslogweb (
 	exec { "a2enmod wsgi":
 		command => "/usr/sbin/a2enmod wsgi",
 		unless => "/usr/sbin/a2query -m wsgi",
+		require => Package["apache2", "libapache2-mod-wsgi"],
 		notify => Service["apache2"],
 	}
 	
 	file  { "/etc/apache2/conf-enabled/rsyslogweb.conf":
 		ensure => link,
-		source => "puppet:///modules/${module_name}/opt/rsyslogweb/apache-proxy-bottle.conf",
-		owner => "root", group => "root", mode => "0644",
+		target => "/opt/rsyslogweb/apache-proxy-bottle.conf",
 		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"], Exec["a2enmod wsgi"]],
 		notify => Service["apache2"],
 	}
