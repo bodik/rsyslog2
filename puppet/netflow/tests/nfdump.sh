@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 #sw emitor
 /usr/lib/nagios/plugins/check_procs -C pmacctd -c 2:2

@@ -46,7 +46,7 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="netflow capture daemon"
 NAME=nfcapd
 DAEMON=/usr/bin/$NAME
-DATA_BASE_DIR="<%= data_dir %>"
+DATA_BASE_DIR="<%= @data_dir %>"
 PIDFILE=/var/run/$NAME.pid
 
 #bodik: this does not work with -x and start-stop-daemon
