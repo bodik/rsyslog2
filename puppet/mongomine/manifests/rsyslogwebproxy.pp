@@ -57,16 +57,19 @@ class mongomine::rsyslogwebproxy (
 	}
 
 	include metalib::apache2
-	file { "/etc/apache2/mods-enabled/rewrite.load":
-		ensure => link, 	target => "../mods-available/rewrite.load", 
-		require => Package["apache2"],	notify => Service["apache2"],
+	exec { "a2enmod rewrite":
+		command => "/usr/sbin/a2enmod rewrite",
+		unless => "/usr/sbin/a2query -m rewrite",
+		notify => Service["apache2"],
 	}
-	file { "/etc/apache2/mods-enabled/proxy.load":
-		ensure => link, 	target => "../mods-available/proxy.load", 
-		require => Package["apache2"],	notify => Service["apache2"],
+	exec { "a2enmod proxy":
+		command => "/usr/sbin/a2enmod proxy",
+		unless => "/usr/sbin/a2query -m proxy",
+		notify => Service["apache2"],
 	}
-	file { "/etc/apache2/mods-enabled/proxy_http.load":
-		ensure => link, 	target => "../mods-available/proxy_http.load", 
-		require => Package["apache2"],	notify => Service["apache2"],
+	exec { "a2enmod proxy_http":
+		command => "/usr/sbin/a2enmod proxy_http",
+		unless => "/usr/sbin/a2query -m proxy_http",
+		notify => Service["apache2"],
 	}
 }
