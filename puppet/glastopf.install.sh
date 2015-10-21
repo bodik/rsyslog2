@@ -1,3 +1,3 @@
-puppet apply --modulepath=/puppet -e 'include glastopf'
+pa.sh -e 'include glastopf'
 
 
