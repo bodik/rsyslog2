@@ -85,13 +85,5 @@ class elk::esc (
 		instances  => 'es01'
 	}
 
-	# needed for elk script queries
-	package { ["curl", "python-requests"]:
-		ensure => installed,
-	}
-
-	exec { "gem install elasticsearch":
-		command => "/usr/bin/gem install elasticsearch",
-		unless => "/usr/bin/gem list | /bin/grep elasticsearch",
-	}
+	contain elk::utils
 }
