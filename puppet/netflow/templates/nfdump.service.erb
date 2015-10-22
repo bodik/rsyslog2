@@ -1,0 +1,40 @@
+<%
+  # Arguement setup:
+  args = []
+
+  args.push "-p #{@collector_port}"
+  args.push "-x #{@period_exec}"
+  args.push "-t #{@interval}"
+
+#  args.push '-w' if @align
+#  args.push "-B #{@bufferlen}"
+#  args.push '-z' if @compress
+#  args.push "-l #{data_base_dir}" if @hosts.empty?
+#  args.push "-T #{@extensions}"
+#  args.push "-S #{@sub_hierarchy}"
+
+#  # Packet repeaters
+#  @packet_repeater.each do |dest|
+#    args.push "-R #{dest}"
+#  end
+
+#  # Hosts
+#  @hosts.each do |host|
+#    args.push "-n #{host}"
+#  end
+%>
+[Unit]
+Description=netflow capture daemon
+After=network.target auditd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/nfcapd <%= args.join(' ') %> -D -l <%= @data_dir %> -P /var/run/nfcapd.pid
+PIDFile=/var/run/nfcapd.pid
+KillMode=process
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
+Alias=nfdump.service
+

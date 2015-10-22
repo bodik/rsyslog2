@@ -40,7 +40,7 @@ class glastopf {
 		require => Package["php5-dev"],
 	}
 	
-	file { "/etc/php5/conf.d/bfr.ini":
+	file { "/etc/php5/cli/conf.d/bfr.ini":
 		content => template("${module_name}/bfr.ini.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [Package["php5"], Exec["/puppet/glastopf/bin/make-bfr.sh"]],

@@ -9,9 +9,10 @@ class netflow::pmacct (
 	package { "pmacct":
 		ensure => installed,
 	}
-	service { "pmacct":
+	service { "pmacctd":
 		ensure => running,
 		hasstatus => false,
+		require => Package["pmacct"],
 	}
 
 
@@ -26,7 +27,7 @@ class netflow::pmacct (
 		file { "/etc/pmacct/pmacctd.conf":
 			content => template("${module_name}/pmacctd.conf.erb"),
 			require => Package["pmacct"],
-			notify => Service["pmacct"],
+			notify => Service["pmacctd"],
 		}
 	} else {
 		warning("WARN: pmacct config missing facts")
