@@ -24,11 +24,12 @@ class netflow::nfdump (
                 owner => "root", group => "root", mode => "0644",
                 timeout => 900;
 	}
+	package { ["libdbi1", "librrd4"]: ensure => installed }
 	package { "nfdump":
-		name      =>  "nfdump",
-		ensure    =>  installed,
-		provider  =>  dpkg,
-		source    =>  "/var/cache/apt/nfdump_1.6.12-0.1_amd64.deb",
+		ensure => installed,
+		provider => dpkg,
+		source => "/var/cache/apt/nfdump_1.6.12-0.1_amd64.deb",
+		require => Package["libdbi1", "librrd4"],
 	}
 	service { "nfdump":
 		ensure => running,

@@ -83,6 +83,7 @@ class glastopf {
 	}
 	service { "glastopf":
 		ensure => running,
+		provider => init,
 		require => [File["/opt/glastopf/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"]],
 	}
 	
