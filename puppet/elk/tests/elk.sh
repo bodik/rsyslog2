@@ -77,7 +77,7 @@ if [ $? -ne 0 ]; then
 fi
 
 
-elasticdump | head -n1 | grep "elasticdump: Import and export tools for elasticsearch"
+elasticdump --help | head -n1 | grep "elasticdump: Import and export tools for elasticsearch"
 if [ $? -ne 0 ]; then
         rreturn 1 "$0 elasticdump not installed"
 fi
