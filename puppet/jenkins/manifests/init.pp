@@ -11,32 +11,19 @@
 class jenkins() {
 	include metalib::base
 
-	package { ["debootstrap", "qemu-kvm", "qemu-utils", "grub-pc"]:
+	apt::source { 'jenkins':
+		location   => 'http://pkg.jenkins-ci.org/debian',
+		release => 'binary/',
+		repos => '',
+		include_src => false,
+        	key         => 'D50582E6',
+	        key_source  => 'http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key',
+	}
+
+	package { ["jenkins"]:
 		ensure => installed,
+		require => Apt::Source["jenkins"],
 	}
-
-	file { "/etc/apt/sources.list.d/jenkins.list":
-		source => "puppet:///modules/${module_name}/jenkins.list",
-		owner => "root", group => "root", mode => "0644",
-		notify => Exec["apt-get update"],
-	}
-
-	#sudo is enabled because of kvm and xen creating local domains (lvm, mounts, ...)
-	package { ["jenkins", "sudo"]:
-		ensure => installed,
-		require => [File["/etc/apt/sources.list.d/jenkins.list"], Exec["apt-get update"]],
-	}
-	file { "/etc/sudoers.d/jenkins":
-		source => "puppet:///modules/${module_name}/jenkins.sudoers",
-		#TODO: enforce /puppet 640 jinak to nema smysl :)
-		owner => "root", group => "root", mode => "0640",
-		require => Package["sudo"],
-	}
-	user { "jenkins":
-		groups => ["kvm"],
-		require => [Package["jenkins"], Package["sudo"]],
-	}
-
 
 	augeas { "/etc/default/jenkins" :
 		context => "/files/etc/default/jenkins",
@@ -52,15 +39,14 @@ class jenkins() {
 		source => "puppet:///modules/${module_name}/jobs",
 		recurse => true,
 		owner => "jenkins", group=> "jenkins", mode=>"0644",
+		require => Package["jenkins"],
 		notify => Service["jenkins"],
-		require => User["jenkins"],
 	}
 
 	#metacloud
-	package { ["libexpat1-dev", "libcurl4-openssl-dev", "rake", "libxml2-dev", "libxslt1-dev", "gcc", "libopenssl-ruby", "make", "ruby-dev"]:
+	package { ["libexpat1-dev", "libcurl4-openssl-dev", "rake", "libxml2-dev", "libxslt1-dev", "zlib1g-dev", "gcc", "make", "ruby-dev"]:
 		ensure => installed,
 	}
-
 	file { "/root/.one":
 		ensure => link,
 		target => "/dev/shm",
@@ -71,15 +57,16 @@ class jenkins() {
 		require => Package["jenkins"],
 	}
 	exec { "gem_install_opennebula-cli":
-		command => "/usr/bin/gem install opennebula-cli -v '~> 4.4.0'",
+		command => "/usr/bin/gem install opennebula-cli",
 		unless => "/usr/bin/gem list | grep opennebula-cli",
 		require => [Package["ruby-dev"], Package["make"]],
 	}
-
 	file { "/usr/local/bin/metacloud.init":
 		ensure => link,
 		target => "/puppet/jenkins/bin/metacloud.init",
 	}
+
+	#magrathea
 	file { "/usr/local/bin/magrathea.init":
 		ensure => link,
 		target => "/puppet/jenkins/bin/magrathea.init",
