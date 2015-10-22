@@ -15,7 +15,7 @@ class glastopf {
 	package { 
 		["python", "python-openssl", "python-gevent", "libevent-dev", "python-dev", "build-essential", "make",
 		"python-argparse", "python-chardet", "python-requests", "python-sqlalchemy", "python-lxml",
-		"python-beautifulsoup", "python-pip", "python-setuptools",
+		"python-beautifulsoup", "python-pip", "python-setuptools", "python-greenlet",
 		"g++", "git", "php5", "php5-dev", "liblapack-dev", "gfortran",
 		"libxml2-dev", "libxslt1-dev",
 		"libmysqlclient-dev",
@@ -23,17 +23,7 @@ class glastopf {
 		ensure => installed,
 	}
 
-	exec { "pip install distribute":
-		command => "/usr/bin/pip install --upgrade distribute",
-		creates => "/usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/installed-files.txt"
-	}
-	exec { "pip install greenlet":
-		command => "/usr/bin/pip install --upgrade greenlet",
-		creates => "/usr/local/lib/python2.7/dist-packages/greenlet.so"
-	}
-	
-
-	$api_version = "20100525"
+	$api_version = "20131226"
 	exec { "/puppet/glastopf/bin/make-bfr.sh":
 		command => "/bin/sh /puppet/glastopf/bin/make-bfr.sh",
 		creates => "/usr/lib/php5/${api_version}/bfr.so",
@@ -49,7 +39,7 @@ class glastopf {
 	exec { "pip install glastopf":
                 command => "/usr/bin/pip install glastopf",
                 creates => "/usr/local/lib/python2.7/dist-packages/glastopf/glastopf.cfg.dist",
-		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"], Package["python-dev"]],
+		require => [Package["python-pip", "python-setuptools", "python-dev"], File["/etc/php5/cli/conf.d/bfr.ini"]],
         }
 
 
