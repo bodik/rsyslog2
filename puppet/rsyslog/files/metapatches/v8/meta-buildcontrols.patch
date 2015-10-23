@@ -10,7 +10,7 @@ index 0b01623..66ae525 100644
 --- a/debian/changelog
 +++ b/debian/changelog
 @@ -1,3 +1,10 @@
-+rsyslog (8.4.2+deb8u1.rb30) jessie; urgency=medium
++rsyslog (8.4.2+deb8u1.rb32) jessie; urgency=medium
 +
 +  * Non maintainer upload
 +  * metacentrum.cz specific changes
