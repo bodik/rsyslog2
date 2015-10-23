@@ -17,7 +17,7 @@ while getopts "f:d:p:" o; do
 done
 
 if [ -z $DIP ]; then
-	DIP=$(/puppet/metalib/avahi.findservice.sh "_rediser._tcp")
+	DIP=$(/puppet/metalib/bin/avahi.findservice.sh "_rediser._tcp")
 fi
 
 sh /puppet/netflow/bin/dump.sh -f $FILE | nc -q0 $DIP $DP

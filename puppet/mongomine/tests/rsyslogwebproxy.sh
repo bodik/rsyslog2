@@ -3,7 +3,7 @@
 . /puppet/metalib/lib.sh
 
 #for now we consider rediser something like a headnode
-REDISER=$(/puppet/metalib/avahi.findservice.sh _rediser._tcp)
+REDISER=$(/puppet/metalib/bin/avahi.findservice.sh _rediser._tcp)
 
 wget "http://${REDISER}/rsyslogweb/stats" -O - | grep table_mapRemoteResult 1>/dev/null
 if [ $? -ne 0 ]; then
