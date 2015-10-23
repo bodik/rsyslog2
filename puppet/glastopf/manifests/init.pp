@@ -73,7 +73,7 @@ class glastopf {
 	package { "libcap2-bin": ensure => installed }
 	exec { "python cap_net":
 		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
-		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
+		unless => "/sbin/getcap /usr/bin/python2.7 | /bin/grep cap_net_bind_service",
 		require => Package["python"],
 	}
 

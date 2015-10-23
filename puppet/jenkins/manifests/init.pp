@@ -58,12 +58,12 @@ class jenkins() {
 	}
 	exec { "gem install opennebula-cli":
 		command => "/usr/bin/gem install opennebula-cli -v '~>4.4.0'",
-		unless => "/usr/bin/gem list | grep opennebula-cli",
+		unless => "/usr/bin/gem list | /bin/grep opennebula-cli",
 		require => [Package["ruby-dev"], Package["make"], Exec["gem install nokogiri"]],
 	}
 	exec { "gem install nokogiri":
 		command => "/usr/bin/gem install nokogiri -v '~>1.6.6.2'",
-		unless => "/usr/bin/gem list | grep nokogiri",
+		unless => "/usr/bin/gem list | /bin/grep nokogiri",
 		require => [Package["ruby-dev"], Package["make"]],
 	}
 	file { "/usr/local/bin/metacloud.init":

@@ -21,7 +21,7 @@ class rsyslog::install (
 			exec { "install_rsyslog":
 				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confold  -t jessie rsyslog/jessie rsyslog-gssapi/jessie rsyslog-relp/jessie",
 				timeout => 600,
-				unless => "/usr/bin/dpkg -l rsyslog | grep ' 8.4'",
+				unless => "/usr/bin/dpkg -l rsyslog | /bin/grep ' 8.4'",
 			}
 		}
 		"meta": { 
@@ -34,7 +34,7 @@ class rsyslog::install (
 			exec { "install_rsyslog":
 				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confnew rsyslog=${myver} rsyslog-gssapi=${myver} rsyslog-relp=${myver}",
 				timeout => 600,
-				unless => "/usr/bin/dpkg -l rsyslog | grep ' ${myver}'",
+				unless => "/usr/bin/dpkg -l rsyslog | /bin/grep ' ${myver}'",
 				require => [File["/etc/apt/sources.list.d/meta-rsyslog.list"], Exec["apt-get update"]],
 			}
 			file { "/etc/apt/sources.list.d/meta-rsyslog.list":

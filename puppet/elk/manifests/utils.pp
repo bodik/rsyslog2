@@ -19,7 +19,7 @@ class elk::utils() {
 	}
 	exec { "install elasticdump":
 		command => "/usr/bin/npm install elasticdump -g",
-		unless => "/usr/bin/npm -g list | grep elasticdump",
+		unless => "/usr/bin/npm -g list | /bin/grep elasticdump | /usr/bin/tr -c '[:print:][:cntrl:]' '?'",
 		require => Package["npm"],
 	}
 }

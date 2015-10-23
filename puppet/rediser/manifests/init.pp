@@ -44,7 +44,7 @@ class rediser {
 	}
 	exec { "gem install hiredis":
                 command => "/usr/bin/gem install --no-rdoc --no-ri hiredis",
-                unless => "/usr/bin/gem list | grep hiredis",
+                unless => "/usr/bin/gem list | /bin/grep hiredis",
                 require => [Package["ruby-dev"], Package["make"]],
         }
 	file { "/etc/init.d/rediser":

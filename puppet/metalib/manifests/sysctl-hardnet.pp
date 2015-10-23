@@ -5,7 +5,7 @@ class metalib::sysctl-hardnet {
 	}
 	exec { "force setting":
 		command => "/sbin/sysctl --load=/etc/sysctl.d/hardnet.conf",
-		unless => "/sbin/sysctl -a | grep 'net.ipv6.conf.all.accept_ra = 0'",
+		unless => "/sbin/sysctl -a | /bin/grep 'net.ipv6.conf.all.accept_ra = 0'",
 		require => File["/etc/sysctl.d/hardnet.conf"],
 	}
 }
