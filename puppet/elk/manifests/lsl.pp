@@ -46,7 +46,8 @@ class elk::lsl (
 	$output_es_cluster_name = "mry",
 	$process_stream_auth = false,
 ) {
-	notice($name)
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+
 	package { ["libgeoip1", "geoip-database"]:
 		ensure => installed,
 	}
