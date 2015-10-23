@@ -165,7 +165,16 @@ metacloud_templates() {
 }
 
 vm_list() {
-	onevm list -v
+	if [ "$1" = "-n" ]; then
+		onevm list -v | while read i; do 
+			echo -n "$i"
+			VMIP=$(onevm show $( echo "$i" | awk '{print $4}' ) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
+			VMHNAME=$(host $VMIP 2>/dev/null| grep "domain name pointer" | rev | awk '{print $1}' | rev)
+			echo " $VMHNAME"
+		done
+	else
+		onevm list -v
+	fi
 }
 
 metacloud_update() {
@@ -194,7 +203,7 @@ case "$1" in
 		metacloud_login
 	;;
 	list)
-		vm_list
+		vm_list "$2"
 	;;
 	build)
 		vm_build
