@@ -36,7 +36,7 @@
     <hudson.tasks.Shell>
       <command>/puppet/jenkins/bin/magrathea.init login
 /puppet/jenkins/bin/magrathea.init update 1&gt;/dev/null
-cd /rsyslog2/test02
+cd /puppet/rsyslog/test02
 export CLOUD=&quot;magrathea&quot;
 sh test_clients.sh $LEN $DISRUPT</command>
     </hudson.tasks.Shell>

@@ -7,9 +7,15 @@ set -e
 TESTID="ti$(date +%s)"
 
 if [ -z $1 ]; then
-    LEN=4000
+    LEN=4
 else
     LEN=$1
+fi
+
+if [ -z $2 ]; then
+    DISRUPT="none"
+else
+    DISRUPT=$2
 fi
 
 if [ -z $CLOUD ]; then
@@ -30,6 +36,8 @@ for all in $VMLIST; do
 	VMCOUNT=$(($VMCOUNT+1))
 done
 
+echo "INFO: VMCOUNT $VMCOUNT"
+
 #reconnect all clients
 /puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog stop'
 /puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog start'
@@ -47,26 +55,78 @@ fi
 
 
 
-
-#fill server's local disk
-echo "INFO: server disk filling"
-/puppet/jenkins/bin/$CLOUD.init sshs "(time dd if=/dev/zero of=/vyplndisku bs=8M)" &
-echo "INFO: waiting for server to finish disk filling"
-wait
-
-#run the test
 for all in $VMLIST; do
 	echo "INFO: client $all testi.sh init"
-	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "(sh /rsyslog2/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
+	VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "(sh /puppet/rsyslog/test02/testi.sh $LEN $TESTID </dev/null 1>/dev/null 2>/dev/null)" &
 done
-echo "INFO: waiting for clients to finish testi"
+
+
+
+# VYNUCOVANI CHYB
+WAITRECOVERY=60
+
+case $DISRUPT in
+	tcpkill)
+(
+sleep 10;
+TIMER=240
+echo "INFO: tcpkill begin $TIMER";
+/puppet/jenkins/bin/$CLOUD.init sshs "cd /puppet/rsyslog/test02;
+./tcpkill -i eth0 port 515 or port 514 or port 516 2>/dev/null &
+PPP=\$!; 
+sleep $TIMER;
+kill \$PPP;
+"
+echo "INFO: tcpkill end $TIMER";
+)
+WAITRECOVERY=230
+;;
+	restart)
+(
+sleep 10; 
+echo "INFO: restart begin";
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog restart'
+echo "INFO: restart end";
+)
+WAITRECOVERY=230
+;;
+	killserver)
+(
+sleep 10; 
+echo "INFO: killserver begin";
+/puppet/jenkins/bin/$CLOUD.init sshs 'kill -9 `pidof rsyslogd`'
+/puppet/jenkins/bin/$CLOUD.init sshs 'service rsyslog restart'
+echo "INFO: killserver end";
+)
+WAITRECOVERY=230
+;;
+
+	manual)
+(
+sleep 10;
+TIMER=120
+echo "INFO: manual begin $TIMER";
+count $TIMER
+echo "INFO: manual end $TIMER";
+)
+WAITRECOVERY=230
+;;
+
+esac
+
+echo "INFO: waiting for clients to finish"
 wait
-
-# cleanup
-echo "INFO: server disk full cleanup"
-/puppet/jenkins/bin/$CLOUD.init sshs "(rm /vyplndisku)"
+echo "INFO: test finished"
 
 
+
+
+
+
+# CEKANI NA DOTECENI VYSLEDKU
+#nemusi to dotect vsechno, interval je lepsi prodlouzit, ale ted nechci cekat
+echo "INFO: waiting to sync for $WAITRECOVERY secs"
+count $WAITRECOVERY
 
 
 
@@ -74,8 +134,8 @@ echo "INFO: server disk full cleanup"
 
 # VYHODNOCENI VYSLEDKU
 for all in $VMLIST; do
-CLIENT=$( VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
-VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh "sh /rsyslog2/test02/results_client_local.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
+	CLIENT=$( VMNAME=$all /puppet/jenkins/bin/$CLOUD.init ssh 'facter ipaddress' |grep -v "RESULT")
+	/puppet/jenkins/bin/$CLOUD.init sshs "sh /puppet/rsyslog/test02/results_client.sh $LEN $TESTID $CLIENT" | grep "RESULT TEST NODE:" | tee -a /tmp/test_results.$TESTID.log
 done
 echo =============
 
@@ -86,13 +146,13 @@ BEGIN {
 	TOTALLEN=LEN*VMCOUNT;
 }
 //{
-DELIVERED = DELIVERED + $10;
-DELIVEREDUNIQ = DELIVEREDUNIQ + $14;
+	DELIVERED = DELIVERED + $10;
+	DELIVEREDUNIQ = DELIVEREDUNIQ + $14;
 }
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
 	PERCUNIQ=DELIVEREDUNIQ/(TOTALLEN/100);
-	if(PERCUNIQ >= 99.99 && PERCUNIQ <= 100 ) {
+	if(PERCUNIQ >= 99.9 && PERCUNIQ <= 100 ) {
 		RES="OK";
 		RET=0;
 	} else {
@@ -107,5 +167,4 @@ RET=$?
 rm /tmp/test_results.$TESTID.log
 
 rreturn $RET "$0"
-
 

@@ -18,7 +18,6 @@
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start
 /puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
-####/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
 ################
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;

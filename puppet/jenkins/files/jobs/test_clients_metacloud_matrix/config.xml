@@ -34,7 +34,7 @@
     <hudson.tasks.Shell>
       <command>/puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init update 1&gt;/dev/null
-cd /rsyslog2/test02
+cd /puppet/rsyslog/test02
 sh test_clients.sh $LEN $DISRUPT</command>
     </hudson.tasks.Shell>
   </builders>

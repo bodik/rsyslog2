@@ -15,7 +15,7 @@
     <hudson.tasks.Shell>
       <command>/puppet/jenkins/bin/magrathea.init login
 /puppet/jenkins/bin/magrathea.init update 1&gt;/dev/null
-cd /rsyslog2/test02
+cd /puppet/rsyslog/test02
 export CLOUD=&quot;magrathea&quot;
 sh -x test_sockopt.sh</command>
     </hudson.tasks.Shell>
