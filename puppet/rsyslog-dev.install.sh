@@ -1,1 +1,1 @@
-puppet apply --modulepath=/puppet -v -e 'include rsyslog::dev'
+pa.sh -v -e 'include rsyslog::dev'
