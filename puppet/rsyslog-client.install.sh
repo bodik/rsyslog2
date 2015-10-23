@@ -1,2 +1,2 @@
-pa.sh -vd -e 'include rsyslog::client'
+pa.sh -v -e 'include rsyslog::client'
 
