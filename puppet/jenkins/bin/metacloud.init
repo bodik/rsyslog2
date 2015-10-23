@@ -141,7 +141,7 @@ vm_build() {
 
 metacloud_login() {
 	cd /dev/shm || exit 1
-	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY --force
+	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY
 }
 
 metacloud_creds() {
