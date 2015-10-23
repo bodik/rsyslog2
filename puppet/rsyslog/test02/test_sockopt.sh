@@ -2,7 +2,7 @@
 
 set -e
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 if [ -z $CLOUD ]; then
     CLOUD="metacloud"

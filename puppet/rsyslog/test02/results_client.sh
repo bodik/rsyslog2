@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 if [ -z $1 ]; then
 	rreturn 1 "$0 len missing"

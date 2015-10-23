@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 #for now we consider rediser something like a headnode
 REDISER=$(/puppet/metalib/bin/avahi.findservice.sh _rediser._tcp)

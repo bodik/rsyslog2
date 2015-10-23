@@ -2,7 +2,7 @@
 
 set -e
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 TESTID="ti$(date +%s)"
 
