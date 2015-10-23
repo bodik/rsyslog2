@@ -56,7 +56,7 @@ CONNS=$(/puppet/jenkins/bin/$CLOUD.init sshs 'netstat -nlpa | grep rsyslog | gre
 /puppet/jenkins/bin/$CLOUD.init sshs 'echo "7200" > /proc/sys/net/ipv4/tcp_keepalive_time;echo "75" > /proc/sys/net/ipv4/tcp_keepalive_intvl;echo "9" > /proc/sys/net/ipv4/tcp_keepalive_probes'
 
 if [ $CONNS -ne 0 ]; then
-	rreturn 1 "$0 dead clients not detected"
+	rreturn 1 "$0 dead clients detected"
 else
 	rreturn 0 "$0"
 fi
