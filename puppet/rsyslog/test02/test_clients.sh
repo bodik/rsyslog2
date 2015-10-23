@@ -113,11 +113,9 @@ WAITRECOVERY=230
 sleep 10;
 TIMER=240
 echo "INFO: ipdrop begin $TIMER";
-/puppet/jenkins/bin/$CLOUD.init sshs "cd /puppet/rsyslog/test02;
 /puppet/jenkins/bin/$CLOUD.init sshs 'iptables -I INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
 sleep $TIMER;
 /puppet/jenkins/bin/$CLOUD.init sshs 'iptables -D INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
-"
 echo "INFO: ipdrop end $TIMER";
 )
 WAITRECOVERY=230
