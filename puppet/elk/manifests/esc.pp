@@ -22,7 +22,7 @@ class elk::esc (
 	$network_host = undef,
 	$esd_heap_size = undef,
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ( $esd_heap_size ) {
 		$esd_heap_size_real = $esd_heap_size

@@ -23,7 +23,7 @@ class elk::kbn (
 	$kibana_version = "3.1.0",
 	$kibana_webserver = "apache",
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 	if ($kibana_webserver == false) {
 		$kibana_webserver_real = undef
