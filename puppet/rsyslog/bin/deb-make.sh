@@ -20,11 +20,9 @@ else
 	git pull
 fi
 
-if [ -z $RB_VERSION ]; then
-	git checkout debian/8.4.2+deb8u1.rb30
-	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=debian/8.4.2+deb8u1.rb30
-else 
-	git checkout $RB_VERSION
-	git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RB_VERSION
+if [ -z "$RBVERSION" ]; then
+	RBVERSION=debian/8.4.2+deb8u1.rb31
 fi
+git checkout $RBVERSION
+git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RBVERSION
 
