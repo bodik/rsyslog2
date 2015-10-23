@@ -66,6 +66,8 @@ done
 WAITRECOVERY=60
 
 case $DISRUPT in
+
+
 	tcpkill)
 (
 sleep 10;
@@ -81,6 +83,8 @@ echo "INFO: tcpkill end $TIMER";
 )
 WAITRECOVERY=230
 ;;
+
+
 	restart)
 (
 sleep 10; 
@@ -90,6 +94,8 @@ echo "INFO: restart end";
 )
 WAITRECOVERY=230
 ;;
+
+
 	killserver)
 (
 sleep 10; 
@@ -101,6 +107,21 @@ echo "INFO: killserver end";
 WAITRECOVERY=230
 ;;
 
+
+	ipdrop)
+(
+sleep 10;
+TIMER=240
+echo "INFO: ipdrop begin $TIMER";
+/puppet/jenkins/bin/$CLOUD.init sshs 'iptables -I INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
+sleep $TIMER;
+/puppet/jenkins/bin/$CLOUD.init sshs 'iptables -D INPUT -m multiport -p tcp --dport 514,515,516 -j DROP'
+echo "INFO: ipdrop end $TIMER";
+)
+WAITRECOVERY=230
+;;
+
+
 	manual)
 (
 sleep 10;
@@ -111,6 +132,7 @@ echo "INFO: manual end $TIMER";
 )
 WAITRECOVERY=230
 ;;
+
 
 esac
 
@@ -152,7 +174,7 @@ BEGIN {
 END {
 	PERC=DELIVERED/(TOTALLEN/100);
 	PERCUNIQ=DELIVEREDUNIQ/(TOTALLEN/100);
-	if(PERCUNIQ >= 99.9 && PERCUNIQ <= 100 ) {
+	if(PERCUNIQ >= 99.0 && PERCUNIQ <= 100 ) {
 		RES="OK";
 		RET=0;
 	} else {
