@@ -1,6 +1,15 @@
 Changelog
 =========
 
+3.0
+	- rsyslog 8.4 based on collab-maint-rsyslog.git with metacentrum's deployment patches
+	- puppet 3.7 working version targeted to Debian Jessie
+	- 3rd party modules moved to separate dir + pa.sh as shortcut to puppet apply ....
+	- some modules upgraded to recent versions
+
+
+
+
 2.0
 	- rsyslog 7.6.3
 	- metacentricke patche
@@ -16,8 +25,6 @@ Changelog
 	- logstash 1.4.2
 	- elasticsearch 1.2
 	- rizeni masterless puppetem
-	
-
 
 
 

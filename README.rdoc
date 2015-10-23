@@ -3,7 +3,7 @@
 This software suite is designed to aid creating and maintaining data processing
 cloud within a realm of CESNET.CZ and beyond. It is based on masterless puppet 
 and bash. Whole suite is bootsrapped from git to the clean provisioned 
-Debian Wheezy VM.
+Debian Jessie VM.
 
 TODO: elaborate on roles, check and check_stddev.s
 
