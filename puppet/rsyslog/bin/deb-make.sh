@@ -21,7 +21,7 @@ else
 fi
 
 if [ -z "$RBVERSION" ]; then
-	RBVERSION=debian/8.4.2+deb8u1.rb31
+	RBVERSION=debian/8.4.2+deb8u1.rb32
 fi
 git checkout $RBVERSION
 git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RBVERSION

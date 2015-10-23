@@ -1,12 +1,23 @@
-commit 95d382819500ac9b8cad358e275bcfdffbd6dd96
+commit 3fafb77b6169c2e055cfe57d8d33f9e7cca73bb8
 Author: root <root@minos47-2.zcu.cz>
 Date:   Thu Jul 16 03:30:38 2015 +0200
 
     meta-defaultcfg.patch
     preservefqdn, stats, ratelimit
+    117780: perian - kernel vypisuje chybove hlasky do konzole
 
+diff --git a/debian/changelog b/debian/changelog
+index 66ae525..e87c9a0 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,4 +1,4 @@
+-rsyslog (8.4.2+deb8u1.rb30) jessie; urgency=medium
++rsyslog (8.4.2+deb8u1.rb31) jessie; urgency=medium
+ 
+   * Non maintainer upload
+   * metacentrum.cz specific changes
 diff --git a/debian/rsyslog.conf b/debian/rsyslog.conf
-index 0e33f48..803024c 100644
+index 0e33f48..7ba15dc 100644
 --- a/debian/rsyslog.conf
 +++ b/debian/rsyslog.conf
 @@ -3,14 +3,24 @@
@@ -37,3 +48,12 @@ index 0e33f48..803024c 100644
  
  # provides UDP syslog reception
  #$ModLoad imudp
+@@ -96,7 +106,7 @@ news.notice			-/var/log/news/news.notice
+ #
+ # Emergencies are sent to everybody logged in.
+ #
+-*.emerg				:omusrmsg:*
++*.emerg				:omusrmsg:root
+ 
+ #
+ # I like to have messages displayed on the console, but only on a virtual
