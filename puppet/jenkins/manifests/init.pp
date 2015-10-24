@@ -11,12 +11,15 @@
 class jenkins() {
 	include metalib::base
 
+	if !defined(Class['apt']) {
+        	class { 'apt': }
+	}
 	apt::source { 'jenkins':
 		location   => 'http://pkg.jenkins-ci.org/debian',
 		release => 'binary/',
 		repos => '',
 		include_src => false,
-        	key         => 'D50582E6',
+        	key         => '150FDE3F7787E7D11EF4E12A9B7D32F2D50582E6',
 	        key_source  => 'http://pkg.jenkins-ci.org/debian-stable/jenkins-ci.org.key',
 	}
 
