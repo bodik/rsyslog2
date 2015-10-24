@@ -7,23 +7,23 @@ describe Puppet::Type::type(:apt_key) do
       :id => '4BD6EC30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq '4BD6EC30'
+      resource[:id].should eq '4BD6EC30'
     end
 
     it 'name is set to id' do
-      expect(resource[:name]).to eq '4BD6EC30'
+      resource[:name].should eq '4BD6EC30'
     end
 
     it 'keyserver is default' do
-      expect(resource[:server]).to eq :'keyserver.ubuntu.com'
+      resource[:server].should eq :'keyserver.ubuntu.com'
     end
 
     it 'source is not set' do
-      expect(resource[:source]).to eq nil
+      resource[:source].should eq nil
     end
 
     it 'content is not set' do
-      expect(resource[:content]).to eq nil
+      resource[:content].should eq nil
     end
   end
 
@@ -32,7 +32,7 @@ describe Puppet::Type::type(:apt_key) do
       :id => '4bd6ec30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq '4BD6EC30'
+      resource[:id].should eq '4BD6EC30'
     end
   end
 
@@ -41,7 +41,7 @@ describe Puppet::Type::type(:apt_key) do
       :id => 'FFFFFFFF4BD6EC30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq 'FFFFFFFF4BD6EC30'
+      resource[:id].should eq 'FFFFFFFF4BD6EC30'
     end
   end
 
@@ -50,7 +50,7 @@ describe Puppet::Type::type(:apt_key) do
       :id => '0x4BD6EC30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq '4BD6EC30'
+      resource[:id].should eq '4BD6EC30'
     end
   end
 
@@ -59,7 +59,7 @@ describe Puppet::Type::type(:apt_key) do
       :id => '0x4bd6ec30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq '4BD6EC30'
+      resource[:id].should eq '4BD6EC30'
     end
   end
 
@@ -68,7 +68,7 @@ describe Puppet::Type::type(:apt_key) do
       :id => '0xFFFFFFFF4BD6EC30'
     )}
     it 'id is set' do
-      expect(resource[:id]).to eq 'FFFFFFFF4BD6EC30'
+      resource[:id].should eq 'FFFFFFFF4BD6EC30'
     end
   end
 
@@ -79,7 +79,7 @@ describe Puppet::Type::type(:apt_key) do
     )}
 
     it 'source is set to the URL' do
-      expect(resource[:source]).to eq 'http://apt.puppetlabs.com/pubkey.gpg'
+      resource[:source].should eq 'http://apt.puppetlabs.com/pubkey.gpg'
     end
   end
 
@@ -90,7 +90,7 @@ describe Puppet::Type::type(:apt_key) do
     )}
 
     it 'content is set to the string' do
-      expect(resource[:content]).to eq 'http://apt.puppetlabs.com/pubkey.gpg'
+      resource[:content].should eq 'http://apt.puppetlabs.com/pubkey.gpg'
     end
   end
 
@@ -101,7 +101,7 @@ describe Puppet::Type::type(:apt_key) do
     )}
 
     it 'keyserver is set to Debian' do
-      expect(resource[:server]).to eq 'http://keyring.debian.org'
+      resource[:server].should eq 'http://keyring.debian.org'
     end
   end
 
