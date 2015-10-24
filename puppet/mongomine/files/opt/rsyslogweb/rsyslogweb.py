@@ -483,14 +483,13 @@ def list_cracks_data():
 	        { "$sort": bson.son.SON([("_id.remote", 1), ("count", -1)])}
 	])
 
-	data = []
-	if "result" in c:
-		data = c["result"]
-
-	for tmp in data:
-		if "remote" in tmp["_id"]:
-			a = "".join(tmp["_id"]["remote"])
-			tmp["_id"]["remote"] = "<a href='profile_remote?remote="+a+"'>"+a+"</a>"
+	data=[]	
+	if c:
+		for tmp in c:
+			if "remote" in tmp["_id"]:
+				a = "".join(tmp["_id"]["remote"])
+				tmp["_id"]["remote"] = "<a href='profile_remote?remote="+a+"'>"+a+"</a>"
+			data.append(tmp)
 
 	columns = []
 	if len(data):

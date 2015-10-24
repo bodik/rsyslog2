@@ -7,26 +7,26 @@ def get_blacklist(conn):
 	return  [i['remote'] for i in conn.sshd.cracksBlacklist.find({}, {"remote":1, "_id":0})]
 
 def get_wardenlist(conn):
+	ret = []
 	r = conn.warden.events.aggregate([
 		{ "$project": {"source":1, "_id":0} },
         	{ "$group": {"_id": "$source" }}
 	])
-
-	if "result" in r:
-		return [i["_id"] for i in r["result"]]
-	else:
-		return []
+	if r:
+		for i in r:
+			ret.append(i["_id"])
+	return ret
 
 def get_torlist(conn):
+	ret = []
 	r = conn.tor.lists.aggregate([
 		{ "$project": {"ip":1, "_id":0} },
         	{ "$group": {"_id": "$ip" }}
 	])
-
-	if "result" in r:
-		return [i["_id"] for i in r["result"]]
-	else:
-		return []
+	if r:
+		for i in r:
+			ret.append(i["_id"])
+	return ret
 
 def get_cracklist(conn):
 	crackers = []
