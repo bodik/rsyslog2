@@ -1,20 +1,18 @@
 define apt::conf (
-  $content       = undef,
-  $ensure        = present,
-  $priority      = '50',
-  $notify_update = undef,
+  $content,
+  $ensure   = present,
+  $priority = '50'
 ) {
 
-  unless $ensure == 'absent' {
-    unless $content {
-      fail('Need to pass in content parameter')
-    }
-  }
+  include apt::params
 
-  apt::setting { "conf-${name}":
-    ensure        => $ensure,
-    priority      => $priority,
-    content       => template('apt/_conf_header.erb', 'apt/conf.erb'),
-    notify_update => $notify_update,
+  $apt_conf_d = $apt::params::apt_conf_d
+
+  file { "${apt_conf_d}/${priority}${name}":
+    ensure  => $ensure,
+    content => template('apt/_header.erb', 'apt/conf.erb'),
+    owner   => root,
+    group   => root,
+    mode    => '0644',
   }
 }

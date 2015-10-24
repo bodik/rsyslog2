@@ -10,7 +10,7 @@ describe 'apt_update_last_success fact' do
       File.stubs(:exists?).returns false
     }
     it 'should have a value of -1' do
-      is_expected.to eq(-1)
+      should == -1
     end
   end
 
@@ -21,7 +21,7 @@ describe 'apt_update_last_success fact' do
       File.stubs(:mtime).returns 1407660561
     }
     it 'should have the value of the mtime of the file' do
-      is_expected.to eq(1407660561)
+      should == 1407660561
     end
   end
 
