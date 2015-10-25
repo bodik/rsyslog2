@@ -27,6 +27,7 @@
         <string>restart</string>
         <string>killserver</string>
         <string>tcpkill</string>
+        <string>ipdrop</string>
       </values>
     </hudson.matrix.TextAxis>
   </axes>
