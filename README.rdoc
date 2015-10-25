@@ -121,7 +121,7 @@ documentation.
 * metalib[link:puppet/metalib/README_full.html]
 * rsyslog[link:puppet/rsyslog/README_full.html]
 * rediser[link:puppet/rediser/README_full.html]
-* elk[link:puppet/elk/README.rdoc]
+* elk[link:puppet/elk/]
 * jenkins[link:puppet/jenkins/README_full.html]
 * netflow (nfdump, frpobe, pmacct)
 * mongomine
