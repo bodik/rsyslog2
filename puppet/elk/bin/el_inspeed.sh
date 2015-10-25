@@ -1,3 +1,6 @@
+#!/bin/sh
+# mydoc
+
 if [ -z $1 ]; then
 	SPAN=3
 else

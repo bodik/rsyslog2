@@ -5,8 +5,6 @@ cloud within a realm of CESNET.CZ and beyond. It is based on masterless puppet
 and bash. Whole suite is bootsrapped from git to the clean provisioned 
 Debian Jessie VM.
 
-TODO: elaborate on roles, check and check_stddev.s
-
 === Acknowledgement
 
 Computational resources were provided by the MetaCentrum under the program
@@ -20,13 +18,13 @@ Each major component should provide a puppet module and set of install/check
 and other scripts within itself.
 
   component/ 			-- puppet module
-  component/fileX			-- additional file (perhaps a script)
+  component/fileX		-- additional file (perhaps a script)
   component/tests/componentX.sh	-- simple test checking real state of the service
   				   typically used by jenkins autotests
 
 === Roles
 
-  role.install.sh			-- script for masterless installation
+  role.install.sh		-- script for masterless installation
   role.check.sh			-- script for state detection (noop show_diff)
 
 --------
@@ -45,7 +43,7 @@ primaliry on ELK stack (http://www.elasticsearch.org) and MongodDB
 
 Bootstrap suite from a git repository, subsequent calls would pull from master repo.
 
-  wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
+  wget esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   cd /puppet && ls -l
   sh bootstrap.install.sh
 
@@ -80,7 +78,7 @@ Then, changes can be accepted into repository or node state could be reverted to
 Commands will ensure installation of basic set of components for data analysis
 (rediser queue, elasticsearch data node, logstash processor, kibana frontend).
 
-  $ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
+  $ wget esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   $ cd /puppet && ls -l
   $ sh phase2.install.sh
   $ sh rediser.install.sh
@@ -94,7 +92,7 @@ Commands will ensure installation of basic set of components for data analysis
 Commands will ensure installation of basic set of components for rsyslog development
 (compiler, debugger, libs-dev,...)
 
-  $ wget esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
+  $ wget esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh && sh bootstrap.install.sh
   $ cd /puppet && ls -l
   $ sh phase2.install.sh
   $ sh rsyslog-dev.install.sh
@@ -123,8 +121,7 @@ documentation.
 * metalib[link:puppet/metalib/README_full.html]
 * rsyslog[link:puppet/rsyslog/README_full.html]
 * rediser[link:puppet/rediser/README_full.html]
-* elk[link:puppet/elk/README_full.html]
+* elk[link:puppet/elk/README.rdoc]
 * jenkins[link:puppet/jenkins/README_full.html]
 * netflow (nfdump, frpobe, pmacct)
 * mongomine
-
