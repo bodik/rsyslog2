@@ -2,6 +2,105 @@
 
 Module provides a way to install Elasticsearch data node, logstash processor and kibana3/apache frontend to elasticsearch.
 
-BUG: documentation for class elk::esd is not rendered because of bug in puppet 2.7, see class. itself
+--------
+== Class: elk::esc
+
+Class will ensure installation of elasticsearch client node using puppet-elasticsearch modules 
+and creates single instance:
+- heapsize as memorytotal/2
+- set of basic plugins
+
+=== Parameters
+
+[*cluster_name*]
+  set a specific cluster name for node
+
+[*network_host*]
+  set a network.host ES setting, eg. bind to specific interface
+
+=== Examples
+
+  class { "elk::esc": cluster_name => "abc", }
+
+== Class: elk::esd
+
+Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
+and creates single instance:
+- heapsize as memorytotal/2
+- set of basic plugins
+
+=== Parameters
+
+[*cluster_name*]
+  set a specific cluster name for node
+
+=== Examples
+
+  class { "elk::esd": cluster_name => "abc", }
+
+== Class: elk::kbn
+
+Class will ensure installation of:
+- kibana and apache virtualhost using example42's modules
+- set of static dashboards
+- general dasboard /dash.html
+
+=== Parameters
+
+[*kibana_webserver*]
+  which webserver should be managed with examples42-kibana class
+  set to false to disable automatic webserver configuration
+
+[*kibana_elasticsearch_url*]
+  specify ES rest endpoit url to config.js and dash.html, used in gated setup
+
+=== Examples
+
+  class { "elk::kbn": }
+
+== Class: elk::lsl
+
+Class will ensure installation of logstash using puppet-logstash modules 
+and creates single instance:
+- with additional custom patterns
+- input redis for fetching data from specific server or discovered rediser service (queues syslog, nz)
+- input netflow data using udp codec netflow
+- filtering/grokking data
+- output data to elasticsearch using node discovery
+   (special multicast group s fixed because of magrathea)
+
+=== Parameters
+
+[*lsl_workers*]
+  logstash number of workers (default 2 or 4)
+
+[*rediser_server*]
+  hostname or ip to fetch data for all queues, has precedence over rediser_auto
+  (default undef)
+
+[*rediser_auto*]
+  perform rediser autodiscovery by avahi (defult true)
+
+[*rediser_service*]
+  name of rediser service to discover (default "_rediser._tcp")
+
+[*output_es_cluster_name*]
+  output elasticsearch plugin cluster name config
+
+[*process_stream_auth*]
+  boolean expresion if node has to process auth log
+  currently is auth stream processed by mongomine, thus defauls to false
+
+=== Examples
+
+  class { "elk::lsl": 
+    lsl_workers => "1",
+    rediser_server => "1.2.3.4",
+  }
+
+== Scripts
+
+* a
+* b
 
 --------

@@ -1,0 +1,7 @@
+# == Scripts
+#
+# * a
+# * b
+#
+# --------
+class elk::doc {}
