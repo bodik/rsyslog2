@@ -123,3 +123,4 @@ documentation.
 * jenkins[link:puppet/jenkins/README.rdoc]
 * mongomine[link:puppet/mongomine/README.rdoc]
 * netflow[link:puppet/netflow/README.rdoc]
+* glastopf[link:puppet/glastopf/README.rdoc]
