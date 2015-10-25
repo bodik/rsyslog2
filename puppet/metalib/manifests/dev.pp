@@ -5,7 +5,7 @@
 #
 # === Examples
 #
-# include metalib::dev
+#  include metalib::dev
 #
 class metalib::dev { 
 	package { ["tcpdump", "strace", "puppet-lint", "colordiff", "augeas-tools", "ngrep", "iotop", "atop", "rake"]: 

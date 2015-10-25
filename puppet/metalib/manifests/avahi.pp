@@ -5,7 +5,7 @@
 #
 # === Examples
 #
-# include metalib::avahi
+#  include metalib::avahi
 #
 class metalib::avahi ( ) {
 	notice($name)

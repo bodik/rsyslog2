@@ -28,3 +28,28 @@ are emited towards configured netflow collector (netflow::nfdump, logstash, ...)
 
   class { "netflow::pmacct": collector_server => "collector.domain.cz", }
 
+== Class: netflow::nfdump
+
+Class will ensure installation of nfcapd collector and other nfdump tools. 
+Collected data are pushed into rediser in periodic interval. Inspired by
+https://github.com/jvoss/puppet-module-nfdump
+
+=== Parameters
+
+[*collector_port*]
+  udp port for listening data from netflow emitors
+
+[*data_dir*]
+  directory for storing collected data
+
+[*period_exec*]
+  script to run after each collection interval. Script
+  should process period data and send them to rediser.
+
+[*interval*]
+  data collection interval
+
+=== Examples
+
+  class { "netflow::nfdump": interval => "300" }
+

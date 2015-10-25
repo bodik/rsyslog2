@@ -6,8 +6,7 @@
 # - input redis for fetching data from specific server or discovered rediser service (queues syslog, nz)
 # - input netflow data using udp codec netflow
 # - filtering/grokking data
-# - output data to elasticsearch using node discovery
-#    (special multicast group s fixed because of magrathea)
+# - output data to elasticsearch using node discovery (special multicast group s fixed because of magrathea)
 #
 # === Parameters
 #
@@ -38,6 +37,7 @@
 #     rediser_server => "1.2.3.4",
 #   }
 #
+
 class elk::lsl (
 	$lsl_workers = undef,
 	$rediser_server = undef,

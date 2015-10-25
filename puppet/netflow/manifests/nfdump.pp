@@ -23,7 +23,6 @@
 #
 #   class { "netflow::nfdump": interval => "300" }
 #
-
 class netflow::nfdump (
 	$collector_port = "9995",
 	$data_dir = "/var/cache/nfdump",

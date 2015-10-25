@@ -49,46 +49,6 @@ Class will ensure installation of:
 
   class { "elk::kbn": }
 
-== Class: elk::lsl
-
-Class will ensure installation of logstash using puppet-logstash modules 
-and creates single instance:
-- with additional custom patterns
-- input redis for fetching data from specific server or discovered rediser service (queues syslog, nz)
-- input netflow data using udp codec netflow
-- filtering/grokking data
-- output data to elasticsearch using node discovery
-   (special multicast group s fixed because of magrathea)
-
-=== Parameters
-
-[*lsl_workers*]
-  logstash number of workers (default 2 or 4)
-
-[*rediser_server*]
-  hostname or ip to fetch data for all queues, has precedence over rediser_auto
-  (default undef)
-
-[*rediser_auto*]
-  perform rediser autodiscovery by avahi (defult true)
-
-[*rediser_service*]
-  name of rediser service to discover (default "_rediser._tcp")
-
-[*output_es_cluster_name*]
-  output elasticsearch plugin cluster name config
-
-[*process_stream_auth*]
-  boolean expresion if node has to process auth log
-  currently is auth stream processed by mongomine, thus defauls to false
-
-=== Examples
-
-  class { "elk::lsl": 
-    lsl_workers => "1",
-    rediser_server => "1.2.3.4",
-  }
-
 == Class: elk::esc
 
 Class will ensure installation of elasticsearch client node using puppet-elasticsearch modules 

@@ -1,8 +1,6 @@
 = metalib
 
 A set of support classes and helpers used within rsyslog2 puppet ecosystem.
-Classes are documenten within themselves, see link:README_full.html for more
-documentation.
 
 == Scripts
 

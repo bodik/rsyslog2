@@ -5,7 +5,7 @@
 #
 # === Examples
 #
-# include metalib::fail2ban
+#  include metalib::fail2ban
 #
 class metalib::fail2ban () {
 	notice($name)

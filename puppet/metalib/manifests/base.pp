@@ -5,7 +5,7 @@
 #
 # === Examples
 #
-# include metalib::base
+#  include metalib::base
 #
 class metalib::base {
 	notice($name)
