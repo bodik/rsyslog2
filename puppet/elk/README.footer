@@ -1,8 +1,10 @@
 # == Scripts
 #
-# [el_inspeed.sh] 		measures indexing rate, resp. number of new documents comming to es 
+# [el_inspeed.sh]
+#	measures indexing rate, resp. number of new documents comming to es 
 #
-# [elk-cli.rb]	  		very simple cli interface to search and delete es API
+# [elk-cli.rb]
+#	very simple cli interface to search and delete es API
 #
 # [elk-resourcekill.rb]		user jobs killed PoC for portal display
 #
