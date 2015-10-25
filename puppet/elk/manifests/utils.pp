@@ -1,7 +1,7 @@
 class elk::utils() {
 
 	# needed for elk script queries
-	package { ["curl", "python-requests"]:
+	package { ["curl"]:
 		ensure => installed,
 	}
 
