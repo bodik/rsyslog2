@@ -1,0 +1,6 @@
+= netflow
+
+Module installs a services for gathering netflow data from nodes interface and emits
+them into rediser service. Also provides sample scripts for data aggregation and statistics
+from data in ES cluster.
+

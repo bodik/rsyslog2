@@ -1,0 +1,4 @@
+= glastopf
+
+Installs glastopf honeypot with logstash processing it's logs.
+

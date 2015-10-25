@@ -79,13 +79,3 @@ scheduler. Helper must initialize users credentials.
 [run_jobs.sh]
   runs set of jenkins job by regexp name. Used for quick'n'dirty jobs chaining
 
-== Class: jenkins
-
-Class provides Jenkins installation from vendor repository packages and
-configures basic set of jobs for building host with specified roles as well
-as running autotests at the ends of the scenarios.
-
-=== Examples
-
- class { jenkins: }
-

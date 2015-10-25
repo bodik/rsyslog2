@@ -1,6 +1,4 @@
-#http://www.xenuser.org/downloads/puppet/xenuser_org-010-check_if_file_exists.pp
-# This file requires a custom facter script:
-#   /etc/puppet/modules/customfacts/lib/facter/file_exists.rb
+# http://www.xenuser.org/downloads/puppet/xenuser_org-010-check_if_file_exists.pp
 require "puppet"
 module Puppet::Parser::Functions
 	newfunction(:file_exists, :type => :rvalue) do |args|

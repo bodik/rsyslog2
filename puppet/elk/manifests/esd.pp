@@ -1,14 +1,18 @@
 # == Class: elk::esd
 #
-# Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
-# and creates single instance:
-# - heapsize as memorytotal/2
-# - set of basic plugins
+# Class will ensure installation of elasticsearch node using puppet-elasticsearch modules 
+# and creates single instance with 'heapsize as memorysize/2' and set of basic plugins.
 #
 # === Parameters
 #
 # [*cluster_name*]
 #   set a specific cluster name for node
+#
+# [*network_host*]
+#   set a network.host ES setting, eg. bind to specific interface
+#
+# [*es_heap_size*]
+#   sets a heap size for ES jvm
 #
 # === Examples
 #

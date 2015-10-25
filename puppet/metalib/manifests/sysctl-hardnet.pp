@@ -1,3 +1,7 @@
+# == Class: metalib::sysctl-hardnet
+#
+# Hardens networking on linux box. Used internally.
+#
 class metalib::sysctl-hardnet {
 	file { "/etc/sysctl.d/hardnet.conf":
 		source => "puppet:///modules/${module_name}/etc/sysctl.d/hardnet.conf",

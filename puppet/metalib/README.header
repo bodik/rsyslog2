@@ -1,0 +1,28 @@
+= metalib
+
+A set of support classes and helpers used within rsyslog2 puppet ecosystem.
+Classes are documenten within themselves, see link:README_full.html for more
+documentation.
+
+== Scripts
+
+[avahi.findservice.sh]
+  Discover service by name using Avahi mDNS. Prints resolved hostname or IPv4
+  address.  Ensures installation of avahi-daemon on execution to aid
+  lib/facter/avahi_findservice.rb at bootstrap time.
+
+  $ avahi.findservice.sh _service1._tcp
+  hostnamex.domain.tld
+
+[lib.sh]
+  Set of shell subroutines used within rsyslog2 puppet ecosystem.
+
+[install_sslselfcert.sh]
+  generates SSL self-signed certificate to given directory
+
+[pa.sh]
+  shortcut for masterless puppet
+
+[render_rdoc.rb]
+  renders documentation preview from rdoc to html
+

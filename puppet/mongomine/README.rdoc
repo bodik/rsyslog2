@@ -4,3 +4,90 @@ Module provides mongodb aggregation service which computes preaggregated
 auth/sshd log views for bruteforcing and blacklist detection.
 
 --------
+== Class: mongomine::rsyslogweb
+
+Class will ensure installation of rsysloweb, python bottle aplication for
+mongodb collection browsing.  Also creates set of cronjobs which will compute
+crackers maps or fetch lists of tor nodes, ...
+
+=== Parameters
+
+[*backend_email*] 
+[*alert_email*] 
+  send emited email messages to specific e-mail
+
+[*mta_package*]
+[*mta_fix_cloud_sender*] 
+  will tune postfix to rewrite sender addresses to something more 
+  non cloudish which will pass various filtering (nxdomain,...)
+
+=== Examples
+
+  class { "mongomine::rsyslogweb": }
+
+== Class: mongomine::rsyslogwebproxy
+
+Class will ensure installation of apache and proxy modules to proxy rsyslogweb from the gate to actual application server/cloud member
+
+=== Parameters
+
+[*mongomine_server*]
+  hostname or ip to proxy rsyslogweb requests to, has precedence over mongomine_auto
+  (default undef)
+
+[*mongomine_auto*]
+  perform mongomine autodiscovery by avahi (defult true)
+
+[*mongomine_service*]
+  name of mongomine service to discover (default "_mongomine._tcp")
+
+=== Examples
+
+  class { "mongomine::mongomine":  }
+
+== Class: mongomine::lsl
+
+Class will ensure installation of logstash using puppet-logstash modules 
+and creates single instance which process auth queue.
+
+Notet: some files taken from elk class, we dont want to duplicate things as mongomine will be replaced soon
+
+=== Parameters
+
+[*lsl_workers*]
+  logstash number of workers (default 2 or 4)
+
+[*rediser_server*]
+  hostname or ip to fetch data for all queues, has precedence over rediser_auto
+  (default undef)
+
+[*rediser_auto*]
+  perform rediser autodiscovery by avahi (defult true)
+
+[*rediser_service*]
+  name of rediser service to discover (default "_rediser._tcp")
+
+[*output_es_cluster_name*]
+  output elasticsearch plugin cluster name config
+
+=== Examples
+
+  class { "mongomine::lsl": 
+    lsl_workers => "1",
+    rediser_server => "1.2.3.4",
+  }
+
+== Class: mongomine::database
+
+Installs mongodb server, creates number of shards with shardproxy and
+mongoproxy.  Anounces itself through Avahi mDNS.
+
+=== Parameters
+
+[*shard*] number of shard to create
+
+=== Examples
+
+  class { "mongomine::database":  }
+
+Install the MongoDB shard server

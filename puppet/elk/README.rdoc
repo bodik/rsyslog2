@@ -4,41 +4,30 @@ Module provides a way to install Elasticsearch data node, logstash processor,
 kibana3/apache frontend to elasticsearch and few script for management and
 querying.
 
---------
-== Class: elk::esc
+== Scripts
 
-Class will ensure installation of elasticsearch client node using puppet-elasticsearch modules 
-and creates single instance:
-- heapsize as memorytotal/2
-- set of basic plugins
-
-=== Parameters
-
-[*cluster_name*]
-  set a specific cluster name for node
-
-[*network_host*]
-  set a network.host ES setting, eg. bind to specific interface
-
-=== Examples
-
-  class { "elk::esc": cluster_name => "abc", }
-
-== Class: elk::esd
-
-Class will ensure installation of elasticsearch using puppet-elasticsearch modules 
-and creates single instance:
-- heapsize as memorytotal/2
-- set of basic plugins
-
-=== Parameters
-
-[*cluster_name*]
-  set a specific cluster name for node
-
-=== Examples
-
-  class { "elk::esd": cluster_name => "abc", }
+[el_inspeed.sh]
+  measures indexing rate, resp. number of new documents comming to es 
+[elk-cli.rb]
+  very simple cli interface to search and delete es API
+[elk-resourcekill.rb]
+  user jobs killed PoC for portal display
+[elk-userquota.rb]
+  user overquota PoC for portal display
+[java_thread.sh]
+  Debugging java threads with top(1) and jstack.
+[purge_lsl.sh]
+  dev script
+[recover.sh]
+  forces indices recovery on specified node
+[set_replicas.sh]
+  sets replica factor on all indices
+[shut_node.sh]
+  excludes ip from shards routing/allocation (used for proper node shutdown)
+[tailog.sh]
+  elk stack tailog
+[unshut_node.sh]
+  includes ip from shards routing/allocation (used for proper node shutdown)
 
 == Class: elk::kbn
 
@@ -100,21 +89,43 @@ and creates single instance:
     rediser_server => "1.2.3.4",
   }
 
-== Scripts
+== Class: elk::esc
 
-[el_inspeed.sh]
-  measures indexing rate, resp. number of new documents comming to es 
-[elk-cli.rb]
-  very simple cli interface to search and delete es API
-[elk-resourcekill.rb]
-  user jobs killed PoC for portal display
-elk-userquota.rb:: user overquota PoC for portal display
-java_thread.sh:: Debugging java threads with top(1) and jstack.
-purge_lsl.sh:: dev script
-recover.sh:: forces indices recovery on specified node
-set_replicas.sh:: sets replica factor on all indices
-shut_node.sh:: excludes ip from shards routing/allocation (used for proper node shutdown)
-tailog.sh:: elk stack tailog
-unshut_node.sh:: includes ip from shards routing/allocation (used for proper node shutdown)
+Class will ensure installation of elasticsearch client node using puppet-elasticsearch modules 
+and creates single instance with 'heapsize as memorysize/2' and set of basic plugins.
 
---------
+=== Parameters
+
+[*cluster_name*]
+  set a specific cluster name for node
+
+[*network_host*]
+  set a network.host ES setting, eg. bind to specific interface
+
+[*es_heap_size*]
+  sets a heap size for ES jvm
+
+=== Examples
+
+  class { "elk::esc": cluster_name => "abc", }
+
+== Class: elk::esd
+
+Class will ensure installation of elasticsearch node using puppet-elasticsearch modules 
+and creates single instance with 'heapsize as memorysize/2' and set of basic plugins.
+
+=== Parameters
+
+[*cluster_name*]
+  set a specific cluster name for node
+
+[*network_host*]
+  set a network.host ES setting, eg. bind to specific interface
+
+[*es_heap_size*]
+  sets a heap size for ES jvm
+
+=== Examples
+
+  class { "elk::esd": cluster_name => "abc", }
+

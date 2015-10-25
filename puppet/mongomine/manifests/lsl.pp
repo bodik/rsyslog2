@@ -1,10 +1,9 @@
 # == Class: mongomine::lsl
 #
 # Class will ensure installation of logstash using puppet-logstash modules 
-# and creates single instance:
-# TODO to write
+# and creates single instance which process auth queue.
 #
-# caveat: some files taken from elk class, we dont want to duplicate things as mongomine will be replaced soon
+# Notet: some files taken from elk class, we dont want to duplicate things as mongomine will be replaced soon
 #
 # === Parameters
 #

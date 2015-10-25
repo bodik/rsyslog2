@@ -1,41 +1,29 @@
 # == Class: gate
 #
-# Full description of class gate here.
-#
-# === Parameters
-#
-# Document parameters here.
-#
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
-#   e.g. "Specify one or more upstream ntp servers as an array."
-#
-# === Variables
-#
-# Here you should define a list of variables that this module would require.
-#
-# [*sample_variable*]
-#   Explanation of how this variable affects the funtion of this class and if it
-#   has a default. e.g. "The parameter enc_ntp_servers must be set by the
-#   External Node Classifier as a comma separated list of hostnames." (Note,
-#   global variables should not be used in preference to class parameters  as of
-#   Puppet 2.6.)
-#
-# === Examples
-#
-#  class { gate:
-#    servers => [ 'pool.ntp.org', 'ntp.local.company.com' ]
-#  }
-#
-# === Authors
-#
-# Author Name <author@domain.com>
-#
-# === Copyright
-#
-# Copyright 2011 Your name here, unless otherwise noted.
+# Example class giving raw overview how to create cloud gateway
 #
 class gate {
+        include metalib::base
+        include metalib::fail2ban
+        include iptables
 
+
+        # with rediser
+        include rediser
+        # esc on secondary interface
+        class { "elk::esc":
+                network_host =>  $ipaddress_eth1,
+        }
+        class { "elk::kbn":
+                kibana_webserver => false,
+                kibana_elasticsearch_url => 'https://"+window.location.hostname+"/head'
+        }
+
+
+        #package apache2
+        ##package { "apache2": ensure => installed, }
+        # proxy config pass esc
+        include metalib::apache2
+        include mongomine::rsyslogwebproxy
 
 }

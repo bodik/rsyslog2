@@ -1,0 +1,5 @@
+= rediser
+
+Module provides installation of rediser -- small tcp line oriented daemon
+which reads data from network and rpushes them into redis queue.
+

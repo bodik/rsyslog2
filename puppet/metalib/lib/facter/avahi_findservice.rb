@@ -1,4 +1,4 @@
-#simple wrapper for avahi-browse
+# simple wrapper for avahi-browse
 require "puppet"
 module Puppet::Parser::Functions
 	newfunction(:avahi_findservice, :type => :rvalue) do |args|

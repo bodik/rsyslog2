@@ -1,14 +1,6 @@
 # == Class: glastopf
 #
-# Full description of class glastopf here.
-#
-# === Examples
-#
-#  class { glastopf: }
-#
-# === Authors
-#
-# bodik@cesnet.cz
+# Install glastopf honeypot and logstash consuming it's logs 
 #
 class glastopf {
 

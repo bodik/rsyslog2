@@ -1,0 +1,6 @@
+= mongomine
+
+Module provides mongodb aggregation service which computes preaggregated
+auth/sshd log views for bruteforcing and blacklist detection.
+
+--------

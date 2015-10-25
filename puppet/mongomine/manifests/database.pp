@@ -1,5 +1,16 @@
-#!/usr/bin/puppet
-
+# == Class: mongomine::database
+#
+# Installs mongodb server, creates number of shards with shardproxy and
+# mongoproxy.  Anounces itself through Avahi mDNS.
+#
+# === Parameters
+#
+# [*shard*] number of shard to create
+#
+# === Examples
+#
+#   class { "mongomine::database":  }
+#
 class mongomine::database (
 	$shards = 4,
 ) {

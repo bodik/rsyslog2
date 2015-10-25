@@ -1,0 +1,8 @@
+= glastopf
+
+Installs glastopf honeypot with logstash processing it's logs.
+
+== Class: glastopf
+
+Install glastopf honeypot and logstash consuming it's logs 
+

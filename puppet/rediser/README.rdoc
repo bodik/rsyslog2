@@ -3,4 +3,12 @@
 Module provides installation of rediser -- small tcp line oriented daemon
 which reads data from network and rpushes them into redis queue.
 
---------
+== Class: rediser
+
+Class will install redis server and rediser. 
+Rediser will announce itself to others using avahi.
+
+=== Examples
+
+ class { rediser: }
+

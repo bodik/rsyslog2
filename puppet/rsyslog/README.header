@@ -1,0 +1,8 @@
+= rsyslog
+
+Module provides way to develop and install rsyslog, and configures the instance
+to server or client mode. By default clients forwards all messages to server,
+server stores all logs on disk and forwards them to rediser (or other tcp line
+oriented server) for further analysis. Classes supports autodiscovery of
+components by avahi or statically by parameter.
+

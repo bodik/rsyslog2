@@ -1,4 +1,7 @@
-#dependency placeholder, just simple cross sharing deps sux
+# == Class: metalib::apache2
+#
+# Dependency placeholder.
+#
 class metalib::apache2 {
 	package { "apache2": ensure => installed, }
 	service { "apache2": }

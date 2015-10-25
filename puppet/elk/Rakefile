@@ -36,10 +36,17 @@ end
 
 desc "Generate documentation from README.rdoc and manifests"
 task :doc do
-	files = Dir.glob(["README.header", "manifests/*.pp", "lib/facter/*.rb", "README.footer"])
-	unless files.empty?
-		rdocs = `puppet doc #{files.join(' ')}`
+	out = ""
+	if File.exists?("README.header")
+		out += File.open("README.header", 'r') { |f| f.read }
 	end
-	File.open("README.rdoc", 'w') { |file| file.write(rdocs) }
+	files = Dir.glob(["manifests/*.pp", "lib/facter/*.rb"])
+	unless files.empty?
+		out += `puppet doc #{files.join(' ')}`
+	end
+	if File.exists?("README.footer")
+		out += File.open("README.footer", 'r') { |f| f.read }
+	end
+	File.open("README.rdoc", 'w') { |file| file.write(out) }
 end
 

@@ -1,3 +1,27 @@
+# == Class: netflow::pmacct
+#
+# Class will ensure installation of pmacctd pcap based netflow emitor. All data
+# are emited towards configured netflow collector (netflow::nfdump, logstash, ...)
+#
+# === Parameters
+#
+# [*collector_server*]
+#   collector hosname or ip address
+#
+# [*collector_port*]
+#   netflow collector destination port
+#
+# [*collector_auto*]
+#   flag if netflow collector should be autodiscovered,
+#   collector_server parameter has precedence over autodiscovery
+#
+# [*collector_service*]
+#   name of collector service to be discovered
+#
+# === Examples
+#
+#   class { "netflow::pmacct": collector_server => "collector.domain.cz", }
+#
 class netflow::pmacct (
 	$collector_server = undef,
 	$collector_port = 5555,

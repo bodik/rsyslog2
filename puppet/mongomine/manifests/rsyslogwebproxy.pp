@@ -16,10 +16,8 @@
 #
 # === Examples
 #
-#   class { "mongomine::mongomine": 
-#   }
+#   class { "mongomine::mongomine":  }
 #
-
 class mongomine::rsyslogwebproxy (
 	$mongomine_server = undef,
 	$mongomine_auto = true,

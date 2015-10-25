@@ -1,4 +1,4 @@
-#simple wrapper for custom execs
+# simple wrapper for custom execs
 require "puppet"
 module Puppet::Parser::Functions
         newfunction(:myexec, :type => :rvalue) do |args|

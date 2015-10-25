@@ -1,3 +1,7 @@
+# == Class: metalib::wget
+#
+# Class for installling wget, and defines download resource. Used internally.
+#
 class metalib::wget() {
 	package { "wget": ensure => installed, }
 	define download ($uri, $timeout = 300, $owner = "root", $group = "root", $mode = "0644") {

@@ -19,8 +19,6 @@
 #
 #   class { "mongomine::rsyslogweb": }
 #
-
-
 class mongomine::rsyslogweb (
 	$backend_email = "bodik@cesnet.cz",
 	$alert_email = "bodik@cesnet.cz",
