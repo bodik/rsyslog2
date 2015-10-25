@@ -102,32 +102,16 @@ and creates single instance:
 
 == Scripts
 
-[el_inspeed.sh]
-	measures indexing rate, resp. number of new documents comming to es 
-
-
-[elk-cli.rb]
-	very simple cli interface to search and delete es API
-
-
-[elk-resourcekill.rb]
-	user jobs killed PoC for portal display
-
-
-[elk-userquota.rb]		user overquota PoC for portal display
-
-[java_thread.sh]		Debugging java threads with top(1) and jstack.
-
-[purge_lsl.sh]		dev script
-
-[recover.sh]			forces indices recovery on specified node
-
-[set_replicas.sh]		sets replica factor on all indices
-
-[shut_node.sh]		excludes ip from shards routing/allocation (used for proper node shutdown)
-
-[tailog.sh]			elk stack tailog
-
-[unshut_node.sh]		includes ip from shards routing/allocation (used for proper node shutdown)
+el_inspeed.sh:: measures indexing rate, resp. number of new documents comming to es 
+elk-cli.rb:: very simple cli interface to search and delete es API
+elk-resourcekill.rb:: user jobs killed PoC for portal display
+elk-userquota.rb:: user overquota PoC for portal display
+java_thread.sh:: Debugging java threads with top(1) and jstack.
+purge_lsl.sh:: dev script
+recover.sh:: forces indices recovery on specified node
+set_replicas.sh:: sets replica factor on all indices
+shut_node.sh:: excludes ip from shards routing/allocation (used for proper node shutdown)
+tailog.sh:: elk stack tailog
+unshut_node.sh:: includes ip from shards routing/allocation (used for proper node shutdown)
 
 --------
