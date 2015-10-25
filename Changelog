@@ -6,6 +6,7 @@ Changelog
 	- puppet 3.7 working version targeted to Debian Jessie
 	- 3rd party modules moved to separate dir + pa.sh as shortcut to puppet apply ....
 	- some modules upgraded to recent versions
+	- more complete documentation
 
 
 
