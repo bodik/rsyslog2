@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 /usr/lib/nagios/plugins/check_procs --argument-array=warden_2rediser.py -c 1:1
 if [ $? -ne 0 ]; then

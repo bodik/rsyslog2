@@ -35,12 +35,17 @@ class warden3::ca (
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.init",
 		owner => "root", group => "root", mode => "0700",
 		require => File["/opt/warden_ca/warden_ca_http.py"],
+		notify => Exec["systemd_reload"],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "warden_ca_http": 
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => File["/etc/init.d/warden_ca_http"],
+		require => [File["/etc/init.d/warden_ca_http"], Exec["systemd_reload"]],
 	}
 	if ($autosign) {
 		file { "/opt/warden_ca/AUTOSIGN":
