@@ -77,7 +77,7 @@ class warden3::server (
         }
 
 	#server application
-	package { ["python-mysqldb", "python-m2crypto", "python-pip"]: ensure => installed, }
+	package { ["python-mysqldb", "python-m2crypto", "python-pip", "rsyslog"]: ensure => installed, }
 	package { ["jsonschema", "functools32"]:
 		ensure => installed,
 		provider => "pip",
