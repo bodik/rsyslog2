@@ -1,6 +1,6 @@
 
-puppet apply --modulepath=/puppet -e 'include warden3::ca'
-puppet apply --modulepath=/puppet -e 'include warden3::server'
+pa.sh -e 'include warden3::ca'
+pa.sh -e 'include warden3::server'
 
 TCNT=$(mysql -NBe "show tables;" warden3 2>/dev/null | wc -l)
 if [ $TCNT -lt "2" ]; then

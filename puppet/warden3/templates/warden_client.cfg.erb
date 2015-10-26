@@ -1,8 +1,8 @@
 {
-    "url": "https://<%= warden_server_real %>:45443/warden3",
+    "url": "https://<%= @warden_server_real %>:45443/warden3",
 
-    "certfile": "/opt/hostcert/<%= fqdn %>.crt",
-    "keyfile": "/opt/hostcert/<%= fqdn %>.key",
+    "certfile": "/opt/hostcert/<%= @fqdn %>.crt",
+    "keyfile": "/opt/hostcert/<%= @fqdn %>.key",
     "cafile": "/opt/hostcert/cachain.pem",
 
     "timeout": 60,

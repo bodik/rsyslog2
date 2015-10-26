@@ -124,14 +124,13 @@ class warden3::server (
 	file { ["/etc/apache2/mods-enabled/cgid.conf", "/etc/apache2/mods-enabled/cgid.load", "/etc/apache2/sites-enabled/000-default"]: 
 		ensure => absent,
 		require => Package["apache2"],
+		notify => Service["apache2"],
 	}
-	file { "/etc/apache2/mods-enabled/ssl.load":        ensure => "link",        target => "../mods-available/ssl.load",
-	        require => Package["apache2"]
+	exec { "a2enmod ssl":
+		command => "/usr/sbin/a2enmod ssl",
+		unless => "/usr/sbin/a2query -m ssl",
+		notify => Service["apache2"],
 	}
-	file { "/etc/apache2/mods-enabled/ssl.conf":        ensure => "link",        target => "../mods-available/ssl.conf",
-	        require => Package["apache2"]
-	}
-
 	class { "warden3::hostcert":
 		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use fqdn
 		warden_server => $fqdn,
@@ -143,7 +142,7 @@ class warden3::server (
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
 			Class["warden3::hostcert"], 
-			File["/etc/apache2/mods-enabled/ssl.load", "/etc/apache2/mods-enabled/ssl.conf"], 
+			Exec["a2enmod ssl"],
 			],
 		notify => Service["apache2"],
 	}

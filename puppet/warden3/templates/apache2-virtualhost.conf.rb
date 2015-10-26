@@ -1,5 +1,5 @@
-Listen *:<%= port %>
-<Virtualhost *:<%= port %>>
+Listen *:<%= @port %>
+<Virtualhost *:<%= @port %>>
 	
 	#defaults
 	ServerAdmin webmaster@localhost
@@ -16,8 +16,8 @@ Listen *:<%= port %>
 	</Directory>
 
 	LogLevel warn
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
+	ErrorLog ${APACHE_LOG_DIR}/warden3-server-error.log
+	CustomLog ${APACHE_LOG_DIR}/warden3-server-access.log combined
 
 
 	#warden3
@@ -26,16 +26,15 @@ Listen *:<%= port %>
 	SSLVerifyDepth 4
 	SSLOptions +StdEnvVars +ExportCertData
 	#SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-	SSLCertificateFile      /opt/hostcert/<%= fqdn %>.crt
-	SSLCertificateKeyFile   /opt/hostcert/<%= fqdn %>.key
+	SSLCertificateFile      /opt/hostcert/<%= @fqdn %>.crt
+	SSLCertificateKeyFile   /opt/hostcert/<%= @fqdn %>.key
 	SSLCACertificateFile    /opt/hostcert/cachain.pem
 
 	WSGIProcessGroup warden3
         WSGIDaemonProcess warden3 threads=1
-	WSGIScriptAlias /warden3 <%= install_dir %>/warden_server.wsgi
-	<Directory <%= install_dir %>/warden_server.wsgi>
-		Order allow,deny
-		Allow from all
+	WSGIScriptAlias /warden3 <%= @install_dir %>/warden_server.wsgi
+	<Directory <%= @install_dir %>>
+		Require all granted
 	</Directory>
 
 </Virtualhost>

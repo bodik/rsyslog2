@@ -39,6 +39,7 @@ class warden3::ca (
 	service { "warden_ca_http": 
 		enable => true,
 		ensure => running,
+		provider => init,
 		require => File["/etc/init.d/warden_ca_http"],
 	}
 	if ($autosign) {

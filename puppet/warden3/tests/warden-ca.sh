@@ -1,10 +1,8 @@
 #!/bin/sh
-#
-# modified by bodik@cesnet.cz
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
-WS=$(/puppet/metalib/avahi.findservice.sh _warden-server._tcp)
+WS=$(/puppet/metalib/bin/avahi.findservice.sh _warden-server._tcp)
 if [ -z "$WS" ]; then
         echo "ERROR: cannt discover warden_ca server"
         exit 1

@@ -9,7 +9,7 @@
 #    echo "${0##*/} 'https://warden-hub.example.org/warden3' org.example.warden.client 'ToPsEcReT' key.pem cert.pem tcs-ca-bundle.pem"
 #    exit 1
 #fi
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 tmpfile=/tmp/warden-server.selftest
 
 url="https://$(facter fqdn):45443/warden3"
