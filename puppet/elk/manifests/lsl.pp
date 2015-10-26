@@ -131,6 +131,17 @@ class elk::lsl (
 	} else {
 		notice("input-rediser-auth passive")
 	}
+	if ( $rediser_server_real ) {
+                logstash::configfile { 'input-rediser-wb':
+                        content => template("${module_name}/etc/logstash/conf.d/input-rediser-wb.conf.erb"),
+                        order => 10,
+                        notify => Service["logstash"],
+                }
+                notice("input-rediser-wb active")
+        } else {
+                notice("input-rediser-wb passive")
+        }
+
 
 
 
@@ -152,7 +163,11 @@ class elk::lsl (
 		order => 30,
 		notify => Service["logstash"],
 	}
-
+	logstash::configfile { 'filter-wb':
+                content => template("${module_name}/etc/logstash/conf.d/filter-wb.conf"),
+                order => 30,
+                notify => Service["logstash"],
+        }
 
 
 
