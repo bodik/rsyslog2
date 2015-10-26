@@ -1,0 +1,62 @@
+#!/bin/sh
+
+BASE=/opt/glastopf
+
+cd $BASE || exit 1
+
+rreturn() {
+        RET=$1
+        MSG=$2
+        if [ $RET -eq 0 ]; then
+                echo "RESULT: OK $MSG"
+                exit 0
+        else
+                echo "RESULT: FAILED $MSG"
+                exit 1
+        fi
+
+        echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+        exit 1
+}
+
+
+killwaitpids() {
+        PID="$@"
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+case "$1" in
+
+	start)
+        	echo -n "Starting glastopf: "
+		su -c '/usr/bin/python /usr/local/bin/glastopf-runner 1>glastop.log 2>glastop.log & echo $! > glastop.pid' glastopf
+	        echo "done"
+	;;
+	stop)
+	        echo -n "Stopping glastopf:: "
+	        killwaitpids `cat $BASE/glastop.pid`
+	        rm $BASE/glastop.pid
+	        echo "done"
+	;;
+	status)
+                pgrep -f glastopf-runner 1>/dev/null
+                if [ $? -eq 0 ]; then
+                        rreturn 0 "running"
+                fi
+		rreturn 1 "not running"
+	;;
+	log)
+		tail -f glastop.log
+	;;
+	*)
+		ps faxu | grep glastopf-runner
+		exit 1
+	;;
+esac
+

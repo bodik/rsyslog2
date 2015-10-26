@@ -1,0 +1,2 @@
+*/5 * * * * <%= kippo_user %> /usr/bin/python <%= install_dir %>/warden/warden3-kippo-sender.py 1>><%= install_dir %>/warden/warden-kippo-sender.log 2>&1
+*/5 * * * * <%= kippo_user %> /usr/bin/python <%= install_dir %>/warden/kippo-reporter.py 1>><%= install_dir %>/warden/kippo-reporter.log 2>&1

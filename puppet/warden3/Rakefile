@@ -1,0 +1,71 @@
+#https://raw.githubusercontent.com/brightbox/puppet/master/Rakefile#
+task :default => [:test, :parse]
+
+def old_puppet?
+  `puppet -V` =~ /^2.[456]/
+end
+
+desc "Noop implementation of default task"
+task :clean do
+end
+
+desc "Run the test suite"
+task :test do
+  pcommand = old_puppet? ? "puppet" : "puppet apply"
+	Dir["tests/*pp"].each do |test_file|
+		sh "#{pcommand} --noop --modulepath .. #{test_file}"
+	end
+end
+
+desc "Parse any .pp files we can find"
+task :parse => :clean do
+  pcommand = old_puppet? ? "puppet --parseonly --modulepath .." : "puppet parser validate --modulepath .."
+
+  files = Dir["manifests/**/*.pp", "modules/**/*.pp"]
+  if old_puppet?
+    files.each { |f| sh "#{pcommand} #{f}" }
+  else
+    sh "#{pcommand} #{files.join(' ')}"
+  end
+
+end
+
+desc "Run lint check on puppet manifests"
+task :lint => :clean do
+  require 'puppet-lint'
+  linter =  PuppetLint.new
+  Dir.glob('./**/*.pp').each do |puppet_file|
+    puts "=== Evaluating #{puppet_file}"
+    linter.file = puppet_file
+    linter.run
+    puts
+  end
+  fail if linter.errors?
+end
+
+
+desc "Generate documentation from README.rdoc and manifests"
+task :doc do
+  require 'github/markup'
+  require 'puppet'
+  require 'puppet/util/rdoc'
+
+  out = '<link href="../metalib/style.css" rel="stylesheet"></link>'
+  out += GitHub::Markup.render("README.rdoc", File.read("README.rdoc"))
+  files = Dir.glob(["manifests/*.pp", "lib/facter/*.rb"])
+  unless files.empty?
+	rdocs = `puppet doc #{files.join(' ')}`
+  	out += GitHub::Markup.render("README.manifests.rdoc", rdocs)
+  end
+  File.open("README_full.html", 'w') { |file| file.write(out) }
+end
+
+#require 'rspec/core/rake_task'
+#
+#desc "Run specs check on puppet manifests"
+#RSpec::Core::RakeTask.new(:spec) do |t|
+#   t.pattern = './modules/**/*_spec.rb' # don't need this, it's default
+#   t.verbose = true
+#   t.rspec_opts = "--format documentation --color"
+#    # Put spec opts in a file named .rspec in root
+#end

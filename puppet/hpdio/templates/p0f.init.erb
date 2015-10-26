@@ -1,0 +1,74 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          p0f
+# Required-Start:    networking
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Nahazuje p0f
+### END INIT INFO
+
+PATH=/usr/bin:/sbin:/bin:/usr/sbin
+export PATH
+
+P0F_SOCK=/tmp/p0f.sock
+PIDFILE=/var/run/p0f.pid
+USER=<%= dio_user %>
+IFACE=any
+LOG=/var/log/p0f.log
+OPTIONS="-q -l -d -c 1024"
+
+
+case "$1" in
+start)
+        /usr/sbin/p0f -i ${IFACE} -u ${USER} -Q ${P0F_SOCK} \
+                    -o ${LOG} ${OPTIONS}
+
+        PID=`pidof -s p0f`
+        if [ $PID ] ; then
+                echo $PID >$PIDFILE
+                #touch /var/lock/subsys/p0f
+                echo "Starting p0f: Done."
+        else
+                echo "Starting p0f: Fail."
+        fi
+        ;;
+
+stop)
+        if [ -f $PIDFILE ]; then
+                echo "Stopping p0f: Done."
+                kill -TERM `cat $PIDFILE`
+                rm -f $PIDFILE
+                #rm -f /var/lock/subsys/p0f
+        else
+                echo "Stopping p0f: Fail."
+        fi
+        ;;
+
+restart)
+        $0 stop
+        $0 start
+        exit $?
+        ;;
+
+status)
+        # "status" seems to prefer "pidof" to the pidfile, so let's
+        # avoid its use here.
+        #status p0f
+        if [ -f $PIDFILE ]; then
+                echo "p0f (pid `cat $PIDFILE`) is running"
+        else
+                echo "p0f is not running"
+        fi
+        exit $?
+        ;;
+
+*)
+        echo "Usage: $0 {start|stop|status|restart}"
+        exit 1
+        ;;
+
+esac
+
+exit 0

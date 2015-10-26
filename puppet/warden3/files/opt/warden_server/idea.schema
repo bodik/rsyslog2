@@ -1,0 +1,528 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "description": "= IDEA0 format definition =\n\nKeys use !CamelCase, however to avoid confusion, they must be case insensitively unique within their parent object. When parsing, keys \"ID\", \"id\", \"iD\" and \"Id\" must be considered as equivalent.\n\nEach definition line is in form KEY: TYPE, followed by an explanation line, where type can be basic JSON type (in ''italics''), syntactically restricted type (with reference to [[#Types|Types]] chapter), or array of former two (order is important). Types define expected syntax, however their content may be further syntactically or semantically restricted according to particular key explanation.\n\nThe keys ''Format'', ''ID'', ''!DetectTime'' and ''Category'' are mandatory, rest of the keys is optional (nonexistent key indicates that information is not applicable or unknown).\n\nAs human language may be ambiguous inadvertently or by omission, when in doubt, consult [[IDEA/Schema|JSON schema]].",
+    "type": "object",
+    "required": ["Format", "ID", "DetectTime", "Category"],
+    "definitions": {
+        "Boolean": {
+            "description": "JSON \"true\" or \"false\" value.",
+            "type": "boolean"
+        },
+        "Integer": {
+            "description": "JSON \"number\" with no fractional and exponential part.",
+            "type": "integer"
+        },
+        "Version": {
+            "description": "Must contain string \"IDEA0\". (Trailing zero denotes draft version, after review/discussion and specification finalisation the name will change.)",
+            "type": "string",
+            "enum": ["IDEA0"]
+        },
+        "MediaType": {
+            "description": "Internet media type without parameters. Format is type and subtype, separated by slash, where type can contain only alphanumeric, underscore and minus sign, and subtype can contain only alphanumeric, plus and minus sign, underscore and dot.",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+/[a-zA-Z0-9_+.-]+$"
+        },
+        "Charset": {
+            "description": "Character set name may consist of alphanumeric, dot, colon, minus sign, underscore and parentheses (round brackets).",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9.:_()-]+$"
+        },
+        "Encoding": {
+            "description": "May contain only string \"base64\" (however note that key can be nonexistent, which means native encoding).",
+            "type": "string",
+            "enum": ["base64"]
+        },
+        "Handle": {
+            "description": "String value unique among all \"Handle\" element values. May contain only alphanumeric or underscore, must not start with number and must not be empty.",
+            "type": "string",
+            "pattern": "^[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "ID": {
+            "description": "String, containing reasonably globally unique identifier. UUID version 4 (random) or 5 (SHA-1) is recommended. As IDs are meant to be used at other mediums, transfer protocols and formats (an example being query string fields in URL), they are allowed to contain only reasonably safe subset of characters. May thus contain only alphanumeric, dot, minus sign and underscore and must not be empty.",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9._-]+$"
+        },
+        "Timestamp": {
+            "description": "String, containing timestamp conforming to [[http://tools.ietf.org/html/rfc3339|RFC 3339]].",
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}[Tt ][0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?(?:[Zz]|(?:[+-][0-9]{2}:[0-9]{2}))?$"
+        },
+        "Duration": {
+            "description": "String, containing time offset, intended for representing difference between two timestamps. Format is time part of [[http://tools.ietf.org/html/rfc3339|RFC 3339]], optionally prepended by \"D\" or \"d\" separator and number of days (which can have arbitrary number number of digits). \"D\" separator has been chosen to distinguish from internet time, and as a memory aid for \"duration\" or \"days\". For example \"536D10:20:30.5\" means 536 days, 10 hours, 20 seconds, 30.5 seconds, whereas 00:05:00 represents five minutes.\n\n[[http://tools.ietf.org/html/rfc2234|ABNF]] syntax:\n{{{\ntime-hour       = 2DIGIT  ; 00-23\ntime-minute     = 2DIGIT  ; 00-59\ntime-second     = 2DIGIT  ; 00-59\ntime-secfrac    = \".\" 1*DIGIT\nseparator       = \"D\" / \"d\"\ndays            = 1*DIGIT\n\nduration        = [days separator] time-hour \":\" time-minute \":\" time-second [time-secfrac]\n}}}",
+            "type": "string",
+            "pattern": "^(?:[0-9]+[Dd])?[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]+)?$"
+        },
+        "URI": {
+            "description": "String, containing URI as defined in [[http://tools.ietf.org/html/rfc3986|RFC 3986]] and related.",
+            "type": "string",
+            "format": "uri",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:[][a-zA-Z0-9._~:/?#@*'&'()*+,;=%-]*$"
+        },
+        "Net4": {
+            "description": "String, containing IPv4 range in human readable form. Range can be specified as CIDR network (\"192.0.2.0/24\") or two IP addresses in dot-decimal notation, separated by minus sign (\"192.0.2.0-192.0.2.255\").",
+            "type": "string",
+            "pattern": "^(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(?:(?:/(?:[0-9]|[1-2][0-9]|3[0-2]))|(?:-(?:(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}(?:[0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])))?$"
+        },
+        "Net6": {
+            "description": "String, containing IPv6 range in human readable form. Range can be specified as CIDR notation (\"2001:db8::/48\") or two IP addresses in colon-hexadecimal notation, separated by minus sign (\"2001:db8::-2001:db8:0:ffff:ffff:ffff:ffff:ffff\").",
+            "type": "string",
+            "pattern": "^(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(?:(?:/(?:\\d|\\d\\d|1[0-1]\\d|12[0-8]))?|-(?:(?:(?:[0-9A-Fa-f]{1,4}:){7}(?:[0-9A-Fa-f]{1,4}|:))|(?:(?:[0-9A-Fa-f]{1,4}:){6}(?::[0-9A-Fa-f]{1,4}|(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){5}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,2})|:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(?:(?:[0-9A-Fa-f]{1,4}:){4}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,3})|(?:(?::[0-9A-Fa-f]{1,4})?:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){3}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,4})|(?:(?::[0-9A-Fa-f]{1,4}){0,2}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){2}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,5})|(?:(?::[0-9A-Fa-f]{1,4}){0,3}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?:(?:[0-9A-Fa-f]{1,4}:){1}(?:(?:(?::[0-9A-Fa-f]{1,4}){1,6})|(?:(?::[0-9A-Fa-f]{1,4}){0,4}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(?::(?:(?:(?::[0-9A-Fa-f]{1,4}){1,7})|(?:(?::[0-9A-Fa-f]{1,4}){0,5}:(?:(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))))$"
+        },
+        "NSID": {
+            "description": "Namespaced identifier. Dot separated list of labels, with significance from left to right – leftmost denoting largest containing realm, rightmost denoting single entity. Country – organisation – suborganizations – machine – local scheme akin to \"org.example.csirt.northwest.honeypot.jabberwock\" is strongly recommended. Label case is insignificant, label can contain only letters, numbers or underscore and must not start with number.",
+            "type": "string",
+            "pattern": "^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$"
+        },
+        "MAC": {
+            "description": "String, containing MAC address in human friendly form - six groups of two hexadecimal digits, separated by colon.",
+            "type": "string",
+            "pattern": "^([0-9A-Fa-f]{2}:){5}([0-9A-Fa-f]{2})$"
+        },
+        "Netname": {
+            "description": "URI string, containing LIR identifier and network identifier within LIR namespace, separated by colon.",
+            "type": "string",
+            "format": "uri",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:[][a-zA-Z0-9._~:/?#@*'&'()*+,;=%-]*$"
+        },
+        "Hash": {
+            "description": "URI string, defining hash type and hash value, separated by colon.",
+            "type": "string",
+            "format": "uri",
+            "pattern": "^[a-zA-Z][a-zA-Z0-9+.-]*:[][a-zA-Z0-9._~:/?#@*'&'()*+,;=%-]*$"
+        },
+        "EventTag": {
+            "description": "Category name consists of one or two abbreviated parts - category and optional subcategory, separated by dot. If unsure of more precise nature of the incident, subcategory and dot may be omitted. Category and subcategory name must contain only alphanumeric, underscore and minus sign.\n\nFor semantics and taxonomy see [[IDEA/Classifications#EventTag|security event types classification]].",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+(?:\\.[a-zA-Z0-9_-]+)?$"
+        },
+        "ProtocolName": {
+            "description": "Name must not be empty, must contain only alphanumeric and minus sign, must contain at least one letter, must not begin or end with a hyphen and two hyphens must not be adjacent.\n\nFor semantics and applicable strings see [[IDEA/Classifications#ProtocolName|protocols classification]].",
+            "type": "string",
+            "allOf": [
+                {
+                    "description": "Protocol name must contain at least one letter.",
+                    "pattern": "[a-zA-Z]"
+                },
+                {
+                    "description": "Protocol name must contain only alphanumeric and minus sign.",
+                    "pattern": "^[a-zA-Z0-9-]*$"
+                },
+                {
+                    "description": "Protocol name must begin with alphanumeric.",
+                    "pattern": "^[a-zA-Z0-9]"
+                },
+                {
+                    "description": "Protocol name must end with alphanumeric.",
+                    "pattern": "[a-zA-Z0-9]$"
+                },
+                {
+                    "description": "There must not be two adjacent hyphens in protocol name.",
+                    "not": {
+                        "pattern": "--"
+                    }
+                }
+            ]
+        },
+        "SourceTargetTag": {
+            "description": "Tag name must contain only alphanumeric, underscore and minus sign.\n\nFor semantics and taxonomy see [[IDEA/Classifications#SourceTargetTag|source/target classification]].",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "NodeTag": {
+            "description": "Tag name must contain only alphanumeric, underscore and minus sign.\n\nFor semantics and taxonomy see [[IDEA/Classifications#NodeTag|classification of detection nodes]].",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "AttachmentTag": {
+            "description": "Tag name must contain only alphanumeric, underscore and minus sign.\n\nFor semantics and taxonomy see [[IDEA/Classifications#AttachmentTag|attachment description]].",
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+        }
+    },
+    "properties": {
+        "Format": {
+            "description": "Identifier of the IDEA container.",
+            "$ref": "#/definitions/Version"
+        },
+        "ID": {
+            "description": "Unique message identifier.",
+            "$ref": "#/definitions/ID"
+        },
+        "AltNames": {
+            "description": "Array of alternative identifiers.",
+            "type": "array",
+            "items": {
+                "description": "Alternative identifiers; strings which help to pair the event to internal system information (for example tickets in request tracker systems).",
+                "type": "string"
+            }
+        },
+        "CorrelID": {
+            "description": "Array of correlated messages identifiers.",
+            "type": "array",
+            "items": {
+                "description": "Identifiers of messages, which are information sources for creation of this message in case the message has been created based on correlation/analysis/deduction of other messages.",
+                "$ref": "#/definitions/ID"
+            }
+        },
+        "AggrID": {
+            "description": "Array of aggregated messages identifiers.",
+            "type": "array",
+            "items": {
+                "description": "Identifiers of messages, which are aggregated into more concise form by this message. Should be sent mostly by intermediary nodes, which detect duplicates, or aggregate events, spanning multiple detection windows, into one longer.",
+                "$ref": "#/definitions/ID"
+            }
+        },
+        "PredID": {
+            "description": "Array of obsoleted messages identifiers.",
+            "type": "array",
+            "items": {
+                "description": "Identifiers of messages, which are obsoleted and information in them is replaced by this message. Should be sent only by detection nodes to incorporate further data about ongoing event.",
+                "$ref": "#/definitions/ID"
+            }
+        },
+        "RelID": {
+            "description": "Array of related messages identifiers.",
+            "type": "array",
+            "items": {
+                "description": "Otherwise related messages.",
+                "$ref": "#/definitions/ID"
+            }
+        },
+        "CreateTime": {
+            "description": "Timestamp of the creation of the IDEA message. May point out delay between detection and processing of data.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "DetectTime": {
+            "description": "Timestamp of the moment of detection of event (not necessarily time of the event taking place). This timestamp is mandatory, because every detector is able to know when it detected the information - for example when line about event appeared in the logfile, or when its information source says the event was detected, or at least when it accepted the information from the source.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "EventTime": {
+            "description": "Deduced start of the event/attack, or just time of the event if its solitary.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "CeaseTime": {
+            "description": "Deduced end of the event/attack.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "WinStartTime": {
+            "description": "Beginning of aggregation window in which event has been observed.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "WinEndTime": {
+            "description": "End of aggregation window in which event has been observed.",
+            "$ref": "#/definitions/Timestamp"
+        },
+        "ConnCount": {
+            "description": "Number of individual connections attempted or taken place.",
+            "$ref": "#/definitions/Integer"
+        },
+        "FlowCount": {
+            "description": "Number of individual simplex (one direction) flows.",
+            "$ref": "#/definitions/Integer"
+        },
+        "PacketCount": {
+            "description": "Number of individual packets transferred.",
+            "$ref": "#/definitions/Integer"
+        },
+        "ByteCount": {
+            "description": "Number of bytes transferred.",
+            "$ref": "#/definitions/Integer"
+        },
+        "Category": {
+            "description": "Array of event categories.",
+            "type": "array",
+            "items": {
+                "description": "Category of event.",
+                "$ref": "#/definitions/EventTag"
+            }
+        },
+        "Ref": {
+            "description": "Array of references.",
+            "type": "array",
+            "items": {
+                "description": "References to known sources, related to attack and/or vulnerability. May be URL of the additional info, or URN (according to [[http://tools.ietf.org/html/rfc2141|RFC 2141]]) in registered namespace ([[http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml|IANA]]) or unregistered ad-hoc namespace bearing reasonable information value and uniqueness, such as \"urn:cve:CVE-2013-5634\".",
+                "$ref": "#/definitions/URI"
+            }
+        },
+        "Confidence": {
+            "description": "Confidence of detector in its own reliability of this particular detection. (0 – surely false, 1 – no doubts). If key is not presented, detector does not know (or has no capability to estimate the confidence).",
+            "type": "number",
+            "maximum": 1,
+            "minimum": 0
+        },
+        "Description": {
+            "description": "Short free text human readable description.",
+            "type": "string"
+        },
+        "Note": {
+            "description": "Free text human readable addidional note, possibly longer description of incident if not obvious.",
+            "type": "string"
+        },
+        "Source": {
+            "type": "array",
+            "description": "Array of source or target descriptions.",
+            "items": {
+                "description": "Information concerning particular source or target.",
+                "type": "object",
+                "properties": {
+                    "Type": {
+                        "description": "Array of source/target categories.",
+                        "type": "array",
+                        "items": {
+                            "description": "Closer category of source/target.",
+                            "$ref": "#/definitions/SourceTargetTag"
+                        }
+                    },
+                    "Hostname": {
+                        "description": "Array of hostnames.",
+                        "type": "array",
+                        "items": {
+                            "description": "Hostname of this source/target. Should be FQDN, but may not conform exactly, because values, extracted from logs, messages, DNS, etc. may themselves be malformed. Empty array can be used to explicitly indicate that value has been inquired and not found (missing DNS name).",
+                            "type": "string"
+                        }
+                    },
+                    "IP4": {
+                        "description": "Array of IPv4 addresses.",
+                        "type": "array",
+                        "items": {
+                            "description": "IPv4 addresses of this source/target.",
+                            "$ref": "#/definitions/Net4"
+                        }
+                    },
+                    "MAC": {
+                        "description": "Array of MAC addresses.",
+                        "type": "array",
+                        "items": {
+                            "description": "MAC addresses of this source/target.",
+                            "$ref": "#/definitions/MAC"
+                        }
+                    },
+                    "IP6": {
+                        "description": "Array of IPv6 addresses.",
+                        "type": "array",
+                        "items": {
+                            "description": "IPv6 addresses of this source/target.",
+                            "$ref": "#/definitions/Net6"
+                        }
+                    },
+                    "Port": {
+                        "description": "Array of port numbers.",
+                        "type": "array",
+                        "items": {
+                            "description": "Source or destination ports affected.",
+                            "$ref": "#/definitions/Integer"
+                        }
+                    },
+                    "Proto": {
+                        "description": "Array of protocol names.",
+                        "type": "array",
+                        "items": {
+                            "description": "Protocols, concerning connections from/to this source/target.",
+                            "$ref": "#/definitions/ProtocolName"
+                        }
+                    },
+                    "URL": {
+                        "description": "Array of URLs.",
+                        "type": "array",
+                        "items": {
+                            "description": "Unified Resource Locator of this source/target. Should be formatted according to [[http://tools.ietf.org/html/rfc1738|RFC 1738]], [[http://tools.ietf.org/html/rfc1808|RFC 1808]] and related, however may not conform exactly, because values, extracted from logs, messages, etc. may themselves be malformed.",
+                            "type": "string"
+                        }
+                    },
+                    "Email": {
+                        "description": "Array of email addresses.",
+                        "type": "array",
+                        "items": {
+                            "description": "Email address (for example Reply-To address in phishing message). Should be formatted according to [[http://tools.ietf.org/html/rfc5322#section-3.4|RFC 5322, section 3.4]] and related, however may not conform exactly, because values, extracted from logs, messages, DNS, etc. may themselves be malformed.",
+                            "type": "string"
+                        }
+                    },
+                    "AttachHand": {
+                        "description": "Array of attachment identifiers.",
+                        "type" : "array",
+                        "items": {
+                            "description": "Identifiers of attachments related to this source/target - contain \"Handle\"s of related attachments.",
+                            "$ref": "#/definitions/Handle"
+                        }
+                    },
+                    "Note": {
+                        "description": "Free text human readable additional note.",
+                        "type": "string"
+                    },
+                    "Spoofed": {
+                        "description": "Establishes whether this source/target is forged.",
+                        "$ref": "#/definitions/Boolean"
+                    },
+                    "Imprecise": {
+                        "description": "Establishes whether this source/target is knowingly imprecise.",
+                        "$ref": "#/definitions/Boolean"
+                    },
+                    "Anonymised": {
+                        "description": "Establishes whether this source/target is willingly incomplete.",
+                        "$ref": "#/definitions/Boolean"
+                    },
+                    "ASN": {
+                        "description": "Autonomous system numbers.",
+                        "type": "array",
+                        "items": {
+                            "description": "Autonomous system number of this source/target.",
+                            "$ref": "#/definitions/Integer"
+                        }
+                    },
+                    "Router": {
+                        "description": "Array of router/interface paths.",
+                        "type": "array",
+                        "items": {
+                            "description": "Router/interface path information. Intentionally organisation specific, router identifiers have usually no clear meaning outside organisational unit.",
+                            "type": "string"
+                        }
+                    },
+                    "Netname": {
+                        "description": "Array of RIR network identifiers.",
+                        "type": "array",
+                        "items": {
+                            "description": "RIR database reference network identifier (for example \"ripe:CESNET-BB2\" or \"arin:WETEMAA\"). Common network identifiers are: ripe, arin, apnic, lacnic, afrinic. Empty array can be used to explicitly indicate that value has been inquired and not found (IP address from unassigned block).",
+                            "$ref": "#/definitions/Netname"
+                        }
+                    },
+                    "Ref": {
+                        "description": "Array of references.",
+                        "type": "array",
+                        "items": {
+                            "description": "References to known sources, related to attack and/or vulnerability, specific to this source/target. May be URL of the additional info, or URN (according to [[http://tools.ietf.org/html/rfc2141|RFC 2141]]) in registered namespace ([[http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml|IANA]]) or unregistered ad-hoc namespace bearing reasonable information value and uniqueness, such as \"urn:cve:CVE-2013-2266\".",
+                            "$ref": "#/definitions/URI"
+                        }
+                    }
+                }
+            }
+        },
+        "Target": {
+            "$ref": "#/properties/Source"
+        },
+        "Attach": {
+            "description": "Array of attachment descriptions.",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "description": "Additional attachment information and data.",
+                "properties": {
+                    "Handle": {
+                        "description": "Message unique identifier for reference through Attach elements.",
+                        "$ref": "#/definitions/Handle"
+                    },
+                    "FileName": {
+                        "description": "Array of filenames.",
+                        "type": "array",
+                        "items": {
+                            "description": "Names of the attached file.",
+                            "type": "string"
+                        }
+                    },
+                    "Type": {
+                        "description": "Array of attachment type tags.",
+                        "type": "array",
+                        "items": {
+                            "description": "Type of the attached data.",
+                            "$ref": "#/definitions/AttachmentTag"
+                        }
+                    },
+                    "Hash": {
+                        "description": "Array of checksums.",
+                        "type": "array",
+                        "items": {
+                            "description": "Checksum of the content (for example \"sha1:794467071687f7c59d033f4de5ece6b46415b633\" or \"md5:dc89f0b4ff9bd3b061dd66bb66c991b1\").",
+                            "$ref": "#/definitions/Hash"
+                        }
+                    },
+                    "Size": {
+                        "description": "Length of the content.",
+                        "$ref": "#/definitions/Integer"
+                    },
+                    "Ref": {
+                        "description": "Array of references.",
+                        "type": "array",
+                        "items": {
+                            "description": "References to known sources, related to attack and/or vulnerability, specific to this attachment. May be URL of the additional info, or URN (according to [[http://tools.ietf.org/html/rfc2141|RFC 2141]]) in registered namespace ([[http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml|IANA]]) or unregistered ad-hoc namespace bearing reasonable information value and uniqueness, such as \"urn:clamav:Win.Trojan.Banker-14334\".",
+                            "$ref": "#/definitions/URI"
+                        }
+                    },
+                    "Note": {
+                        "description": "Free text human readable additional note.",
+                        "type": "string"
+                    },
+                    "ContentType": {
+                        "description": "Internet Media Type of the attachment, according to [[http://tools.ietf.org/html/rfc2046|RFC 2046]] and related. Along with [[http://www.iana.org/assignments/media-types/media-types.xhtml|types standardized by IANA]] also non standard but widely used media types can be used (for examples see [[http://www.freeformatter.com/mime-types-list.html|MIME types list at freeformatter.com]]).",
+                        "$ref": "#/definitions/MediaType"
+                    },
+                    "ContentCharset": {
+                        "description": "Name of the content character set according to [[http://www.iana.org/assignments/character-sets/character-sets.xhtml|IANA list]]. If key is not defined, unspecified binary encoding is assumed.",
+                        "$ref": "#/definitions/Charset"
+                    },
+                    "ContentEncoding": {
+                        "description": "Encoding of the content, if feasible. Nonexistent key means native JSON encoding.",
+                        "$ref": "#/definitions/Encoding"
+                    },
+                    "Content": {
+                        "description": "Attachment content.",
+                        "type": "string"
+                    },
+                    "ContentID": {
+                        "description": "Array of external content IDs.",
+                        "type": "array",
+                        "items": {
+                            "description": "If content of attachment is transferred separately (in underlaying container), this key contains external ID of the content, so it can be paired back to message.",
+                            "type": "string"
+                        }
+                    },
+                    "ExternalURI": {
+                        "description": "Array of external URIs.",
+                        "type": "array",
+                        "items": {
+                            "description": "If content of attachment is available and/or recognizable from external source, this is defining URI (usually URL). May also be URN (according to [[http://tools.ietf.org/html/rfc2141|RFC 2141]]) in registered namespace ([[http://www.iana.org/assignments/urn-namespaces/urn-namespaces.xhtml|IANA]]) or unregistered ad-hoc namespace bearing reasonable information value and uniqueness, such as \"urn:mhr:55eaf7effadc07f866d1eaed9c64e7ee49fe081a\", \"magnet:?xt=urn:sha1:YNCKHTQCWBTRNJIV4WNAE52SJUQCZO5C\".",
+                            "$ref": "#/definitions/URI"
+                        }
+                    }
+                }
+            }
+        },
+        "Node": {
+            "description": "Array of detector descriptions.",
+            "type": "array",
+            "items": {
+                "description": "Detector or possible intermediary (event aggregator, correlator, etc.) description.",
+                "type": "object",
+                "properties": {
+                    "Name": {
+                        "description": "Name of the detector, which must be reasonably unique, however still bear some meaningful sense. Usually denotes hierarchy of organisational units which detector belongs to and its own name.",
+                        "$ref": "#/definitions/NSID"
+                    },
+                    "Type": {
+                        "description": "Array of detection node types.",
+                        "type": "array",
+                        "items": {
+                            "description": "Tag, describing various facets of the detector.",
+                            "$ref": "#/definitions/NodeTag"
+                        }
+                    },
+                    "SW": {
+                        "description": "Array of detection software names.",
+                        "type": "array",
+                        "items": {
+                            "description": "The name of the detection software (optionally including version). For example \"labrea-2.5-stable-1\" or \"HP !TippingPoint 7500NX\".",
+                            "type": "string"
+                        }
+                    },
+                    "AggrWin": {
+                        "description": "The size of the aggregation window, if applicable.",
+                        "$ref": "#/definitions/Duration"
+                    },
+                    "Note": {
+                        "description": "Free text human readable additional description.",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
