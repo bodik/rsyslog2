@@ -66,12 +66,17 @@ class warden3::2rediser (
 		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_2rediser.init",
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_2rediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_2rediser.py"], Exec["register warden_2rediser sensor"]],
+		notify => Exec["systemd_reload"],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "warden_2rediser": 
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => File["/etc/init.d/warden_2rediser"],
+		require => [File["/etc/init.d/warden_2rediser"], Exec["systemd_reload"]],
 	}
 
 

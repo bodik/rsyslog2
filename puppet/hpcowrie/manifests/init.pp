@@ -175,12 +175,11 @@ class hpcowrie (
 		content => template("${module_name}/cowrie.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/cowrie.cfg"],
-		notify => Service["cowrie"],
+		notify => [Service["cowrie"], Exec["systemd_reload"]]
 	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
-		notify => Exec["systemd_reload"],
 	}
 	service { "cowrie": 
 		enable => true,
