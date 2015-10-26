@@ -180,6 +180,7 @@ class hpcowrie (
 	service { "cowrie": 
 		enable => true,
 		ensure => running,
+		provider => init,
 		require => File["/etc/init.d/cowrie"],
 	}
 

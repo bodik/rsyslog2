@@ -70,6 +70,7 @@ class warden3::2rediser (
 	service { "warden_2rediser": 
 		enable => true,
 		ensure => running,
+		provider => init,
 		require => File["/etc/init.d/warden_2rediser"],
 	}
 
