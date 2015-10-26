@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 /usr/lib/nagios/plugins/check_procs --argument-array=/usr/local/bin/glastopf-runner -c 1:1
 if [ $? -ne 0 ]; then

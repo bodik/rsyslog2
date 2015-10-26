@@ -31,60 +31,31 @@ class hpglastopf (
 	#glastopf instal
 	package { 
 		["python", "python-openssl", "python-gevent", "libevent-dev", "python-dev", "build-essential", "make",
-		"python-argparse", "python-chardet", "python-requests", "python-sqlalchemy", "python-lxml",
-		"python-beautifulsoup", "python-pip", "python-setuptools",
-		"g++", "git", "php5", "php5-dev", "liblapack-dev", "gfortran",
-		"libxml2-dev", "libxslt1-dev",
-		"libmysqlclient-dev",
+		"python-chardet", "python-requests", "python-sqlalchemy", "python-lxml",
+		"python-beautifulsoup", "python-pip", "python-setuptools", "python-greenlet",
+		"g++", "git", "php5", "php5-dev", "liblapack-dev", "gfortran", "libxml2-dev", "libxslt1-dev", "libmysqlclient-dev",
+		"rsyslog"
 		]: 
 		ensure => installed,
 	}
 
-	#package { "distribute":
-	#	ensure => latest,
-	#	provider => "pip",
-	#	require => Package["python-pip"],
-	#}
-	#package { "greenlet":
-	#	ensure => latest,
-	#	provider => "pip",
-	#	require => Package["python-pip"],
-	#}
-	#pip provider just stopper to work with
-	#Could not evaluate: Could not get latest version: HTTP-Error: 503 Service Temporarily Unavailable
-	exec { "pip install distribute":
-		command => "/usr/bin/pip install --upgrade distribute",
-		creates => "/usr/local/lib/python2.7/dist-packages/distribute-0.7.3-py2.7.egg-info/installed-files.txt"
-	}
-	exec { "pip install greenlet":
-		command => "/usr/bin/pip install --upgrade greenlet",
-		creates => "/usr/local/lib/python2.7/dist-packages/greenlet.so"
-	}
-	
-
-	$api_version = "20100525"
-	exec { "/puppet/glastopf/bin/make-bfr.sh":
-		command => "/bin/sh /puppet/glastopf/bin/make-bfr.sh",
+	$api_version = "20131226"
+	exec { "/puppet/hpglastopf/bin/make-bfr.sh":
+		command => "/bin/sh /puppet/hpglastopf/bin/make-bfr.sh",
 		creates => "/usr/lib/php5/${api_version}/bfr.so",
 		require => Package["php5-dev"],
 	}
 	
-	file { "/etc/php5/conf.d/bfr.ini":
+	file { "/etc/php5/cli/conf.d/bfr.ini":
 		content => template("${module_name}/bfr.ini.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => [Package["php5"], Exec["/puppet/glastopf/bin/make-bfr.sh"]],
+		require => [Package["php5"], Exec["/puppet/hpglastopf/bin/make-bfr.sh"]],
 	}
 
-	#err: Could not prefetch package provider 'pip':
-	#package { "glastopf":
-	#	ensure => installed,
-	#	provider => "pip",
-	#	require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"]],
-	#}
 	exec { "pip install glastopf":
                 command => "/usr/bin/pip install glastopf",
                 creates => "/usr/local/lib/python2.7/dist-packages/glastopf/glastopf.cfg.dist",
-		require => [Package["python-pip"], File["/etc/php5/conf.d/bfr.ini"], Package["python-dev"]],
+		require => [Package["python-pip", "python-setuptools", "python-dev"], File["/etc/php5/cli/conf.d/bfr.ini"]],
         }
 
 	file { "/usr/local/lib/python2.7/dist-packages/glastopf/modules/handlers/emulators/data":
@@ -115,7 +86,11 @@ class hpglastopf (
 	file { "/etc/init.d/glastopf":
 		ensure => link,
 		target => "${install_dir}/glastopf.init",
-		require => File["${install_dir}/glastopf.init"],
+		require => [File["${install_dir}/glastopf.init"], Exec["systemd_reload"]],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	file { "${install_dir}/glastopf.cfg":
 		content => template("${module_name}/glastopf.cfg"),
@@ -136,7 +111,9 @@ class hpglastopf (
 	}
 	service { "glastopf":
 		ensure => running,
-		require => [File["${install_dir}/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"]],
+		enable => true,
+		provider => init,
+		require => [File["${install_dir}/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"], Exec["systemd_reload"]],
 	}
 
 
