@@ -177,11 +177,16 @@ class hpcowrie (
 		require => File["${install_dir}/cowrie.cfg"],
 		notify => Service["cowrie"],
 	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
+		notify => Exec["systemd_reload"],
+	}
 	service { "cowrie": 
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => File["/etc/init.d/cowrie"],
+		require => [File["/etc/init.d/cowrie"], Exec["systemd_reload"]],
 	}
 
 
