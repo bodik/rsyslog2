@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hpdio'
+pa.sh -e 'include hpdio'
 

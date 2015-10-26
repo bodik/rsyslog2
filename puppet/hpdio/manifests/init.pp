@@ -58,11 +58,12 @@ class hpdio (
 		content => template("${module_name}/p0f.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => Package["p0f"],
+		notify => [Service["p0f"], Exec["systemd_reload"]]
 	}
 	service { "p0f": 
 		enable => true,
 		ensure => running,
-		require => [ File["/etc/init.d/p0f"], Package["p0f"]],
+		require => [File["/etc/init.d/p0f"], Package["p0f"], Exec["systemd_reload"]],
 	}
 
 
@@ -76,6 +77,7 @@ class hpdio (
 		content => template("${module_name}/dio.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}/var"], File["/etc/init.d/p0f"]],
+		notify => [Service["dio"], Exec["systemd_reload"]]
 	}
 	file { "${install_dir}/etc/dionaea/dionaea.conf":
 		content => template("${module_name}/dionaea.conf.erb"),
@@ -98,10 +100,15 @@ class hpdio (
 		target => "${install_dir}/etc/dionaea/${fqdn}.crt",
 		require => Exec["install selfcert"],
 	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
+	}
 	service { "dio": 
 		enable => true,
 		ensure => running,
-		require => [ File["/etc/init.d/dio"], File["${install_dir}/etc/dionaea/dionaea.conf"], File["${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"] ],
+		provider => init,
+		require => [File["/etc/init.d/dio", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], Exec["systemd_reload"]],
 	}
 
 

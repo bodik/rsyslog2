@@ -1,4 +1,4 @@
-<%= install_dir %>/var/log/dionaea.log {
+<%= @install_dir %>/var/log/dionaea.log {
     weekly
     missingok
     rotate 52
@@ -8,7 +8,7 @@
     endscript
 }
 
-<%= install_dir %>/var/dionaea/logsql.sqlite {
+<%= @install_dir %>/var/dionaea/logsql.sqlite {
     yearly
     missingok
     rotate 10

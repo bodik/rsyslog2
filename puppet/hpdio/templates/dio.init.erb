@@ -10,10 +10,10 @@
 
 NAME="dionaea"
 
-BASE="<%= install_dir %>"
+BASE="<%= @install_dir %>"
 OPTIONS=""
-USER="<%= dio_user %>"
-GROUP="<%= dio_user %>"
+USER="<%= @dio_user %>"
+GROUP="<%= @dio_user %>"
 PIDFILE="$BASE/var/$NAME.pid"
 
 cd $BASE
