@@ -46,12 +46,17 @@ class hpelastichoney (
 		content => template("${module_name}/elastichoney.init.erb"),
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
 		require => File["${install_dir}/elastichoney", "${install_dir}/warden_client-elastichoney.cfg", "${install_dir}/config.json"],
-		notify => Service["elastichoney"],
+		notify => [Service["elastichoney"], Exec["systemd_reload"]],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "elastichoney": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/elastichoney", "${install_dir}/elastichoney"],
+		provider => init,
+		require => [File["/etc/init.d/elastichoney", "${install_dir}/elastichoney"], Exec["systemd_reload"]],
 	}
 
 

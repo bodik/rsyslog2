@@ -10,12 +10,12 @@
 ### END INIT INFO
 
 
-BASE=<%= install_dir %>
+BASE=<%= @install_dir %>
 NAME="elastichoney"
 PIDFILE="/var/run/elastichoney.pid"
 DAEMON="${BASE}/elastichoney"
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 cd $BASE || exit 1
 
@@ -36,7 +36,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		su -c "${DAEMON} -config=\"config.json\" -verbose=true  1>elastichoney.console.log 2>&1 &" <%= elastichoney_user %>
+		su -c "${DAEMON} -config=\"config.json\" -verbose=true  1>elastichoney.console.log 2>&1 &" <%= @elastichoney_user %>
 	        echo $! > $PIDFILE
 
 	        echo "done"

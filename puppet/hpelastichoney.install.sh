@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hpelastichoney'
+pa.sh -e 'include hpelastichoney'
 

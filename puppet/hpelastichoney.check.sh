@@ -2,8 +2,8 @@ if [ -f /opt/elastichoney/elastichoney ]; then
         echo "INFO: HPELASTICHONEYCHECK ======================="
 
         for all in hpelastichoney; do
-                echo "INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include $all\""
-                puppet apply -v --noop --show_diff --modulepath=/puppet -e "include $all"
+                echo "INFO: pa.sh -v --noop --show_diff -e \"include $all\""
+                pa.sh -v --noop --show_diff -e "include $all"
         done
 
 fi
