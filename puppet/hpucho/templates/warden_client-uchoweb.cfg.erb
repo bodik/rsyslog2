@@ -1,10 +1,10 @@
 {
     "warden": "warden_client.cfg",
-    "name": "<%= fqdn_rev %>.uchoweb",
+    "name": "<%= @fqdn_rev %>.uchoweb",
 
     "anonymised": "yes",
-    "target_net": "<%= anonymised_target_net %>",
+    "target_net": "<%= @anonymised_target_net %>",
 
-    "port": <%= port %>,
-    "personality": "<%= personality %>"
+    "port": <%= @port %>,
+    "personality": "<%= @personality %>"
 }

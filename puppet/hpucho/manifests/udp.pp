@@ -38,11 +38,17 @@ class hpucho::udp (
 		content => template("${module_name}/uchoudp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/uchoudp.py", "${install_dir}/warden_client-uchoudp.cfg"],
+		notify => [Service["uchoudp"], Exec["systemd_reload"]]
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "uchoudp": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/uchoudp", "${install_dir}/uchoudp.py"],
+		provider => init,
+		require => [File["/etc/init.d/uchoudp", "${install_dir}/uchoudp.py"], Exec["systemd_reload"]],
 	}
 
 

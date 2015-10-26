@@ -10,12 +10,12 @@
 ### END INIT INFO
 
 
-BASE=<%= install_dir %>
+BASE=<%= @install_dir %>
 NAME="uchoweb"
 PYTHON=`which python`
 PIDFILE="/var/run/uchoweb.pid"
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 cd $BASE || exit 1
 

@@ -1,6 +1,6 @@
 #!/bin/sh 
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 INSTALL_DIR=/opt/uchoudp
 

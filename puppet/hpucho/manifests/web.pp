@@ -51,12 +51,17 @@ class hpucho::web (
 		content => template("${module_name}/uchoweb.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}/uchoweb.py", "${install_dir}/warden_client-uchoweb.cfg"], Exec["content"]],
+		notify => [Service["uchoweb"], Exec["systemd_reload"]]
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "uchoweb": 
 		enable => true,
 		ensure => running,
-		provider  => "init",
-		require => File["/etc/init.d/uchoweb"],
+		provider  => init,
+		require => [File["/etc/init.d/uchoweb"], Exec["systemd_reload"]]
 	}
 
 

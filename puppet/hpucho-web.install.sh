@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hpucho::web'
+pa.sh -e 'include hpucho::web'
 

@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hpucho::udp'
+pa.sh -e 'include hpucho::udp'
 

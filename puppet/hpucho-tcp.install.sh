@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hpucho::tcp'
+pa.sh -e 'include hpucho::tcp'
 
