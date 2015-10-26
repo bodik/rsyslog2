@@ -1,3 +1,3 @@
-puppet apply --modulepath=/puppet -e 'include hpglastopf'
+pa.sh -e 'include hpglastopf'
 
 
