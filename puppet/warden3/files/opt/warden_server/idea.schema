@@ -72,7 +72,7 @@
         "NSID": {
             "description": "Namespaced identifier. Dot separated list of labels, with significance from left to right – leftmost denoting largest containing realm, rightmost denoting single entity. Country – organisation – suborganizations – machine – local scheme akin to \"org.example.csirt.northwest.honeypot.jabberwock\" is strongly recommended. Label case is insignificant, label can contain only letters, numbers or underscore and must not start with number.",
             "type": "string",
-            "pattern": "^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$"
+            "pattern": "^(?:[a-zA-Z_][a-zA-Z0-9_-]*\\.)*[a-zA-Z_][a-zA-Z0-9_-]*$"
         },
         "MAC": {
             "description": "String, containing MAC address in human friendly form - six groups of two hexadecimal digits, separated by colon.",
