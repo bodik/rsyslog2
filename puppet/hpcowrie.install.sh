@@ -1,5 +1,5 @@
 
-puppet apply --modulepath=/puppet -e 'include hpcowrie'
+pa.sh -e 'include hpcowrie'
 
 TCNT=$(mysql -NBe "show tables;" cowrie 2>/dev/null | wc -l)
 if [ $TCNT -lt "2" ]; then

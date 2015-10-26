@@ -24,13 +24,13 @@
 # To listen to IPv6, set this to "::"
 #
 # (default: 2222)
-listen_port = <%= cowrie_port %>
+listen_port = <%= @cowrie_port %>
 
 # Hostname for the honeypot. Displayed by the shell prompt of the virtual
 # environment.
 #
 # (default: svr04)
-hostname = <%= hostname %>
+hostname = <%= @hostname %>
 
 # Directory where to save log files in.
 #
@@ -169,7 +169,7 @@ sftp_enabled = true
 # SSH-2.0-OpenSSH_5.9
 #
 # (default: "SSH-2.0-SSH-2.0-OpenSSH_6.0p1 Debian-4+deb7u2")
-ssh_version_string = <%= cowrie_ssh_version_string_real %>
+ssh_version_string = <%= @cowrie_ssh_version_string_real %>
 
 # Banner file to be displayed before the first login attempt.
 #
@@ -193,11 +193,11 @@ interact_port = 5123
 # [database_mysql] line.
 
 [database_mysql]
-host=<%= mysql_host %>
-database=<%= mysql_db %>
-username=<%= mysql_user %>
-password=<%= mysql_password_real %>
-port=<%= mysql_port %>
+host=<%= @mysql_host %>
+database=<%= @mysql_db %>
+username=<%= @mysql_user %>
+password=<%= @mysql_password_real %>
+port=<%= @mysql_port %>
 
 # XMPP Logging
 #
