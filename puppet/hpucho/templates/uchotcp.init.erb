@@ -10,12 +10,12 @@
 ### END INIT INFO
 
 
-BASE=<%= install_dir %>
+BASE=<%= @install_dir %>
 NAME="uchotcp"
 PYTHON=`which python`
 PIDFILE="/var/run/uchotcp.pid"
 
-. /puppet/metalib/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 cd $BASE || exit 1
 ulimit -n 65535

@@ -38,11 +38,17 @@ class hpucho::tcp (
 		content => template("${module_name}/uchotcp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}/uchotcp.py", "${install_dir}/warden_client-uchotcp.cfg"],
+		notify => [Service["uchotcp"], Exec["systemd_reload"]]
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "uchotcp": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/uchotcp", "${install_dir}/uchotcp.py"],
+		provider => init,
+		require => [File["/etc/init.d/uchotcp", "${install_dir}/uchotcp.py"], Exec["systemd_reload"]]
 	}
 
 
