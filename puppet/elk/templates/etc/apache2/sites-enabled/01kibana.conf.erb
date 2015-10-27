@@ -1,0 +1,14 @@
+# File Managed by Puppet
+<VirtualHost *:80>
+    ServerAdmin webmaster@<%= @fqdn %>
+    DocumentRoot /opt/kibana
+    ServerName <%= @fqdn %>
+
+    ErrorLog  /var/log/apache2/kibana-error_log
+    CustomLog /var/log/apache2/kibana-access_log common
+
+    <Directory /opt/kibana>
+    	Require all granted
+    </Directory>
+</VirtualHost>
+

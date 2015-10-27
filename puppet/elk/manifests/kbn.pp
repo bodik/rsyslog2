@@ -21,51 +21,59 @@
 class elk::kbn (
 	$kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200',
 	$kibana_version = "3.1.0",
-	$kibana_webserver = "apache",
+	$install_dir = "/opt/kibana",
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($kibana_webserver == false) {
-		$kibana_webserver_real = undef
-	} else {
-		$kibana_webserver_real = $kibana_webserver
+	class { 'elk::kbn_install':
+		kibana_version => $kibana_version,
+		install_dir => $install_dir,
 	}
-	class { 'kibana':
-		webserver => $kibana_webserver_real,
-		virtualhost => $fqdn,
-		version => $kibana_version,
-		
-		#tady v te casti je modul velmi osklivy
-		#jak s konfigurakem sem nevycetl ale meni mu prava na default 664
-		file_mode => "0644",
-	
+
+
+	package { "apache2": ensure => installed, }
+	service { "apache2": }
+	file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
+		ensure => absent,
+		require => Package["apache2"],
+		notify => Service["apache2"],
 	}
-	if ( $kibana_webserver_real ) {	
-		file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
-			ensure => absent,
-			require => Package["apache2"],
-			notify => Service["apache2"],
-		}
-	}
+	exec { "a2enmod ssl":
+                command => "/usr/sbin/a2enmod ssl",
+                unless => "/usr/sbin/a2query -m ssl",
+		require => Package["apache2"],
+                notify => Service["apache2"],
+        }
+	file { "/etc/apache2/sites-enabled/01kibana.conf":
+                content => template("${module_name}/etc/apache2/sites-enabled/01kibana.conf.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => [
+                        Package["apache2"],
+			Class["elk::kbn_install"],
+                        Exec["a2enmod ssl"],
+                        ],
+                notify => Service["apache2"],
+        }
+
 
 
 	file { "/opt/kibana/config.js":
 		content => template("${module_name}/opt/kibana/config.js.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
+		require => Class["elk::kbn_install"],
 	}
 
 	file { "/opt/kibana/dash.html":
 		content => template("${module_name}/opt/kibana/dash.html.erb"),
 		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
+		require => Class["elk::kbn_install"],
 		
 	}
 	file { "/opt/kibana/app/dashboards":
 		source => "puppet:///modules/${module_name}/opt/kibana/app/dashboards",
 		recurse => true,
 		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
+		require => Class["elk::kbn_install"],
 	}
 }
 
