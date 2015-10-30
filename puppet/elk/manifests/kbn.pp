@@ -32,36 +32,7 @@ class elk::kbn (
 		install_dir => $install_dir,
 	}
 
-
-	#apache svc
-	package { "apache2": ensure => installed, }
-	service { "apache2": }
-	file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
-		ensure => absent,
-		require => Package["apache2"],
-		notify => Service["apache2"],
-	}
-
-	#apache config
-	define a2enmod() {
-		exec { "a2enmod $name":
-	                command => "/usr/sbin/a2enmod $name",
-	                unless => "/usr/sbin/a2query -m $name",
-			require => Package["apache2"],
-	                notify => Service["apache2"],
-	        }
-	}
-	a2enmod { "ssl": }
-	file { "/etc/apache2/ssl":
-		ensure => directory,
-		owner => root, group => root, mode => 750,
-		require => Package["apache2"],
-	}
-	exec { "install_sslselfcert.sh":
-		command => "/bin/sh /puppet/metalib/bin/install_sslselfcert.sh /etc/apache2/ssl/",
-		creates => "/etc/apache2/ssl/${fqdn}.crt",
-		require => File["/etc/apache2/ssl"],
-	}
+	include metalib::apache2
 
 	if ($proxyto) {
 		$proxyto_real = $proxyto
@@ -73,22 +44,18 @@ class elk::kbn (
 	        }
 	}
         notice("will proxy to esd at $proxyto_real")
-	a2enmod { "proxy": }
-	a2enmod { "proxy_http": }
-
-
-	file { "/etc/apache2/sites-enabled/01kibana.conf":
-                content => template("${module_name}/etc/apache2/sites-enabled/01kibana.conf.erb"),
+	metalib::apache2::a2enmod { "proxy": }
+	metalib::apache2::a2enmod { "proxy_http": }
+	file { "/etc/apache2/rsyslog2.cloud.d/01kibana.conf":
+                content => template("${module_name}/etc/apache2/rsyslog2.cloud.d/01kibana.conf.erb"),
                 owner => "root", group => "root", mode => "0644",
                 require => [
-                        Package["apache2"],
-			Class["elk::kbn_install"],
-                        A2enmod["ssl", "proxy", "proxy_http"],
+			File["/etc/apache2/rsyslog2.cloud.d/"],
+                        Metalib::Apache2::A2enmod["proxy", "proxy_http"],
 			Exec["install_sslselfcert.sh"],
                         ],
                 notify => Service["apache2"],
         }
-
 
 
 	#kibana app config and customization
@@ -97,21 +64,10 @@ class elk::kbn (
 		owner => "root", group => "root", mode => "0644",
 		require => Class["elk::kbn_install"],
 	}
-	file { "/opt/kibana/dash.html":
-		source => "puppet:///modules/${module_name}/opt/kibana/dash.html",
-		owner => "root", group => "root", mode => "0644",
-		require => Class["elk::kbn_install"],
-	}
 	file { "/opt/kibana/app":
 		ensure => directory, recurse => true, purge => false, 
 		owner => "root", group => "root", mode => "0644",
 		source => "puppet:///modules/${module_name}/opt/kibana/app",
-		require => Class["elk::kbn_install"],
-	}
-	file { "/opt/kibana/dash":
-		ensure => directory, recurse => true, purge => false, 
-		owner => "root", group => "root", mode => "0644",
-		source => "puppet:///modules/${module_name}/opt/kibana/dash",
 		require => Class["elk::kbn_install"],
 	}
 }

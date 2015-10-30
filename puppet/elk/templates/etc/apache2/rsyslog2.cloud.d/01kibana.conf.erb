@@ -1,0 +1,8 @@
+# File Managed by Puppet
+Alias /kibana /opt/kibana
+<Directory /opt/kibana>
+	Require all granted
+</Directory>
+
+ProxyPass /head http://<%= @proxyto_real %>:39200
+ProxyPassReverse /head http://<%= @proxyto_real %>:39200
