@@ -59,7 +59,7 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 apache/kibana not running"
 fi
 
-wget --no-check-certificate "https://$(facter fqdn)" -q -O - | grep "<title>Kibana 3" 1>/dev/null
+wget --no-check-certificate "https://$(facter fqdn)/kibana/" -q -O - | grep "<title>Kibana 3" 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 kibana not found on webserver"
 fi

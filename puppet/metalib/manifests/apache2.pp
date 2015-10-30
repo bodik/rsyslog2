@@ -43,7 +43,7 @@ class metalib::apache2 {
 	file { "/opt/rsyslog2-www":
 		ensure => directory, recurse => true, purge => false,
 		source => "puppet:///modules/${module_name}/opt/rsyslog2-www/",
-		owner => "root", group => "root", mode => "0755",
+		owner => "root", group => "root", mode => "644",
 	}
 	file { "/etc/apache2/sites-enabled/01rsyslog2-sslhost.conf":
                 content => template("${module_name}/etc/apache2/sites-enabled/01rsyslog2-sslhost.conf.erb"),

@@ -11,6 +11,10 @@
 	SSLCertificateFile /etc/apache2/ssl/<%= @fqdn %>.crt
 	SSLCertificateChainFile /etc/apache2/ssl/cachain.pem
 
+	<Directory /opt/rsyslog2-www>
+		Require all granted
+	</Directory>
+
 	Include /etc/apache2/rsyslog2.cloud.d/*conf
 </VirtualHost>
 

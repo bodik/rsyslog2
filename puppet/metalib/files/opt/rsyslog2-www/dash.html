@@ -1,20 +1,9 @@
 <html>
 <head>
-
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-<script src="js/jquery-1.11.1.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-
-<script>
-$(document).ready(function() {
-	$('#doauthhostprofile').on('submit', function (e) {
-		alert(1);
-		document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofile').value
-	})
-}
-</script>
-
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -48,15 +37,15 @@ $(document).ready(function() {
 			<div class="panel-body">
 				<ul>
 					<li><a href="/dash.html">dash.html</a></li>
-					<li><a href="/index.html#/dashboard/file/logstashesb20.json">kibana3</a></li>
-					<li><a href="/index.html#/dashboard/file/fail2ban.json">kibana3 fail2ban</a></li>
-					<li><a href="/index.html#/dashboard/file/fail2ban-stats1.json">kibana3 fail2ban-stats1</a></li>
-					<li><a href="/index.html#/dashboard/file/modules.json">kibana3 modules analysis</a> </li>
-					<li><a href="/index.html#/dashboard/file/kibana3auth.json">kibana3 auth</a></li>
-					<li><a href="/index.html#/dashboard/file/kibana3auth-stats.json">kibana3 auth stats</a></li>
-					<li><a href="/index.html#/dashboard/file/kibana3auth-grokfail.json">kibana3 auth grokfail</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/logstashesb20.json">kibana3</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/fail2ban.json">kibana3 fail2ban</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/fail2ban-stats1.json">kibana3 fail2ban-stats1</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/modules.json">kibana3 modules analysis</a> </li>
+					<li><a href="/kibana/index.html#/dashboard/file/kibana3auth.json">kibana3 auth</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/kibana3auth-stats.json">kibana3 auth stats</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/kibana3auth-grokfail.json">kibana3 auth grokfail</a></li>
 					<li>
-<script>function authhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofile').value;}</script>
+<script>function authhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/kibana/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofile').value;}</script>
 <div role="form" class="form-inline">
   <div class="form-group">
     <label for="authhostprofile1">kibana3 auth-hostprofile</label>
@@ -77,12 +66,12 @@ $(document).ready(function() {
 			<div class="panel-heading">Netflow and basic IDS</div>
 			<div class="panel-body">
 				<ul>
-					<li><a href="/index.html#/dashboard/file/glastopf.json">kibana3 glastopf</a></li>
-					<li><a href="/index.html#/dashboard/file/nz.json">kibana3 nz</a></li>
-					<li><a href="/index.html#/dashboard/file/nz-basicqueries.json">kibana3 nz-basicqueries</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/glastopf.json">kibana3 glastopf</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/nz.json">kibana3 nz</a></li>
+					<li><a href="/kibana/index.html#/dashboard/file/nz-basicqueries.json">kibana3 nz-basicqueries</a></li>
 					<li>
 
-<script>function nzhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/nz-hostprofile.json?host='+document.getElementById('nzhostprofile').value;}</script>
+<script>function nzhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/kibana/index.html#/dashboard/file/nz-hostprofile.json?host='+document.getElementById('nzhostprofile').value;}</script>
 <div role="form" class="form-inline">
   <div class="form-group">
     <label for="nzhostprofile1">kibana3 nz-hostprofile</label>
@@ -105,14 +94,14 @@ $(document).ready(function() {
 			<div class="panel-heading">Wardenb</div>
 			<div class="panel-body">
 				<ul>
-					<li> <a href="/index.html#/dashboard/file/w3-wb.json">kibana3 wardenb</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-uchotcp.json">kibana3 wardenb uchotcp</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-uchoudp.json">kibana3 wardenb uchoudp</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-uchoweb.json">kibana3 wardenb uchoweb</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-kippo.json">kibana3 wardenb kippo</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-dio.json">kibana3 wardenb dio</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-glastopf.json">kibana3 wardenb glastopf</a> </li>
-					<li> <a href="/index.html#/dashboard/file/w3-elastichoney.json">kibana3 wardenb elastichoney</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-wb.json">kibana3 wardenb</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-uchotcp.json">kibana3 wardenb uchotcp</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-uchoudp.json">kibana3 wardenb uchoudp</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-uchoweb.json">kibana3 wardenb uchoweb</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-kippo.json">kibana3 wardenb kippo</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-dio.json">kibana3 wardenb dio</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-glastopf.json">kibana3 wardenb glastopf</a> </li>
+					<li> <a href="/kibana/index.html#/dashboard/file/w3-elastichoney.json">kibana3 wardenb elastichoney</a> </li>
 				</ul>
 			</div>
 		</div>
