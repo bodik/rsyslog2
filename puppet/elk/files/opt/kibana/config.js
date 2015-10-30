@@ -29,7 +29,7 @@ function (Settings) {
      *  +elasticsearch: {server: "http://localhost:9200", withCredentials: true}+
      *
      */
-    elasticsearch: "<%= @kibana_elasticsearch_url %>",
+    elasticsearch: "https://"+window.location.hostname+"/head",
 
     /** @scratch /configuration/config.js/5
      *

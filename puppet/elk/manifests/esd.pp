@@ -70,9 +70,6 @@ class elk::esd (
 	elasticsearch::plugin{'lmenezes/elasticsearch-kopf':
 		instances  => 'es01'
 	}
-	elasticsearch::plugin{'royrusso/elasticsearch-HQ':
-		instances  => 'es01'
-	}
 	elasticsearch::plugin{'lukas-vlcek/bigdesk':
 		instances  => 'es01'
 	}

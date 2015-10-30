@@ -1,0 +1,161 @@
+<html>
+<head>
+
+<link rel="stylesheet" href="dash/css/bootstrap.min.css">
+<link rel="stylesheet" href="dash/css/bootstrap-theme.min.css">
+<script src="dash/js/jquery-1.11.1.min.js"></script>
+<script src="dash/js/bootstrap.min.js"></script>
+
+<script>
+$(document).ready(function() {
+	$('#doauthhostprofile').on('submit', function (e) {
+		alert(1);
+		document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofile').value
+	})
+}
+</script>
+
+</head>
+<body>
+
+<nav class="navbar navbar-default">
+	<div class="container">
+        	<div class="navbar-header">
+			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Rsyslog2 dashboard</a>
+		</div>
+		<div id="navbar" class="collapse navbar-collapse">
+			<ul class="nav navbar-nav">
+				<li class="active"><a href="#home">Home</a></li>
+				<li><a href="#about">About</a></li>
+			</ul>
+		</div><!--/.nav-collapse -->
+	</div>
+</nav>
+
+<div class="container"> <!-- like main content container ??? -->
+
+<div class="row">
+
+        <div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Syslog basics</div>
+			<div class="panel-body">
+				<ul>
+					<li><a href="/dash.html">dash.html</a></li>
+					<li><a href="/index.html#/dashboard/file/logstashesb20.json">kibana3</a></li>
+					<li><a href="/index.html#/dashboard/file/fail2ban.json">kibana3 fail2ban</a></li>
+					<li><a href="/index.html#/dashboard/file/fail2ban-stats1.json">kibana3 fail2ban-stats1</a></li>
+					<li><a href="/index.html#/dashboard/file/modules.json">kibana3 modules analysis</a> </li>
+					<li><a href="/index.html#/dashboard/file/kibana3auth.json">kibana3 auth</a></li>
+					<li><a href="/index.html#/dashboard/file/kibana3auth-stats.json">kibana3 auth stats</a></li>
+					<li><a href="/index.html#/dashboard/file/kibana3auth-grokfail.json">kibana3 auth grokfail</a></li>
+					<li>
+<script>function authhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/kibana3auth-hostprofile.json?remote='+document.getElementById('authhostprofile').value;}</script>
+<div role="form" class="form-inline">
+  <div class="form-group">
+    <label for="authhostprofile1">kibana3 auth-hostprofile</label>
+    <input type="text" class="form-control" id="authhostprofile" name="authhostprofile" placeholder="ip">
+  </div>
+  <button class="btn btn-default" onclick='authhostprofile()'>Profile</button>
+</div>
+				
+					</li>
+					<li><a href="/rsyslogweb/">rsyslogweb</a></li>
+				</ul>
+			</div>
+		</div>
+        </div><!-- /.col-sm-6 -->
+
+        <div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Netflow and basic IDS</div>
+			<div class="panel-body">
+				<ul>
+					<li><a href="/index.html#/dashboard/file/glastopf.json">kibana3 glastopf</a></li>
+					<li><a href="/index.html#/dashboard/file/nz.json">kibana3 nz</a></li>
+					<li><a href="/index.html#/dashboard/file/nz-basicqueries.json">kibana3 nz-basicqueries</a></li>
+					<li>
+
+<script>function nzhostprofile(){document.location.href = location.protocol+"//"+window.location.hostname+'/index.html#/dashboard/file/nz-hostprofile.json?host='+document.getElementById('nzhostprofile').value;}</script>
+<div role="form" class="form-inline">
+  <div class="form-group">
+    <label for="nzhostprofile1">kibana3 nz-hostprofile</label>
+    <input type="text" class="form-control" id="nzhostprofile" name="nzhostprofile" placeholder="ip">
+  </div>
+  <button class="btn btn-default" onclick="nzhostprofile();">Profile</button>
+</div>
+
+					</li>
+				</ul>
+			</div>
+		</div>
+        </div><!-- /.col-sm-6 -->
+</div> <!-- row -->
+
+
+<div class="row">
+        <div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">Wardenb</div>
+			<div class="panel-body">
+				<ul>
+					<li> <a href="/index.html#/dashboard/file/w3-wb.json">kibana3 wardenb</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-uchotcp.json">kibana3 wardenb uchotcp</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-uchoudp.json">kibana3 wardenb uchoudp</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-uchoweb.json">kibana3 wardenb uchoweb</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-kippo.json">kibana3 wardenb kippo</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-dio.json">kibana3 wardenb dio</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-glastopf.json">kibana3 wardenb glastopf</a> </li>
+					<li> <a href="/index.html#/dashboard/file/w3-elastichoney.json">kibana3 wardenb elastichoney</a> </li>
+				</ul>
+			</div>
+		</div>
+        </div><!-- /.col-sm-6 -->
+
+        <div class="col-sm-6">
+		<div class="panel panel-default">
+			<div class="panel-heading">ES Cluster</div>
+			<div class="panel-body">
+				<ul>
+					<li><a href="/head">esd/esc</a></li>
+					<li><a href="/head/_template?pretty=true">/head/_template?pretty=true</a></li>
+					<li><a href="/head/_plugin/head/">/head/_plugin/head/</a> </li>
+					<li><a href="/head/_plugin/kopf/">/head/_plugin/kopf/</a> </li>
+					<li><a href="/head/_plugin/paramedic/">/head/_plugin/paramedic/</a> </li>
+					<li><a href="/head/_plugin/bigdesk/">/head/_plugin/bigdesk/</a> </li>
+				</ul>
+			</div>
+		</div>
+        </div><!-- /.col-sm-6 -->
+</div> <!-- row -->
+
+
+<div class="jumbotron" id="about">
+	<h2>About rsyslog2 -- Data processing suite at metacentrum.cz</h2>
+        <p class="lead">
+This software suite is designed to aid creating and maintaining
+data processing cloud within a realm of CESNET.CZ and beyond. It is based on
+masterless puppet and bash. Whole suite is bootsrapped from git to the clean
+provisioned Debian Jessie VM.
+	</p>
+	<h3>Acknowledgement</h3>
+	<p>
+Computational resources were provided by the MetaCentrum under the program
+LM2010005 and the CERIT-SC under the program Centre CERIT Scientific Cloud,
+part of the Operational Program Research and Development for Innovations, Reg.
+no. CZ.1.05/3.2.00/08.0144.
+	</p>
+	<h3>Documentation</h3>
+	<p><a href="https://github.com/bodik/rsyslog2">https://github.com/bodik/rsyslog2</a></p>
+</div>
+
+</div><!-- like main content container -->
+
+</body>
+</html>
