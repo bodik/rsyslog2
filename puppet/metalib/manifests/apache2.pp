@@ -1,8 +1,9 @@
 # == Class: metalib::apache2
 #
-# todo comment on default settings and sslvhost
+# Class will install apache2, create ssl virtualhost with selfsigned certificate
+# (if missing at default place) and put default dash appl into docroot
 #
-class metalib::apache2 {
+class metalib::apache2() {
 	package { "apache2": ensure => installed, }
 	service { "apache2": }
 	file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
