@@ -27,13 +27,13 @@ class mongomine::rsyslogweb (
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	package { ["apache2", "libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
+	class { "metalib::apache2": }
+
+	package { ["libapache2-mod-wsgi", "python-pip", "python-dateutil", "python-geoip"]:
 		ensure => installed,
 		notify => Service["apache2"],
 	}
-	service { "apache2": 
-		ensure => running,
-	}
+
 	package { ["bottle", "pymongo"]:
 		ensure => installed,
 		provider => "pip",	
@@ -46,17 +46,14 @@ class mongomine::rsyslogweb (
 		owner => "root", group => "root", mode => "0644",
 		notify => Service["apache2"],
 	}
-	exec { "a2enmod wsgi":
-		command => "/usr/sbin/a2enmod wsgi",
-		unless => "/usr/sbin/a2query -m wsgi",
+	metalib::apache2::a2enmod { "wsgi": 
 		require => Package["apache2", "libapache2-mod-wsgi"],
-		notify => Service["apache2"],
 	}
-	
-	file  { "/etc/apache2/conf-enabled/rsyslogweb.conf":
+		
+	file  { "/etc/apache2/rsyslog2.cloud.d/rsyslogweb.conf":
 		ensure => link,
 		target => "/opt/rsyslogweb/apache-proxy-bottle.conf",
-		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"], Exec["a2enmod wsgi"]],
+		require => [Package["libapache2-mod-wsgi"], File["/opt/rsyslogweb"],  Metalib::Apache2::A2enmod["wsgi"]],
 		notify => Service["apache2"],
 	}
 
