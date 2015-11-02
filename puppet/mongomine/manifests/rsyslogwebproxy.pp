@@ -38,7 +38,7 @@ class mongomine::rsyslogwebproxy (
 	}
 
 	file { "/opt/rsyslogwebproxy/rewritemap.txt":
-		content => "mongomine_server_real http://${mongomine_server_real}\n",
+		content => "mongomine_server_real https://${mongomine_server_real}\n",
 		owner => "root", group => "root", mode => "0644",
 		require => File["/opt/rsyslogwebproxy"],
 	}
