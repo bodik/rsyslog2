@@ -7,23 +7,13 @@ class gate {
         include metalib::fail2ban
         include iptables
 
-
-        # with rediser
-        include rediser
-        # esc on secondary interface
+	class { "rediser": }
+        # esc on secondary interface, eth1 should be discovered and prefered by kbn for /head proxy
         class { "elk::esc":
                 network_host =>  $ipaddress_eth1,
         }
-        class { "elk::kbn":
-                kibana_webserver => false,
-                kibana_elasticsearch_url => 'https://"+window.location.hostname+"/head'
-        }
+        class { "elk::kbn": }
 
-
-        #package apache2
-        ##package { "apache2": ensure => installed, }
-        # proxy config pass esc
         include metalib::apache2
         include mongomine::rsyslogwebproxy
-
 }
