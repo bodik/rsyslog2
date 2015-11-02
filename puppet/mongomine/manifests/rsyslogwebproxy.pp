@@ -47,7 +47,7 @@ class mongomine::rsyslogwebproxy (
 		owner => "root", group => "root", mode => "0644",
 		require => File["/opt/rsyslogwebproxy"],
 	}
-	file { "/opt/rsyslogwebproxy/rsyslogwebproxy.conf":
+	file { "/etc/apache2/rsyslog2.cloud.d/rsyslogwebproxy.conf":
 		source => "puppet:///modules/${module_name}/opt/rsyslogwebproxy/rsyslogwebproxy.conf",
 		owner => "root", group => "root", mode => "0644",
 		require => [File["/opt/rsyslogwebproxy"], Package["apache2"]],
@@ -55,19 +55,8 @@ class mongomine::rsyslogwebproxy (
 	}
 
 	include metalib::apache2
-	exec { "a2enmod rewrite":
-		command => "/usr/sbin/a2enmod rewrite",
-		unless => "/usr/sbin/a2query -m rewrite",
-		notify => Service["apache2"],
-	}
-	exec { "a2enmod proxy":
-		command => "/usr/sbin/a2enmod proxy",
-		unless => "/usr/sbin/a2query -m proxy",
-		notify => Service["apache2"],
-	}
-	exec { "a2enmod proxy_http":
-		command => "/usr/sbin/a2enmod proxy_http",
-		unless => "/usr/sbin/a2query -m proxy_http",
-		notify => Service["apache2"],
-	}
+	#ensure resource is here because of sharing common apahce modules between modules (rsyslogwebproxy)
+	ensure_resource( 'metalib::apache2::a2enmod', "rewrite", {} )
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy", {} )
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy_http", {} )
 }

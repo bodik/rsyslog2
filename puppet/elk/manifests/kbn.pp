@@ -44,8 +44,11 @@ class elk::kbn (
 	        }
 	}
         notice("will proxy to esd at $proxyto_real")
-	metalib::apache2::a2enmod { "proxy": }
-	metalib::apache2::a2enmod { "proxy_http": }
+
+	#ensure resource is here because of sharing common apahce modules between modules (rsyslogwebproxy)
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy", {} )
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy_http", {} )
+
 	file { "/etc/apache2/rsyslog2.cloud.d/01kibana.conf":
                 content => template("${module_name}/etc/apache2/rsyslog2.cloud.d/01kibana.conf.erb"),
                 owner => "root", group => "root", mode => "0644",
