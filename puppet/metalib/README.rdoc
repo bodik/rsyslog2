@@ -24,17 +24,33 @@ A set of support classes and helpers used within rsyslog2 puppet ecosystem.
 [render_rdoc.rb]
   renders documentation preview from rdoc to html
 
-== Class: metalib::wget
-
-Class for installling wget, and defines download resource. Used internally.
-
 == Class: metalib::sysctl-hardnet
 
 Hardens networking on linux box. Used internally.
 
+== Class: metalib::fail2ban
+
+Class for installling fail2ban. Used during phase2 eg. basic machine
+setting.
+
+=== Examples
+
+ include metalib::fail2ban
+
 == Class: metalib::apache2
 
-Dependency placeholder.
+Class will install apache2, create ssl virtualhost with selfsigned certificate
+(if missing at default place) and put default dash appl into docroot
+
+apache config
+== Class: metalib::dev
+
+Class for installling set of development, debugging and packages needed
+for documentation generation. Used manually when needed.
+
+=== Examples
+
+ include metalib::dev
 
 == Class: metalib::avahi
 
@@ -54,21 +70,7 @@ puppet, hostname, krb5 client lib, sysctl
 
  include metalib::base
 
-== Class: metalib::dev
+== Class: metalib::wget
 
-Class for installling set of development, debugging and packages needed
-for documentation generation. Used manually when needed.
-
-=== Examples
-
- include metalib::dev
-
-== Class: metalib::fail2ban
-
-Class for installling fail2ban. Used during phase2 eg. basic machine
-setting.
-
-=== Examples
-
- include metalib::fail2ban
+Class for installling wget, and defines download resource. Used internally.
 

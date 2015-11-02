@@ -11,61 +11,67 @@
 #   which webserver should be managed with examples42-kibana class
 #   set to false to disable automatic webserver configuration
 #
-# [*kibana_elasticsearch_url*]
-#   specify ES rest endpoit url to config.js and dash.html, used in gated setup
+# [*proxyto*]
+#   will create https proxy for connecting to local es instance. Parameter
+#   can be either static or will be selected automatically as eth1 (gate) or eth0
+#   (public/singlenode) ipaddress
 #
 # === Examples
 #
 #   class { "elk::kbn": }
 #
 class elk::kbn (
-	$kibana_elasticsearch_url = 'http://"+window.location.hostname+":39200',
 	$kibana_version = "3.1.0",
-	$kibana_webserver = "apache",
+	$install_dir = "/opt/kibana",
+	$proxyto = undef,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
-	if ($kibana_webserver == false) {
-		$kibana_webserver_real = undef
+	class { 'elk::kbn_install':
+		kibana_version => $kibana_version,
+		install_dir => $install_dir,
+	}
+
+	include metalib::apache2
+
+	if ($proxyto) {
+		$proxyto_real = $proxyto
 	} else {
-		$kibana_webserver_real = $kibana_webserver
+		if ($ipaddress_eth1) {
+	                $proxyto_real = $ipaddress_eth1
+	        } else {
+	                $proxyto_real = $ipaddress_eth0
+	        }
 	}
-	class { 'kibana':
-		webserver => $kibana_webserver_real,
-		virtualhost => $fqdn,
-		version => $kibana_version,
-		
-		#tady v te casti je modul velmi osklivy
-		#jak s konfigurakem sem nevycetl ale meni mu prava na default 664
-		file_mode => "0644",
-	
-	}
-	if ( $kibana_webserver_real ) {	
-		file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
-			ensure => absent,
-			require => Package["apache2"],
-			notify => Service["apache2"],
-		}
-	}
+        notice("will proxy to esd at $proxyto_real")
+
+	#ensure resource is here because of sharing common apahce modules between modules (rsyslogwebproxy)
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy", {} )
+	ensure_resource( 'metalib::apache2::a2enmod', "proxy_http", {} )
+
+	file { "/etc/apache2/rsyslog2.cloud.d/01kibana.conf":
+                content => template("${module_name}/etc/apache2/rsyslog2.cloud.d/01kibana.conf.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => [
+			File["/etc/apache2/rsyslog2.cloud.d/"],
+                        Metalib::Apache2::A2enmod["proxy", "proxy_http"],
+			Exec["install_sslselfcert.sh"],
+                        ],
+                notify => Service["apache2"],
+        }
 
 
+	#kibana app config and customization
 	file { "/opt/kibana/config.js":
-		content => template("${module_name}/opt/kibana/config.js.erb"),
+		source => "puppet:///modules/${module_name}/opt/kibana/config.js",
 		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
+		require => Class["elk::kbn_install"],
 	}
-
-	file { "/opt/kibana/dash.html":
-		content => template("${module_name}/opt/kibana/dash.html.erb"),
+	file { "/opt/kibana/app":
+		ensure => directory, recurse => true, purge => false, 
 		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
-		
-	}
-	file { "/opt/kibana/app/dashboards":
-		source => "puppet:///modules/${module_name}/opt/kibana/app/dashboards",
-		recurse => true,
-		owner => "root", group => "root", mode => "0644",
-		require => Class["kibana::install"],
+		source => "puppet:///modules/${module_name}/opt/kibana/app",
+		require => Class["elk::kbn_install"],
 	}
 }
 

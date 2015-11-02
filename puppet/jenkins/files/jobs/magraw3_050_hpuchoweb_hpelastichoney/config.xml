@@ -13,22 +13,23 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;RC-$$-GN&quot;
+      <command>export VMNAME=&quot;HE-$$&quot;
 /puppet/jenkins/bin/magrathea.init login
 /puppet/jenkins/bin/magrathea.init build
 /puppet/jenkins/bin/magrathea.init start
 /puppet/jenkins/bin/magrathea.init fixup
 /puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
-##########
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; git checkout wardenb2&apos;
+################
 /puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-client.install.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh glastopf.install.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh nfdump.install.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x glastopf/tests/glastopf.sh&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x netflow/tests/nfdump.sh&apos;</command>
+
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-web.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/web.sh&apos;
+
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney/tests/hpelastichoney.sh&apos;
+
+</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

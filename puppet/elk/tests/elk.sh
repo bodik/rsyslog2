@@ -59,12 +59,12 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 apache/kibana not running"
 fi
 
-wget "http://$(facter fqdn)" -q -O - | grep "<title>Kibana 3" 1>/dev/null
+wget --no-check-certificate "https://$(facter fqdn)/kibana/" -q -O - | grep "<title>Kibana 3" 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 kibana not found on webserver"
 fi
 
-wget "http://$(facter fqdn)/dash.html" -q -O - | grep "dashboard/file/logstashesb" 1>/dev/null
+wget --no-check-certificate "https://$(facter fqdn)/dash.html" -q -O - | grep "dashboard/file/logstashesb" 1>/dev/null
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 dashboard not found on webserver"
 fi
