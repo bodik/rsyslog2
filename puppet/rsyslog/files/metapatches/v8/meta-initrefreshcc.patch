@@ -1,14 +1,5 @@
-commit afce05b68200b9418834afd8fea92da8a83223af
-Author: root <root@minos47-2.zcu.cz>
-Date:   Thu Jul 16 03:28:21 2015 +0200
-
-    meta-initrefreshcc.patch
-    
-    init.d/rsyslog refreshcc
-    systemd service refreshcc
-
 diff --git a/debian/rsyslog.init b/debian/rsyslog.init
-index 0389df6..3920962 100644
+index 0389df6..57313e2 100644
 --- a/debian/rsyslog.init
 +++ b/debian/rsyslog.init
 @@ -14,6 +14,7 @@
@@ -69,11 +60,11 @@ index 0389df6..3920962 100644
 +	if [ $? -eq 0 ]; then
 +		#Heimdal
 +		PRINC=`ktutil -k /etc/krb5.keytab list | grep "host/" | head -1 | awk '{print $3}'`
-+		OUT=`kinit --no-afslog -k $PRINC 2>&1`
++		OUT=`kinit --no-afslog -c $KRB5CCNAME -k $PRINC 2>&1`
 +	else
 +		#MIT ;)
 +		PRINC=`klist -k | grep "host/" | head -1 | awk '{print $2}'`
-+		OUT=`kinit -k $PRINC 2>&1`
++		OUT=`kinit -c $KRB5CCNAME -k $PRINC 2>&1`
 +	fi
 +	RET=$?
 +
