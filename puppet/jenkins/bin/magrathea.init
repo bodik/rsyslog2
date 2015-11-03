@@ -216,6 +216,9 @@ case "$1" in
 	sshdev)
 		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/bin/magrathea.init ssh "$2"
 	;;
+	sshw)
+		VMNAME=$(/puppet/jenkins/bin/magrathea.init list|grep "WS-"|head -1|awk '{print $4}') /puppet/jenkins/bin/magrathea.init ssh "$2"
+	;;
 	fixup)
 		vm_fixup
 	;;

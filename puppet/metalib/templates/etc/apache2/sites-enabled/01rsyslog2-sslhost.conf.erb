@@ -1,0 +1,20 @@
+# File Managed by Puppet
+<VirtualHost *:443>
+	ServerAdmin webmaster@<%= @fqdn %>
+	DocumentRoot /opt/rsyslog2-www
+	ServerName <%= @fqdn %>
+	ErrorLog  /var/log/apache2/rsyslog2-error_log
+	CustomLog /var/log/apache2/rsyslog2-access_log common
+
+	SSLEngine on
+	SSLCertificateKeyFile /etc/apache2/ssl/<%= @fqdn %>.key
+	SSLCertificateFile /etc/apache2/ssl/<%= @fqdn %>.crt
+	SSLCertificateChainFile /etc/apache2/ssl/cachain.pem
+
+	<Directory /opt/rsyslog2-www>
+		Require all granted
+	</Directory>
+
+	Include /etc/apache2/rsyslog2.cloud.d/*conf
+</VirtualHost>
+

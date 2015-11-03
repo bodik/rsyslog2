@@ -1,6 +1,6 @@
 [ssh]
 
-# we don't want a fail2ban ssh on kippo server
+# we don't want a fail2ban ssh on kippo/cowrie server
 enabled  = false
 port     = ssh
 filter   = sshd

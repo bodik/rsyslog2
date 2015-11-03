@@ -21,7 +21,9 @@ else
 fi
 
 if [ -z "$RBVERSION" ]; then
-	RBVERSION=debian/8.4.2+deb8u1.rb32
+	#by default we build latest revision found in collab sources
+	RBVERSION=$(git branch | grep "\.rb[0-9]\+" | sort -rn | head -1 | rev | awk '{print $1}' | rev)
+	
 fi
 git checkout $RBVERSION
 git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RBVERSION
