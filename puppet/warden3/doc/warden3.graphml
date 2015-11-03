@@ -580,7 +580,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="139.8" x="1272.6102628730237" y="612.3988813119929"/>
-          <y:Fill color="#FFCC00" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="26.171875" x="56.81406250000009" y="6.015625">kbn<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -767,7 +767,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="139.8" x="1272.6102628730234" y="582.3988813119929"/>
-          <y:Fill color="#FF6600" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="55.544921875" x="42.12753906250009" y="6.015625">apache2<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -784,7 +784,7 @@
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="139.8" x="1272.6102628730237" y="389.43585155545543"/>
-          <y:Fill color="#FF6600" transparent="false"/>
+          <y:Fill color="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="55.544921875" x="42.12753906250009" y="6.015625">apache2<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -820,7 +820,7 @@
           <y:Geometry height="30.0" width="84.59693417493236" x="238.62835794259087" y="182.87107897749155"/>
           <y:Fill color="#FFCC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="47.166015625" x="18.715459274966236" y="6.015625">nicmoc<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="47.166015625" x="18.71545927496618" y="6.015625">nicmoc<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -852,7 +852,7 @@
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.dataBase">
           <y:Geometry height="40.0" width="104.97294860234456" x="1493.3884494715935" y="389.43585155545543"/>
-          <y:Fill color="#E8EEF7" color2="#FFCC00" transparent="false"/>
+          <y:Fill color="#E8EEF7" color2="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="60.830078125" x="22.071435238672166" y="11.015625">mongodb<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -868,7 +868,7 @@
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.dataBase">
           <y:Geometry height="40.0" width="104.97294860234456" x="1493.3884494715933" y="501.40544691163313"/>
-          <y:Fill color="#E8EEF7" color2="#FF6600" transparent="false"/>
+          <y:Fill color="#E8EEF7" color2="#99CC00" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
           <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="25.251953125" x="39.86049773867239" y="11.015625">esd<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
@@ -1050,7 +1050,7 @@
           <y:Geometry height="40.0" width="264.18891255598624" x="62.13143516718765" y="747.2933808611361"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="252.015625" x="6.086643777993103" y="11.015625">loguje primo do w3 serveru, daemon, init<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="252.015625" x="6.0866437779931175" y="11.015625">loguje primo do w3 serveru, daemon, init<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1146,7 +1146,7 @@
           <y:Geometry height="45.41929666366093" width="373.4400815643281" x="1123.5587141011226" y="747.293380861136"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="332.517578125" x="20.461251719664006" y="13.725273331830408">muze ztratit data, logging, daemon, non ssl redis conn<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="332.517578125" x="20.461251719664006" y="13.725273331830522">muze ztratit data, logging, daemon, non ssl redis conn<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1162,7 +1162,7 @@
           <y:Geometry height="30.369702434625992" width="264.18891255598624" x="753.1827060193061" y="481.03574447700703"/>
           <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
           <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="239.8515625" x="12.168675027993118" y="6.200476217313053">muze ztratit data, logging, daemon, ssl<y:LabelModel>
+          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="239.8515625" x="12.168675027993118" y="6.200476217312996">muze ztratit data, logging, daemon, ssl<y:LabelModel>
               <y:SmartNodeLabelModel distance="4.0"/>
             </y:LabelModel>
             <y:ModelParameter>
@@ -1173,54 +1173,6 @@
       </data>
     </node>
     <node id="n69">
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.document">
-          <y:Geometry height="30.369702434625992" width="213.908289813145" x="1309.7152626211098" y="642.3988813119929"/>
-          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="214.57421875" x="-0.33296446842746263" y="6.200476217313053">nepekna instalace pres example42<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n70">
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.document">
-          <y:Geometry height="30.369702434625992" width="139.8000000000001" x="1689.3573371938928" y="565.9381377761767"/>
-          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="57.68359375" x="41.05820312500009" y="6.200476217313053">nema ssl<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n71">
-      <data key="d6">
-        <y:GenericNode configuration="com.yworks.flowchart.document">
-          <y:Geometry height="30.369702434625992" width="139.8000000000001" x="1689.3573371938928" y="419.25100033814243"/>
-          <y:Fill color="#E8EEF7" color2="#B7C9E3" transparent="false"/>
-          <y:BorderStyle color="#000000" type="line" width="1.0"/>
-          <y:NodeLabel alignment="center" autoSizePolicy="content" fontFamily="Dialog" fontSize="12" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" height="17.96875" modelName="custom" textColor="#000000" visible="true" width="92.58203125" x="23.60898437500009" y="6.200476217313053">nema auth, ssl<y:LabelModel>
-              <y:SmartNodeLabelModel distance="4.0"/>
-            </y:LabelModel>
-            <y:ModelParameter>
-              <y:SmartNodeLabelModelParameter labelRatioX="0.0" labelRatioY="0.0" nodeRatioX="0.0" nodeRatioY="0.0" offsetX="0.0" offsetY="0.0" upX="0.0" upY="-1.0"/>
-            </y:ModelParameter>
-          </y:NodeLabel>
-        </y:GenericNode>
-      </data>
-    </node>
-    <node id="n72">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.document">
           <y:Geometry height="40.0" width="264.18891255598624" x="62.13143516718765" y="787.2933808611361"/>
@@ -1236,7 +1188,7 @@
         </y:GenericNode>
       </data>
     </node>
-    <node id="n73">
+    <node id="n70">
       <data key="d6">
         <y:GenericNode configuration="com.yworks.flowchart.document">
           <y:Geometry height="40.0" width="264.18891255598624" x="62.13143516718762" y="827.2933808611361"/>
@@ -1252,7 +1204,7 @@
         </y:GenericNode>
       </data>
     </node>
-    <node id="n74">
+    <node id="n71">
       <data key="d6">
         <y:ShapeNode>
           <y:Geometry height="30.0" width="127.0" x="499.7251352523539" y="176.44234725364592"/>
@@ -1554,58 +1506,7 @@
         </y:BezierEdge>
       </data>
     </edge>
-    <edge id="e29" source="n70" target="n44">
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e30" source="n70" target="n45">
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0">
-            <y:Point x="1675.8787713863553" y="470.39687359720415"/>
-          </y:Path>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e31" source="n70" target="n50">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e32" source="n71" target="n50">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e33" source="n71" target="n49">
-      <data key="d9"/>
-      <data key="d10">
-        <y:BezierEdge>
-          <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
-          <y:LineStyle color="#000000" type="dashed" width="1.0"/>
-          <y:Arrows source="none" target="none"/>
-        </y:BezierEdge>
-      </data>
-    </edge>
-    <edge id="e34" source="n67" target="n31">
-      <data key="d9"/>
+    <edge id="e29" source="n67" target="n31">
       <data key="d10">
         <y:BezierEdge>
           <y:Path sx="0.0" sy="0.0" tx="0.0" ty="0.0"/>
