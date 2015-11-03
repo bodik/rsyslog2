@@ -137,7 +137,7 @@ class warden3::server (
 		require => File["/etc/avahi/services/warden-server.service"],
 	}
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
-		content => template("${module_name}/apache2-virtualhost.conf.rb"),
+		content => template("${module_name}/warden3-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
