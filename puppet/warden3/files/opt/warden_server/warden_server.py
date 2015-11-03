@@ -28,7 +28,7 @@ sys.path.append(path.join(path.dirname(__file__), "..", "lib"))
 from jsonschema import Draft4Validator
 
 
-VERSION = "3.0-beta1"
+VERSION = "3.0-beta2"
 
 class Error(Exception):
 
@@ -207,19 +207,9 @@ def SysLogger(req, socket="/dev/log", facility=logging.handlers.SysLogHandler.LO
 
 
 
-class Client(namedtuple("ClientTuple",
-    ["id", "registered", "requestor", "hostname", "note",
-    "valid", "name", "secret", "read", "debug", "write", "test"])):
-
-    def __str__(self):
-        return (
-            "%s(id=%i, registered=%s, requestor=\"%s\", hostname=\"%s\", "
-            "note=\"%s\", name=\"%s\", secret=%s, "
-            "valid=%i read=%i, debug=%i, write=%i, test=%i)") % (
-            type(self).__name__, self.id, self.registered,
-            self.requestor, self.hostname, self.note,
-            self.name, "..." if self.secret is not None else "None",
-            self.valid, self.read, self.debug, self.write, self.test)
+Client = namedtuple("Client",
+    ["id", "registered", "requestor", "hostname", "name", "note",
+    "valid", "secret", "read", "debug", "write", "test"])
 
 
 
@@ -316,12 +306,12 @@ class X509Authenticator(NoAuthenticator):
         subj = cert.get_subject()
         commons = [n.get_data().as_text() for n in subj.get_entries_by_nid(subj.nid["CN"])]
 
-	try:
-		extstrs = cert.get_ext("subjectAltName").get_value().split(",")
-	except LookupError:
-		extstrs = []
-	extstrs = [val.strip() for val in extstrs]
-	altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
+        try:
+           extstrs = cert.get_ext("subjectAltName").get_value().split(",")
+        except LookupError:
+           extstrs = []
+        extstrs = [val.strip() for val in extstrs]
+        altnames = [val[4:] for val in extstrs if val.startswith("DNS:")]
 
         # bit of mangling to get rid of duplicates and leave commonname first
         firstcommon = commons[0]
@@ -342,7 +332,7 @@ class X509Authenticator(NoAuthenticator):
 
         if not client:
             logging.info("authenticate: client not found by name: \"%s\", secret: %s, cert_names: %s" % (
-                name, "..." if secret else "None", str(cert_names)))
+                name, secret, str(cert_names)))
             return None
         
         # Clients with 'secret' set muset get authorized by it.
@@ -522,12 +512,12 @@ class MySQL(ObjectReq):
         params = []
         if name:
             query.append(" AND name = %s")
-            params.append(name)
+            params.append(name.lower())
         if secret:
             query.append(" AND secret = %s")
             params.append(secret)
         query.append(" AND hostname IN (%s)" % self._get_comma_perc(cert_names))
-        params.extend(cert_names)
+        params.extend(n.lower() for n in cert_names)
         rows = self.query("".join(query), params)
 
         if len(rows)>1:
@@ -562,6 +552,8 @@ class MySQL(ObjectReq):
                       "valid", "read", "write", "debug", "test"]:
             val = kwargs.get(attr, None)
             if val is not None:
+                if attr in ["name", "hostname"]:
+                    val = val.lower()
                 uquery.append("`%s` = %%s" % attr)
                 params.append(val)
         if not uquery:
@@ -1354,10 +1346,13 @@ def modify_client(id, name, hostname, requestor, secret, note, valid, read, writ
         print >>sys.stderr, "Invalid id \"%s\"." % id
         return 254
 
-    existing_clients = server.handler.db.get_client_by_name([hostname], name=name, secret=secret)
-    if existing_clients:
-        print >>sys.stderr, "Clash with existing hostname/name/secret: %s" % str(existing_clients)
-        return 254
+    for c in server.handler.db.get_clients():
+        if name is not None and name.lower()==c.name:
+            print >>sys.stderr, "Clash with existing name: %s" % str(c)
+            return 254
+        if secret is not None and secret==c.secret:
+            print >>sys.stderr, "Clash with existing secret: %s" % str(c)
+            return 254
 
     newid = server.handler.db.add_modify_client(
         id=id, name=name, hostname=hostname,

@@ -1,6 +1,6 @@
-+-------------------+
-| Warden Server 3.0 |
-+-------------------+
++-------------------------+
+| Warden Server 3.0-beta2 |
++-------------------------+
 
 Content
 
@@ -83,6 +83,10 @@ C. Installation
 
    You may need to change paths to certificate/key/ca material, path to
    warden_server.wsgi and web path alias.
+
+   Also note that warden_server itself is NOT thread safe, so included
+   configuration expects Apache with mpm-prefork worker, or you will have
+   to configure mod_wsgi as separate process with threads=1.
 
    Also, for warden_server.wsgi, you can use warden_server.wsgi.dist as
    a template. You will possibly need to change at least configuration
