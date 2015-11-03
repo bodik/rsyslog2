@@ -12,7 +12,7 @@ from uuid import uuid4
 import os
 import sys
 
-DEFAULT_ACONFIG = 'warden_client-kippo.cfg'
+DEFAULT_ACONFIG = 'warden_client-cowrie.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
 DEFAULT_NAME = 'org.example.warden.test'
 DEFAULT_AWIN = 5

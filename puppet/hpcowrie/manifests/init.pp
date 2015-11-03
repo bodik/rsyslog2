@@ -86,13 +86,6 @@ class hpcowrie (
 	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
 		ensure => installed, 
 	}
-	# no cap needed now, using prerouting in kippo.init
-	#package { "libcap2-bin": ensure => installed }
-	#exec { "python bind cap":
-	#	command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
-	#	unless => "/sbin/getcap /usr/bin/python2.7 | grep 'cap_net_bind_service+ep'",
-	#	require => Package["libcap2-bin"],
-	#}
 	user { "$cowrie_user": 	
 		ensure => present, 
 		managehome => false,
@@ -196,7 +189,7 @@ class hpcowrie (
 
 
 
-	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
+	# warden_client pro kippo/cowrie (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
@@ -232,8 +225,8 @@ class hpcowrie (
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden/warden_client-kippo.cfg":
-		content => template("${module_name}/warden_client-kippo.cfg.erb"),
+	file { "${install_dir}/warden/warden_client-cowrie.cfg":
+		content => template("${module_name}/warden_client-cowrie.cfg.erb"),
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
