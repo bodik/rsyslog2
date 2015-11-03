@@ -11,9 +11,12 @@ from sys import stderr, exc_info
 from traceback import format_tb
 from os import path
 from operator import itemgetter
+from sys import version_info
+
+fix_logging_filename = str if version_info<(2, 7) else lambda(x): x
 
 
-VERSION = "3.0-beta1"
+VERSION = "3.0-beta2"
 
 class HTTPSConnection(httplib.HTTPSConnection):
     '''
@@ -281,7 +284,8 @@ class Client(object):
                 fl = logging.FileHandler(
                     filename=path.join(
                         path.dirname(__file__),
-                        filelog.get("file", "%s.log" % self.name)))
+                        filelog.get("file", "%s.log" % self.name)),
+                        encoding="utf-8")
                 fl.setLevel(loglevel(filelog.get("level", "debug")))
                 fl.setFormatter(format_time)
                 self.logger.addHandler(fl)
@@ -291,7 +295,7 @@ class Client(object):
         if syslog is not None:
             try:
                 sl = logging.handlers.SysLogHandler(
-                    address=syslog.get("socket", "/dev/log"),
+                    address=fix_logging_filename(syslog.get("socket", "/dev/log")),
                     facility=facility(syslog.get("facility", "local7")))
                 sl.setLevel(loglevel(syslog.get("level", "debug")))
                 sl.setFormatter(format_notime)
