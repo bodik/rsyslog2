@@ -10,14 +10,10 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>true</concurrentBuild>
+  <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>/puppet/jenkins/bin/magrathea.init login
-/puppet/jenkins/bin/magrathea.init update 1&gt;/dev/null
-cd /puppet/rsyslog/test02
-export CLOUD=&quot;magrathea&quot; 
-sh test_clients.sh 4 none</command>
+      <command>sh -x /puppet/jenkins/bin/run_jobs.sh &quot;^magra-rs-&quot;</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>

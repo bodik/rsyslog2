@@ -13,22 +13,19 @@
   <concurrentBuild>false</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;HK-$$&quot;
+      <command>export VMNAME=&quot;HE-$$&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start rsyslog2-jessie-small-metacloud
 /puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; git checkout wardenb2&apos;
 ################
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpcowrie.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpcowrie/tests/hpcowrie.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-web.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/web.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-tcp.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/tcp.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho-udp.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpucho/tests/udp.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpelastichoney/tests/hpelastichoney.sh&apos;
 
 </command>
     </hudson.tasks.Shell>

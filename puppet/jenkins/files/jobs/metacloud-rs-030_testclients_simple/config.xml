@@ -10,10 +10,13 @@
   <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
   <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
   <triggers/>
-  <concurrentBuild>false</concurrentBuild>
+  <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>sh -x /puppet/jenkins/bin/run_jobs.sh &quot;^magranz&quot;</command>
+      <command>/puppet/jenkins/bin/metacloud.init login
+/puppet/jenkins/bin/metacloud.init update 1&gt;/dev/null
+cd /puppet/rsyslog/test02
+sh test_clients.sh 4 none</command>
     </hudson.tasks.Shell>
   </builders>
   <publishers/>
