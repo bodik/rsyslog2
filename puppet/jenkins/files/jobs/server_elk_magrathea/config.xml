@@ -21,7 +21,7 @@
 #vm image fixup
 /puppet/jenkins/bin/magrathea.init ssh &apos;rm /etc/apt/sources.list.d/meta_depot.list;apt-get clean;apt-get update;apt-get purge -y rsyslog rsyslog-gssapi puppet puppet-common;rm -rf /etc/rsyslog.d /etc/puppet /var/lib/puppet /etc/cron.d/meta_puppet*&apos;
 
-/puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb3.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/magrathea.init ssh &apos;wget http://esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ####/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; git checkout esb20&apos;
 ################
 /puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
