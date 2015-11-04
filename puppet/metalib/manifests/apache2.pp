@@ -22,7 +22,8 @@ class metalib::apache2() {
 	        }
 	}
 
-	a2enmod { "ssl": }
+	ensure_resource( 'metalib::apache2::a2enmod', "ssl", {} )
+	ensure_resource( 'metalib::apache2::a2enmod', "rewrite", {} )
 
 	file { "/etc/apache2/ssl":
 		ensure => directory,
