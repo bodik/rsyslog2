@@ -124,3 +124,12 @@ documentation.
 * mongomine[link:puppet/mongomine/README.rdoc]
 * netflow[link:puppet/netflow/README.rdoc]
 * glastopf[link:puppet/glastopf/README.rdoc]
+* warden3
+** warden3-ca
+** warden3-server
+** warden3-2rediser
+** hpcowrie
+** hpglastopf
+** hptelnetd
+** hpthin
+** hpucho
