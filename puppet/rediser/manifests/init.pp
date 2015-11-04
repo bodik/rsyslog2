@@ -50,6 +50,11 @@ class rediser {
 	file { "/etc/init.d/rediser":
 		ensure => link,
 		target => "/puppet/rediser/bin/rediser.init",
+		notify => Exec["systemd_reload"],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
 	}
 	service { "rediser":
 		enable => true,
