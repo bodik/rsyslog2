@@ -20,7 +20,7 @@ class iptables (
 	$rules_v4 = "puppet:///modules/${module_name}/nonexistent",
 	$rules_v6 = "puppet:///modules/${module_name}/nonexistent",
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
 
 	package { ["iptables"]: ensure => installed }
