@@ -39,6 +39,11 @@ class metalib::base {
 	        content => template($tmp_file),
 	        owner => "root", group => "root", mode => "0644",
 	}
+
+	service { "puppet":
+		ensure => stopped,
+		enable => false,
+	}
 	file { "/etc/puppet/hiera.yaml":
 		ensure => file,
 	}
