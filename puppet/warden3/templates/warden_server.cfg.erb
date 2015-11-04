@@ -1,0 +1,19 @@
+{
+	"Log": {
+		"type": "SysLogger",
+		"level": "debug"
+	},
+	"Handler": {
+		"send_events_limit": 500,
+		"get_events_limit": 1000,
+		"description": "Warden 3 not even alpha development server"
+	},
+	"DB": {
+		"type": "MySQL",
+		"host": "<%= @mysql_host %>",
+		"port": <%= @mysql_port %>,
+		"dbname": "<%= @mysql_db %>",
+		"user": "<%= @mysql_user %>",
+		"password": "<%= @mysql_password_real %>"
+	}
+}

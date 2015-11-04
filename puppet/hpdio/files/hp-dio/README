@@ -1,0 +1,67 @@
++---------------------------------------------+
+| Warden Dionaea connector 0.1 for Warden 3.X |
++---------------------------------------------+
+
+Content
+
+  A. Introduction
+  B. Dependencies
+  C. Usage
+  D. Configuration
+
+------------------------------------------------------------------------------
+A. Introduction
+
+   Warden Dionaea connector (executable warden3-dio-sender.py) is a one-shot 
+   script to send events from Dionaea honeypot toward the Warden server.
+
+------------------------------------------------------------------------------
+B. Dependencies
+
+ 1. Platform
+
+    Python 2.7+
+
+ 2. Python packages
+
+    warden_client 3.0+
+
+------------------------------------------------------------------------------
+C. Usage
+
+   warden3-dio-sender.py 
+
+   This script does not run as a daemon, for regularly run use job scheduler cron.
+
+------------------------------------------------------------------------------
+D. Configuration
+   
+   warden_client-dio.cfg
+    warden - path to warden-client config, e.g. 'warden/warden_client.cfg'
+    name - sensor's source id used as a source of events, e.g. 'cz.cesnet.server.dionaea'
+    secret - secret to authenticate client
+           - if 'secret' is non empty, is used instead of value in client's configuration
+           - useful while using more sensors with single client's configuration
+
+    anonymised - no | yes | omit
+               - no (default value)
+               - yes = anonymize to 'target_net' (see below)
+               - omit = completely omit target field
+
+    target_net - anonymized network used as target if 'anonymized' option is 'yes'
+
+    dbfile - path to sqlite database file, e.g. '/opt/dionaea/var/dionaea/logsql.sqlite'
+    binaries_path - path to stored malware, e.g. '/opt/dionaea/var/dionaea/binaries'
+    report_binaries - 'true' if malware attachment have to be included in event, otherwise 'false'
+    con_attempts - number of attempts connection to the database, it may be exclusive locked
+    con_retry_interval - interval between each attempt (in seconds)
+    awin - aggregation window (in minutes), e.g. 5 for events in the last 5 minutes
+    
+   cron
+    SCRIPT_PATH=/opt/warden_client/
+    */5  *   * * *  root cd $SCRIPT_PATH; python warden3-dio-sender.py > /dev/null 2>&1
+
+    Note: Repeat interval must be the same as value of 'awin'.
+
+------------------------------------------------------------------------------
+Copyright (C) 2011-2015 Cesnet z.s.p.o

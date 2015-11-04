@@ -1,0 +1,18 @@
+SSLEngine on
+
+SSLVerifyClient require
+SSLVerifyDepth 4
+SSLOptions +StdEnvVars +ExportCertData
+
+#SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
+
+SSLCertificateFile      /opt/warden_server_3/etc/cert.pem
+SSLCertificateKeyFile   /opt/warden_server_3/etc/key.pem
+SSLCACertificateFile    /opt/warden_server_3/etc/tcs-ca-bundle.pem
+
+WSGIScriptAlias /warden3 /opt/warden_server_3/warden_server.wsgi
+
+<Directory /opt/warden_server_3/warden_server.wsgi>
+    Order allow,deny
+    Allow from all
+</Directory>

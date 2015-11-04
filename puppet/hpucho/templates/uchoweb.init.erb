@@ -1,0 +1,65 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          uchoweb
+# Required-Start:    $remote_fs $network
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: uchoweb
+# Description:       This script starts and stops the uchoweb
+### END INIT INFO
+
+
+BASE=<%= @install_dir %>
+NAME="uchoweb"
+PYTHON=`which python`
+PIDFILE="/var/run/uchoweb.pid"
+
+. /puppet/metalib/bin/lib.sh
+
+cd $BASE || exit 1
+
+killwaitpids() {
+        PID="$@"
+	if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+case "$1" in
+
+	start)
+        	echo -n "Starting $NAME: "
+		
+		$PYTHON ${BASE}/uchoweb.py 1>uchoweb.log 2>&1 &
+	        echo $! > $PIDFILE
+
+	        echo "done"
+	;;
+	stop)
+	        echo -n "Stopping $NAME: "
+		if [ -f $PIDFILE ]; then
+		        killwaitpids $(cat $PIDFILE)
+		        rm $PIDFILE
+		fi
+	        killwaitpids $(pgrep -f ${BASE}/uchoweb.py)
+	        echo "done"
+	;;
+	status)
+		pgrep -f ${BASE}/uchoweb.py 1>/dev/null
+                if [ $? -eq 0 ]; then
+                        rreturn 0 "running"
+                fi
+		rreturn 1 "not running"
+	;;
+	*)
+		ps faxu | grep ${BASE}/uchoweb.py
+		exit 1
+	;;
+esac
+

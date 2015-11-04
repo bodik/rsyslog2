@@ -1,0 +1,52 @@
+#https://raw.githubusercontent.com/brightbox/puppet/master/Rakefile#
+task :default => [:test, :parse]
+
+desc "Noop implementation of default task"
+task :clean do
+end
+
+desc "Run the test suite"
+task :test do
+	pcommand = "puppet apply"
+	Dir["tests/*pp"].each do |test_file|
+		sh "#{pcommand} --noop --modulepath ..:../3rdparty #{test_file}"
+	end
+end
+
+desc "Parse any .pp files we can find"
+task :parse => :clean do
+	pcommand = "puppet parser validate --modulepath ..:../3rdparty"
+
+	files = Dir["manifests/**/*.pp", "modules/**/*.pp"]
+	sh "#{pcommand} #{files.join(' ')}"
+end
+
+desc "Run lint check on puppet manifests"
+task :lint => :clean do
+	require 'puppet-lint'
+	linter =  PuppetLint.new
+	Dir.glob('./**/*.pp').each do |puppet_file|
+		puts "=== Evaluating #{puppet_file}"
+		linter.file = puppet_file
+		linter.run
+		puts
+	end
+	fail if linter.errors?
+end
+
+desc "Generate documentation from README.rdoc and manifests"
+task :doc do
+	out = ""
+	if File.exists?("README.header")
+		out += File.open("README.header", 'r') { |f| f.read }
+	end
+	files = Dir.glob(["manifests/*.pp", "lib/facter/*.rb"])
+	unless files.empty?
+		out += `puppet doc #{files.join(' ')}`
+	end
+	if File.exists?("README.footer")
+		out += File.open("README.footer", 'r') { |f| f.read }
+	end
+	File.open("README.rdoc", 'w') { |file| file.write(out) }
+end
+

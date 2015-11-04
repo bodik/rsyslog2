@@ -1,0 +1,24 @@
+{
+    "logfile" : "./elastichoney.json.log",
+    "use_remote" : false,
+    "remote" : {
+        "url" : "http://example.com",
+        "use_auth" : false,
+        "auth" : {
+            "username" : "",
+            "password" : ""
+        }
+    },
+    "hpfeeds": {
+        "enabled": false,
+        "host": "127.0.0.1",
+        "port": 10000,
+        "ident": "elastichoney",
+        "secret": "elastichoney",
+        "channel": "elastichoney.events"
+    },
+    "instance_name" : "<%= @fqdn %>",
+    "anonymous" : false,
+    "spoofed_version"  : "1.4.1",
+    "public_ip_url": "http://queryip.net/ip/"
+}

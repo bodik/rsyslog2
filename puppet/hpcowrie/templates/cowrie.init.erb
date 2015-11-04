@@ -1,0 +1,161 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          cowrie
+# Required-Start:    $remote_fs $network
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5 
+# Default-Stop:      0 1 6
+# Short-Description: Cowrie honeypot
+# Description:       This script starts and stops the
+### END INIT INFO
+
+# Author: Miguel Jacq <mig@mig5.net>
+# https://raw.githubusercontent.com/mig5/kippo-deb/master/kippo-0.8/etc/init.d/kippo
+
+# Do NOT "set -e"
+
+# PATH should only include /usr/* if it runs after the mountnfs.sh script
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="cowrie"
+NAME=cowrie
+COWRIE_USER=<%= @cowrie_user %>
+DAEMON=/usr/bin/twistd
+RUNDIR=<%= @install_dir %>
+PIDFILE=$RUNDIR/$NAME.pid
+DAEMON_ARGS="-l <%= @install_dir %>/log/cowrie.log --pidfile $PIDFILE cowrie"
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Create RUNDIR if it doesn't exist
+[ -d "$RUNDIR" ] || mkdir -p "$RUNDIR" && chown $COWRIE_USER "$RUNDIR"
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+        log_daemon_msg "Starting $DESC" "$NAME"
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	start-stop-daemon --start --quiet --pidfile $PIDFILE -c $COWRIE_USER --exec $DAEMON --test --chdir $RUNDIR > /dev/null \
+		|| return 1
+	start-stop-daemon --start --quiet --pidfile $PIDFILE -c $COWRIE_USER --exec $DAEMON --chdir $RUNDIR -- \
+		$DAEMON_ARGS \
+		|| return 2
+	# Add code here, if necessary, that waits for the process to be ready
+	# to handle requests from services started subsequently which depend
+	# on this one.  As a last resort, sleep for some time.
+	iptables -t nat -I PREROUTING 1 ! -s 78.128.214.3/32 -p tcp --dport 22 -j REDIRECT --to-port <%= @cowrie_port %>
+	iptables -t nat -I PREROUTING 1 ! -s 78.128.214.3/32 -p tcp --dport 2222 -j REDIRECT --to-port <%= @cowrie_port %>
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+        log_daemon_msg "Stopping $DESC" "$NAME"
+	start-stop-daemon --stop --quiet --pidfile $PIDFILE
+	# Many daemons don't delete their pidfiles when they exit.
+	rm -f $PIDFILE
+	iptables -t nat -D PREROUTING ! -s 78.128.214.3/32 -p tcp --dport 22 -j REDIRECT --to-port <%= @cowrie_port %>
+	iptables -t nat -D PREROUTING ! -s 78.128.214.3/32 -p tcp --dport 2222 -j REDIRECT --to-port <%= @cowrie_port %>
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+	#
+	# If the daemon can reload its configuration without
+	# restarting (for example, when it is sent a SIGHUP),
+	# then implement that here.
+	#
+	start-stop-daemon --stop --signal 1 --quiet --pidfile $PIDFILE -c $COWRIE_USER --name $NAME
+	return 0
+}
+
+case "$1" in
+  start)
+        if [ "$START_DAEMON" != no ]; then
+        	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+		do_start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+        else
+            log_warning_msg "Not starting cowrie. Please edit /etc/default/cowrie first."
+        fi
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+       status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+       ;;
+  #reload|force-reload)
+	#
+	# If do_reload() is not implemented then leave this commented out
+	# and leave 'force-reload' as an alias for 'restart'.
+	#
+	#log_daemon_msg "Reloading $DESC" "$NAME"
+	#do_reload
+	#log_end_msg $?
+	#;;
+  restart|force-reload)
+	#
+	# If the "reload" option is implemented then remove the
+	# 'force-reload' alias
+	#
+	do_stop
+	case "$?" in
+	  0|1)
+		if [ "$START_DAEMON" != no ]; then
+			do_start
+			case "$?" in
+				0) log_end_msg 0 ;;
+				1) log_end_msg 1 ;; # Old process is still running
+				*) log_end_msg 1 ;; # Failed to start
+			esac
+	        else
+	            log_warning_msg "Not starting cowrie. Please edit /etc/default/cowrie first."
+		fi
+		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+  log)
+	tail -f <%= @install_dir %>/log/cowrie.log
+	;;
+  *)
+	#echo "Usage: $SCRIPTNAME {start|stop|restart|reload|force-reload}" >&2
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|force-reload}" >&2
+	exit 3
+	;;
+esac
+
+:

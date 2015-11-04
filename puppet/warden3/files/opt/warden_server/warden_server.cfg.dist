@@ -1,0 +1,11 @@
+{
+    "Log": {
+        // If not specified, FileLogger is default
+        "level": "debug"
+    },
+    "Handler": {
+        "send_events_limit": 500,
+        "get_events_limit": 1000,
+        "description": "Warden 3 distribution config"
+    }
+}
