@@ -69,6 +69,11 @@ if [ $? -ne 0 ]; then
 	rreturn 1 "$0 dashboard not found on webserver"
 fi
 
+curl -s --include --insecure "https://$(facter fqdn)" | grep "Location: .*/dash.html" 1>/dev/null
+if [ $? -ne 0 ]; then
+	rreturn 1 "$0 dashboard redirect not working"
+fi
+
 
 
 echo "require 'elasticsearch'" | ruby
