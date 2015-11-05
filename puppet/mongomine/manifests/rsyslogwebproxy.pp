@@ -31,6 +31,7 @@ class mongomine::rsyslogwebproxy (
                 include metalib::avahi
                 $mongomine_server_real = avahi_findservice($mongomine_service)
         }
+	notice("INFO: mongomine resolved as ${mongomine_server_real}")
 
 	file { "/opt/rsyslogwebproxy":
 		ensure => directory,
