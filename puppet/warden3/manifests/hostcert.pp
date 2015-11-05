@@ -1,4 +1,4 @@
-# == Class: warden3::hostcest
+# == Class: warden3::hostcert
 #
 # Class will ensure provisioning of SSL certificated used by other w3 components.
 # If certificate is not present in install_dir, module will generate new key and
