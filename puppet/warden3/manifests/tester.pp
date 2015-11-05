@@ -1,5 +1,24 @@
-#!/usr/bin/puppet apply
-
+# == Class: warden3::tester
+#
+# Class will ensure installation of example warden3 testing client. Tester will generate ammount of idea messages and sends them to w3 server.
+# Used for testing.
+#
+# TODO: warden server port selection missing
+#
+# === Parameters
+#
+# [*install_dir*]
+#   directory to install w3 server
+#
+# [*warden_server*]
+#   name or ip of warden server, overrides autodiscovery
+#
+# [*warden_server_auto*]
+#   enables warden server autodiscovery
+#
+# [*warden_server_service*]
+#   service name to be discovered
+#
 class warden3::tester (
 	$install_dir = "/opt/warden_tester",
 	

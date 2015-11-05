@@ -1,11 +1,25 @@
-#http://spootnik.org/tech/2013/05/30_neat-trick-using-puppet-as-your-internal-ca.html
+# == Class: warden3::ca
+#
+# Class will ensure installation of warden3 automated ca for testing.
+# CA is build around simple puppet ca which provides list, sign, revoke. 
+# Inspired by http://spootnik.org/tech/2013/05/30_neat-trick-using-puppet-as-your-internal-ca.html
 # init ca, list
 #  puppet cert --confdir /opt/warden-ca list
 # generate keys
 #  puppet cert --confdir /opt/warden-ca generate ${admin}.users.priv.example.com
 # revoke keys
 #  puppet cert revoke
-
+#
+# TODO: allow changing ca service port
+#
+# === Parameters
+#
+# [*ca_name*]
+#   ca name
+#
+# [*autosign*]
+#   handle signing requests automatically (testing)
+#
 class warden3::ca (
 	$ca_name = "warden3ca",
 	$autosign = true,

@@ -1,5 +1,36 @@
-#!/usr/bin/puppet apply
-
+# == Class: warden3::2rediser
+#
+# Class will ensure installation of warden3 client which receives new events from server and sends them to rediser for ELK processing
+#
+# === Parameters
+#
+# [*install_dir*]
+#   directory to install w3 server
+#
+# [*warden_server*]
+#   name or ip of warden server, overrides autodiscovery
+#
+# [*warden_server_auto*]
+#   enables warden server autodiscovery
+#
+# [*warden_server_service*]
+#   service name to be discovered
+#
+# [*warden_server_port*]
+#   warden server port number
+#
+# [*rediser_server*]
+#   name or ip of rediser
+#
+# [*rediser_server_auto*]
+#   enables rediser autodiscovery
+#
+# [*rediser_server_service*]
+#   service name to be discovered
+#
+# [*rediser_server_warden_port*]
+#   rediser port for warden stream input
+#
 class warden3::2rediser (
 	$install_dir = "/opt/warden_2rediser",
 	

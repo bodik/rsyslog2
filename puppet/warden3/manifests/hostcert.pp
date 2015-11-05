@@ -1,5 +1,25 @@
-#!/usr/bin/puppet apply
-
+# == Class: warden3::hostcest
+#
+# Class will ensure provisioning of SSL certificated used by other w3 components.
+# If certificate is not present in install_dir, module will generate new key and
+# request signing it from warden ca service located on warden server
+#
+# TODO: allow changing ca service port
+#
+# === Parameters
+#
+# [*dest_dir*]
+#   directory to generate certificate
+#
+# [*warden_server*]
+#   name or ip of warden server, overrides autodiscovery
+#
+# [*warden_server_auto*]
+#   enables warden server autodiscovery
+#
+# [*warden_server_service*]
+#   service name to be discovered
+#
 class warden3::hostcert (
 	$dest_dir = "/opt/hostcert",
 

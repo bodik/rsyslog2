@@ -125,11 +125,12 @@ documentation.
 * netflow[link:puppet/netflow/README.rdoc]
 * glastopf[link:puppet/glastopf/README.rdoc]
 * warden3
-** warden3-ca
-** warden3-server
-** warden3-2rediser
-** hpcowrie
-** hpglastopf
-** hptelnetd
-** hpthin
-** hpucho
+  * warden3-ca[link:puppet/warden3/README.rdoc]
+  * warden3-server[link:puppet/warden3/README.rdoc]
+  * warden3-2rediser[link:puppet/warden3/README.rdoc]
+  * hpcowrie[link:puppet/hpcowrie/README.rdoc]
+  * hpglastopf[link:puppet/hpglastopf/README.rdoc]
+  * hptelnetd[link:puppet/hptelnetd/README.rdoc]
+  * hpthin[link:puppet/hpthin/README.rdoc]
+  * hpucho[link:puppet/hpucho/README.rdoc]
+  * hpelastichoney[link:puppet/hpelastichoney/README.rdoc]

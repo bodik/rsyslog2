@@ -1,5 +1,21 @@
-#documentation: tbd
-
+# == Class: warden3::server
+#
+# Class will ensure installation of warden3 server: apache2, wsgi, server, mysqldb, configuration
+#
+# === Parameters
+#
+# [*install_dir*]
+#   directory to install w3 server
+#
+# [*port*]
+#   port number to listen with apache vhost
+#
+# [*mysql_... *]
+#   parameters for mysql database for w3 server
+#
+# [*avahi_enable*]
+#   enable service announcement, enabled by default. for testing and debugging purposes
+#
 class warden3::server (
 	#params ...
 	$install_dir = "/opt/warden_server",
