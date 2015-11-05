@@ -4,6 +4,8 @@
 # (if missing at default place) and put default dash appl into docroot
 #
 class metalib::apache2() {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
+
 	package { ["apache2", "apache2-mpm-prefork"]: ensure => installed, }
 	service { "apache2": }
 	file { ["/etc/apache2/sites-enabled/000-default", "/etc/apache2/sites-enabled/000-default.conf"]:
