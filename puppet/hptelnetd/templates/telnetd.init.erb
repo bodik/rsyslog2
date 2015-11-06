@@ -36,7 +36,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		su -c "$PYTHON ${BASE}/telnetd.py 1>telnetd.log 2>&1 &" <%= telnetd_user %>
+		su -c "$PYTHON ${BASE}/telnetd.py 1>/dev/null 2>&1 &" <%= telnetd_user %>
 	        echo $! > $PIDFILE
 		iptables -t nat -I PREROUTING 1 -p tcp --dport 23 -j REDIRECT --to-port <%= telnetd_port %>
 

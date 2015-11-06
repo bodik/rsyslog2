@@ -5,7 +5,7 @@ class hptelnetd (
 
 	$telnetd_user = "telnetd",
 	$telnetd_port = 63023,
-	$telnetd_logfile = "telnet.log",	
+	$telnetd_logfile = "telnetd.log",	
 	
 	$warden_server = undef,
 	$warden_server_auto = true,

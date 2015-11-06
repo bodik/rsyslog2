@@ -17,6 +17,36 @@ if PY3:
 else:
     text_type = unicode
 
+def IDEA_fill_addresses(event, source_ip, destination_ip, anonymised, anonymised_net):
+   af = "IP4" if not ':' in source_ip else "IP6"
+   event['Source'][0][af] = [source_ip]
+   if anonymised != 'omit':
+           if anonymised == 'yes':
+                   event['Target'][0]['Anonymised'] = True
+                   event['Target'][0][af] = [anonymised_net]
+           else:
+                   event['Target'][0][af] = [destination_ip]
+
+   return event
+
+def hexdump(src, length = 16):
+    FILTER =''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
+    N = 0
+    result=''
+ 
+    while src:
+            s,src = src[:length],src[length:]
+            hexa = ' '.join(["%02X"%ord(x) for x in s])
+            s = s.translate(FILTER)
+            result += "%04X   %-*s   %s\n" % (N, length*3, hexa, s)
+            N += length
+
+    return result
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #0x8915 - SIOCGIFADDR
+    return socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,struct.pack('256s', ifname[:15]))[20:24])
 
 def force_text(s, encoding='utf-8', errors='strict'):
     if isinstance(s, text_type):
