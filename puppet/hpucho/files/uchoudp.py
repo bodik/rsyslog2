@@ -14,7 +14,7 @@ import scapy.all
 
 hconfig = read_cfg('uchoudp.cfg')
 skipports = hconfig.get('port_skip', [])
-
+logger = w3u.getLogger(hconfig['logfile'])
 
 class UchoUDP(DatagramProtocol):
     
@@ -24,16 +24,7 @@ class UchoUDP(DatagramProtocol):
    
     def __init__(self):
 	self.dst_ip = w3u.get_ip_address(self.iface)
-       	self.setLogging(hconfig['logfile'])
    
-    def setLogging(self, logname):
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        handler = logging.FileHandler(logname)
-        handler.setLevel(logging.INFO)
-
-        self.logger.addHandler(handler)
-    
     def datagramReceived(self, data, (host, port)):
 	if re.match("autotest.*", data):
 		self.transport.write(data, (host, port))
@@ -46,12 +37,14 @@ class UchoUDP(DatagramProtocol):
 			 "src_port"    : port,
 			 "dst_ip"      : self.dst_ip,
 			 "dst_port"    : self.transport.socket.getsockname()[1],
+			 "decoded"     : "",
+			 "smart"       : "",
 			 "data"        : w3u.hexdump(data),
 		}
 
 		data2log = self.proto_detection(data2log, data)
 		
-		self.logger.info(json.dumps(data2log))	
+		logger.info(json.dumps(data2log))	
 
     def proto_detection(self, event, data):
          try:
