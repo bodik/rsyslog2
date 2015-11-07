@@ -17,6 +17,7 @@ end
 redis_host = "127.0.0.1"
 redis_port = 16379
 redis_key = "r6test"
+batch = 1000
 
 $count = 0
 
@@ -36,16 +37,48 @@ while true do
 	begin
 		conn = Hiredis::Connection.new
 		conn.connect(redis_host, redis_port)
+
 		while true do
-			conn.write ["LPOP", redis_key]
-			a = conn.read
-			if a
-	        		$logger.debug("read #{a.rstrip()}")
-				$count = $count + 1
-			else
-				sleep(1)
-		 	end
+			#hopefully pipeline read ;)
+			(0..batch).each do |i|
+				begin
+					conn.write ["LPOP", redis_key]
+				rescue => e
+					$logger.error(e)
+					$logger.error("error sending %s, retry ..." % i)
+					sleep 1
+					retry
+				end
+			end
+			#must read responses from redise server	
+			(0..batch).each do
+				begin
+					a = conn.read
+					if a
+			        		$logger.debug("read #{a.rstrip()}")
+						$count = $count + 1
+				 	end
+				rescue => e
+					$logger.error(e)
+					$logger.error("error reading pipe response, retry ...")
+					sleep 1
+					retry
+				end
+			end
+
+#			#single read
+#			conn.write ["LPOP", redis_key]
+#			a = conn.read
+#			if a
+#	        		#$logger.debug("read #{a.rstrip()}")
+#				$count = $count + 1
+#			else
+#				sleep(1)
+#		 	end
+
+
 		end
+
 	rescue Exception => e
         	$logger.error("exception #{e}")
 		$logger.info("read so far #{$count}")
