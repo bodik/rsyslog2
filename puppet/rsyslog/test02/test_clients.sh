@@ -1,23 +1,19 @@
 #!/bin/sh
 
 set -e
-
 . /puppet/metalib/bin/lib.sh
 
 TESTID="ti$(date +%s)"
-
 if [ -z $1 ]; then
     LEN=4
 else
     LEN=$1
 fi
-
 if [ -z $2 ]; then
     DISRUPT="none"
 else
     DISRUPT=$2
 fi
-
 if [ -z $CLOUD ]; then
     CLOUD="metacloud"
 fi
