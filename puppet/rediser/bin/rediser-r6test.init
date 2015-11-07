@@ -1,0 +1,52 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          rediser-r6test
+# Required-Start:    networking
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: rediser-r6test
+### END INIT INFO
+
+. /puppet/metalib/bin/lib.sh
+
+BASE=/puppet/rediser/bin
+
+cd /tmp || exit 1
+
+killwaitpids() {
+        PID="$@"
+	if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+case "$1" in
+
+	start)
+        	echo -n "Starting rediser-r6test: "
+
+	        ${BASE}/ncat -l -m 5 -k -c "setsid /bin/bash ${BASE}/rediser-r6test-filter.sh" 0.0.0.0 1234 &
+	        echo $! > /var/run/rediser-r6test.pid
+
+	        echo "done"
+	;;
+	stop)
+	        echo -n "Stopping rediser-r6test: "
+		if [ -f /var/run/rediser-r6test.pid ]; then
+		        killwaitpids $(cat /var/run/rediser-r6test.pid)
+		        rm /var/run/rediser-r6test.pid
+		fi
+	        echo "done"
+	;;
+	*)
+		echo "$0 start|strop"
+		exit 1
+	;;
+esac
+
