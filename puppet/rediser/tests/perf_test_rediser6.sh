@@ -76,7 +76,7 @@ sleep 10
 
 #old
 sh bin/rediser-r6test.init stop
-count 60 #rediser4 has hardcoded teardown
+count 30 #rediser4 has hardcoded teardown
 
 
 
