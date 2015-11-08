@@ -49,11 +49,11 @@ TIME_START=$(date +%s)
 
 #start rediser
 #new
-#ruby bin/rediser6.rb --rediser-port 1234 --redis-host 127.0.0.1 --redis-port 16379 --redis-key r6test --flush-size 100 --flush-timeout 3 --max-enqueue 50 --debug &
-
+###ruby bin/rediser6.rb --rediser-port 1234 --redis-host 127.0.0.1 --redis-port 16379 --redis-key r6test --flush-size 1000 --flush-timeout 3 --max-enqueue 500000 &
+###PID_REDISER=$!
 #old
 sh bin/rediser-r6test.init start
-PID_REDISER=$!
+
 sleep 3
 
 #run reader
@@ -68,12 +68,9 @@ sleep 10
 #disrupt ? ;)
 
 
-
-
 #stop rediser/teardown
 #new
-#kill -TERM $PID_REDISER
-
+###kill -TERM $PID_REDISER
 #old
 sh bin/rediser-r6test.init stop
 count 30 #rediser4 has hardcoded teardown

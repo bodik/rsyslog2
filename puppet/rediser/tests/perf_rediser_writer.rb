@@ -29,7 +29,7 @@ OptionParser.new do |opts|
 	end
 
 end.parse!
-$logger.info($options)
+$logger.info("startup options #{$options}")
 
 
 
@@ -38,13 +38,17 @@ $logger.info($options)
 beginning_time = Time.now
 
 i=0
-s = TCPSocket.open($options["rediser_host"], $options["rediser_port"])
-while i < $options["count"]
-	s.puts "#{$options["tid"]} tmsg#{i}\n"
-	i = i+1
+begin
+	s = TCPSocket.open($options["rediser_host"], $options["rediser_port"])
+	while i < $options["count"]
+		s.puts "#{$options["tid"]} tmsg#{i}\n"
+		i = i+1
+	end
+	s.close
+rescue Exception => e
+	$logger.error("exception #{e}")
 end
-s.close
 
 #perf
 end_time = Time.now
-$logger.info("perf_rediser_write.rb count #{$options["count"]} sent #{i} time #{(end_time - beginning_time)} s")
+$logger.info("count #{$options["count"]} sent #{i} time #{(end_time - beginning_time)} s")

@@ -13,11 +13,12 @@ $logger.formatter = proc do |severity, datetime, progname, msg|
 	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
 	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
 end
-
-redis_host = "127.0.0.1"
-redis_port = 16379
-redis_key = "r6test"
-batch = 1000
+$options = {}
+$options["redis_host"] = "127.0.0.1"
+$options["redis_port"] = 16379
+$options["redis_key"] = "r6test"
+$options["batch"] = 1000
+$logger.info("startup options #{$options}")
 
 $count = 0
 
@@ -36,13 +37,13 @@ Signal.trap("TERM") { teardown() }
 while true do
 	begin
 		conn = Hiredis::Connection.new
-		conn.connect(redis_host, redis_port)
+		conn.connect($options["redis_host"], $options["redis_port"])
 
 		while true do
 			#hopefully pipeline read ;)
-			(0..batch).each do |i|
+			(0..$options["batch"]).each do |i|
 				begin
-					conn.write ["LPOP", redis_key]
+					conn.write ["LPOP", $options["redis_key"]]
 				rescue => e
 					$logger.error(e)
 					$logger.error("error sending %s, retry ..." % i)
@@ -51,11 +52,11 @@ while true do
 				end
 			end
 			#must read responses from redise server	
-			(0..batch).each do
+			(0..$options["batch"]).each do
 				begin
 					a = conn.read
 					if a
-			        		$logger.debug("read #{a.rstrip()}")
+			        		#$logger.debug("read #{a.rstrip()}")
 						$count = $count + 1
 				 	end
 				rescue => e
@@ -67,7 +68,7 @@ while true do
 			end
 
 #			#single read
-#			conn.write ["LPOP", redis_key]
+#			conn.write ["LPOP", $options["redis_key"]]
 #			a = conn.read
 #			if a
 #	        		#$logger.debug("read #{a.rstrip()}")
