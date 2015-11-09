@@ -9,10 +9,6 @@ Thread.current["name"] = "perf_rediser_writer.rb"
 $logger = Logger.new(STDOUT)
 # DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
 $logger.level = Logger::INFO
-$logger.formatter = proc do |severity, datetime, progname, msg|
-	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
-	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
-end
 $options = {}
 $options["rediser_host"] = "127.0.0.1"
 $options["rediser_port"] = 1234
@@ -24,6 +20,10 @@ OptionParser.new do |opts|
 	opts.on("-i", "--testid ID", "testid") do |v| $options["tid"] = v end
 	opts.on("-d", "--debug", "debug") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
 end.parse!
+$logger.formatter = proc do |severity, datetime, progname, msg|
+	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
+	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
+end
 $logger.info("startup options #{$options}")
 
 

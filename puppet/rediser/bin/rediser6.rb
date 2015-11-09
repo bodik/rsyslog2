@@ -203,11 +203,6 @@ Thread.current["name"] = "rediser6-main"
 $logger = Logger.new(STDOUT)
 # DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
 $logger.level = Logger::INFO
-$logger.formatter = proc do |severity, datetime, progname, msg|
-	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
-	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
-end
-
 $options = {}
 $options["redis_host"] = "127.0.0.1"
 $options["redis_port"] = 16379
@@ -227,9 +222,16 @@ OptionParser.new do |opts|
 	opts.on("-f", "--flush-size SIZE", "flush x buffered events to redis using pipeline") do |v| $options["flush_size"] = v.to_i end
 	opts.on("-t", "--flush-timeout TIMEOUT", "flush at least in x second") do |v| $options["flush_timeout"] = v.to_i end
 	opts.on("-m", "--max-enqueue MAX", "maximum redis queue len") do |v| $options["max_enqueue"] = v.to_i end
+	opts.on("-o", "--output LOGFILE", "log output to file") do |v| $options["output"] = v; $logger = Logger.new($options["output"]) end
 	opts.on("-d", "--debug", "debug mode") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
 end.parse!
+$logger.formatter = proc do |severity, datetime, progname, msg|
+	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
+	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
+end
 $logger.info("startup options #{$options}")
+
+
 
 Signal.trap("INT") { raise RediserShutdown }
 Signal.trap("TERM") { raise RediserShutdown }
