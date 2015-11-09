@@ -16,17 +16,19 @@ end
 
 class Rediser < Thread
    	def initialize(connection, redis_host, redis_port, redis_key, flush_size, flush_timeout, max_enqueue)
-    		super(&method(:thread))
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
 		@queue = []
 		@conn = nil
-
 		#http://www.regular-expressions.info/posixbrackets.html
 		#[:print:] 	Visible characters and spaces (i.e. anything except control characters, etc.) 	[\x20-\x7E]
 		@allowed_chars = ""
 		(32..126).to_a.each { |x| @allowed_chars+=x.chr }
 
 		@connection = connection
+		sock_domain, remote_port, remote_hostname, remote_ip = @connection.peeraddr
+		@connection_remote_ip = remote_ip
+		@connection_remote_port = remote_port
+
 		@redis_host = redis_host
 		@redis_port = redis_port
 		@redis_key = redis_key
@@ -36,8 +38,7 @@ class Rediser < Thread
 		@max_enqueue = [1, max_enqueue - @flush_size].max
 
 		@flush_thread = Thread.new do
-			sock_domain, remote_port, remote_hostname, remote_ip = @connection.peeraddr
-			Thread.current["name"] = "flush-#{remote_ip}-#{remote_port}"
+			Thread.current["name"] = "flush-#{@connection_remote_ip}-#{@connection_remote_port}"
 			@logger.info("flush thread initialized")
 		        while sleep(@flush_timeout) do
 				@logger.debug("flush thread waked")
@@ -46,6 +47,8 @@ class Rediser < Thread
 		end
 
 		@logger.info("rediser thread initialized")
+
+    		super(&method(:thread))
 	end
 	
 	def receive(line)
@@ -133,11 +136,9 @@ class Rediser < Thread
 
 	def thread()
 		#RubyProf.start
-
 		begin
-			sock_domain, remote_port, remote_hostname, remote_ip = @connection.peeraddr
-			Thread.current["name"] = "rediser-#{remote_ip}-#{remote_port}"
-			@logger.info("client #{remote_ip} connected")
+			Thread.current["name"] = "rediser-#{@connection_remote_ip}-#{@connection_remote_port}"
+			@logger.info("client #{@connection_remote_ip} connected")
 
 			redis_connect()
 			while line = @connection.gets 
@@ -150,7 +151,7 @@ class Rediser < Thread
 		end
 
 		close_client()
-		@logger.info("client #{remote_ip} disconnected")
+		@logger.info("client #{@connection_remote_ip} disconnected")
 		teardown()
 		if @conn
 			@conn.disconnect()
@@ -165,15 +166,24 @@ end
 
 
 class Tlister < Thread
-	def initialize() 
-    		super(&method(:thread))
+	def initialize(tlisterperiod) 
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
+		@tlisterperiod = tlisterperiod
+    		super(&method(:thread))
 	end
 	def thread() 
 		Thread.current["name"] = "tlister"; 
-		while sleep(10) do 
+		while sleep(@tlisterperiod) do 
 			Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")}
 			@logger.info($threads)
+			$threads.each do |th|
+				if not th.alive?
+					#@logger.info("to be joined #{th}")
+					th.join(2)
+					$threads.delete(th)
+					#@logger.info("joined succesfully #{th}")
+				end
+			end
 		end 
 	end
 end
@@ -203,6 +213,7 @@ $options["flush_size"] = 1000
 $options["flush_timeout"] = 10
 $options["max_enqueue"] = 500000
 $options["debug"] = false
+$options["tlisterperiod"] = 60
 OptionParser.new do |opts|
 	opts.banner = "Usage: example.rb [options]"
 	opts.on("-l", "--rediser-port PORT", "rediser port") do |v| $options["rediser_port"] = v.to_i end
@@ -233,16 +244,18 @@ def shutdown()
 	exit!
 end
 
-$tlister_thread = Tlister.new
+$tlister_thread = Tlister.new($options["tlisterperiod"])
 
 $threads = []
 server = TCPServer.new($options["rediser_port"])
 loop do
 	begin
+
 		connection = server.accept
 		connection.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
 		$logger.info("accepted connection #{connection}")
 		$threads << Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
+
 	rescue RediserShutdown => e
 		shutdown()
 	rescue Exception => e
