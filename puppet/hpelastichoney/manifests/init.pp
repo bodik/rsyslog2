@@ -8,6 +8,9 @@ class hpelastichoney (
 	$warden_server = undef,
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
+
+	$logfile = "elastichoney.log",
+
 ) {
 
 	if ($warden_server) {

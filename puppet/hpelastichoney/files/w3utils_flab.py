@@ -1,84 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-#
-# na motivy kostejova romanu
-
-#warden
-from warden_client import Client, Error, read_cfg, format_timestamp
-import json
-import string
-from time import time, gmtime, strftime
-from math import trunc
-from uuid import uuid4
-import os
-import sys
-
-DEFAULT_ACONFIG = 'warden_client-elastichoney.cfg'
-DEFAULT_WCONFIG = 'warden_client.cfg'
-DEFAULT_NAME = 'org.example.warden.test'
-DEFAULT_AWIN = 5
-DEFAULT_ANONYMISED = 'no'
-DEFAULT_TARGET_NET = '0.0.0.0/0'
-
-#warden client startup
-aconfig = read_cfg(DEFAULT_ACONFIG)
-wconfig = read_cfg(aconfig.get('warden', DEFAULT_WCONFIG))
-aname = aconfig.get('name', DEFAULT_NAME)
-awin = aconfig.get('awin', DEFAULT_AWIN) * 60
-wconfig['name'] = aname
-wclient = Client(**wconfig)
-aanonymised = aconfig.get('anonymised', DEFAULT_ANONYMISED)
-if aanonymised not in ['no', 'yes', 'omit']:
-	wclient.logger.error("Configuration error: anonymised: '%s' - possible typo? use 'no', 'yes' or 'omit'" % aanonymised)
-	sys.exit(2)
-atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
-aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
-
-
-def fill_addresses(event, src_ip, anonymised, target_net):
-	af = "IP4" if not ':' in src_ip else "IP6"
-	event['Source'][0][af] = [src_ip]
-	if anonymised != 'omit':
-		if anonymised == 'yes':
-			event['Target'][0]['Anonymised'] = True
-			event['Target'][0][af] = [target_net]
-		else:
-			event['Target'][0][af] = [dst_ip]
-
-	return event
-
-
-def gen_event_idea_elastichoney(client_name, detect_time, conn_count, src_ip, dst_ip, anonymised, target_net, 
-	data):
-
-	event = {
-		"Format": "IDEA0",
-		"ID": str(uuid4()),
-		"DetectTime": detect_time,
-		"Category": ["Recon.Scanning"],
-		"Note": "Elastichoney event",
-		"ConnCount": conn_count,
-		"Source": [{}],
-		"Target": [{ "Proto": ["tcp", "http"], "Port" : [9200] }],
-		"Node": [
-			{
-				"Name": client_name,
-				"Tags": ["Honeypot", "Data"],
-				"SW": ["Elastichoney"],
-			}
-		],
-		"Attach": [ { "ehevent": data, "smart": data["type"] } ]
-  	}
-	event = fill_addresses(event, src_ip, anonymised, target_net)
-  
-	return event
-
-
-
-
-
-#pygtail
-##from __future__ import print_function
 from os import stat, fstat
 from os.path import exists, getsize
 from datetime import datetime, timedelta
@@ -88,7 +7,8 @@ import signal
 import socket
 import sys
 import time
-from optparse import OptionParser
+import socket, fcntl, struct
+import logging
 
 __version__ = '0.5.3'
 
@@ -98,12 +18,51 @@ if PY3:
 else:
     text_type = unicode
 
+def IDEA_fill_addresses(event, source_ip, destination_ip, anonymised, anonymised_net):
+   af = "IP4" if not ':' in source_ip else "IP6"
+   event['Source'][0][af] = [source_ip]
+   if anonymised != 'omit':
+           if anonymised == 'yes':
+                   event['Target'][0]['Anonymised'] = True
+                   event['Target'][0][af] = [anonymised_net]
+           else:
+                   event['Target'][0][af] = [destination_ip]
+
+   return event
+
+def hexdump(src, length = 16):
+    FILTER =''.join([(len(repr(chr(x)))==3) and chr(x) or '.' for x in range(256)])
+    N = 0
+    result=''
+ 
+    while src:
+            s,src = src[:length],src[length:]
+            hexa = ' '.join(["%02X"%ord(x) for x in s])
+            s = s.translate(FILTER)
+            result += "%04X   %-*s   %s\n" % (N, length*3, hexa, s)
+            N += length
+
+    return result
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    #0x8915 - SIOCGIFADDR
+    return socket.inet_ntoa(fcntl.ioctl(s.fileno(),0x8915,struct.pack('256s', ifname[:15]))[20:24])
 
 def force_text(s, encoding='utf-8', errors='strict'):
     if isinstance(s, text_type):
         return s
     return s.decode(encoding, errors)
 
+def getLogger(logname):
+   logger = logging.getLogger(__name__)
+   logger.setLevel(logging.INFO)
+   handler = logging.FileHandler(logname)
+   handler.setLevel(logging.INFO)
+
+   logger.addHandler(handler)
+
+   return logger
 
 class Pygtail(object):
     """
@@ -359,43 +318,3 @@ class Pygtail(object):
     def exit_handler(self, signal, frame):
         logging.info("Received exit signal, shutting down...")
         sys.exit(0)
-
-
-
-
-#reporter
-##from pygtail import Pygtail
-import dateutil.parser, calendar
-
-events = []
-for line in Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
-	#sys.stdout.write(line)
-	data = json.loads(line)
-
-	#import pdb; pdb.set_trace()
-	#yes gringo ;) text > object > unixtime > text again
-	dtime = format_timestamp( calendar.timegm( dateutil.parser.parse(data["@timestamp"]).utctimetuple() ) )
-	a = gen_event_idea_elastichoney(
-		client_name = aname, 
-		detect_time = dtime, 
-		conn_count = 1, 
-		src_ip = data['source'], 
-		dst_ip = data['honeypot'],
-		anonymised = aanonymised, 
-		target_net = atargetnet,
-		
-		data = data	
-	)
-	#print json.dumps(a)
-	events.append(a)
-
-print "=== Sending ==="
-start = time.time()
-ret = wclient.sendEvents(events)
-print json.dumps(events, indent=3)
-
-if 'saved' in ret:
-	wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
-
-print "Time: %f" % (time.time() - start)
-
