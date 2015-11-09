@@ -74,6 +74,9 @@ sleep 3
 ruby tests/perf_redis_reader.rb > $LOG &
 PID_READER=$!
 # run writer
+for i in $(seq 1 3); do
+	ruby tests/perf_rediser_writer.rb -c $LEN -i $TESTID &
+done
 ruby tests/perf_rediser_writer.rb -c $LEN -i $TESTID
 sleep 10
 
@@ -105,7 +108,7 @@ CLIENT="local"
 TESTID="testid"
 DELIVERED=$(cat $LOG | grep "INFO perf_redis_reader.rb: RESULT: read" | rev | awk '{print $1}' | rev)
 DELIVEREDUNIQ=$DELIVERED
-awk -F':' -v LEN=$LEN -v DELIVEREDUNIQ=$DELIVEREDUNIQ -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID -v TESTTIME=$(($TIME_STOP-$TIME_START)) '
+awk -F':' -v LEN=$(( $LEN * 4 )) -v DELIVEREDUNIQ=$DELIVEREDUNIQ -v DELIVERED=$DELIVERED -v CLIENT=$CLIENT -v TESTID=$TESTID -v TESTTIME=$(($TIME_STOP-$TIME_START)) '
 BEGIN {
 	PERC=DELIVERED/(LEN/100);
 	PERCUNIQ=DELIVEREDUNIQ/(LEN/100);
