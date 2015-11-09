@@ -37,7 +37,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		$PYTHON ${BASE}/uchoudp.py 1>/dev/null 2>&1 &
+		$PYTHON ${BASE}/uchoudp.py 1>/uchoudp-init.log 2>&1 &
 	        echo $! > $PIDFILE
 
 	        echo "done"
