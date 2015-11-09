@@ -8,13 +8,16 @@ from twisted.internet.protocol import ServerFactory
 from twisted.internet import reactor
 from time import sleep
 import json
-import logging
+import w3utils_flab as w3u
 
 hconfig = read_cfg('telnetd.cfg')
+logger = w3u.getLogger(hconfig['logfile'])
 
 class telnetd(StatefulTelnetProtocol, object):
     DEF_USER = "root"
     DEF_PASS = "toor"
+    DEF_AUTOTEST_USER = "autotest"
+    DEF_AUTOTEST_PASS = "autotest.123456"
     MAX_LOGIN_COUNT = 3
     LOGIN_DELAY = 1
     PROMPT = "/ # "
@@ -26,7 +29,7 @@ class telnetd(StatefulTelnetProtocol, object):
     state = 'User'
     logcount = 0
     lastaction = None
-    logger = None
+    autotest = False
     
     ECHO  = chr(1)  # Server-to User:  States that the server is sending echos of the transmitted data.
                     # Sent only as a reply to ECHO or NO ECHO..
@@ -41,7 +44,7 @@ class telnetd(StatefulTelnetProtocol, object):
 	      }
 
     def __init__(self):
-	self.setLogging(hconfig['logfile'])
+	pass
 
     def telnet_Password(self, line):
 	self.lastaction = "PASSWORD"
@@ -99,6 +102,10 @@ class telnetd(StatefulTelnetProtocol, object):
   
     def checkCreds(self, username, password):
 	self._data.append("%s:%s" % (username, password))
+	if username == self.DEF_AUTOTEST_USER and password == self.DEF_AUTOTEST_PASS:
+		self.autotest = True
+		return True
+
 	if username == self.DEF_USER and password  == self.DEF_PASS:
 		return True
 	else:
@@ -129,6 +136,9 @@ class telnetd(StatefulTelnetProtocol, object):
 	return 'User'    
 
     def connectionLost(self, reason):
+	if self.autotest:
+		return
+
 	lastaction = self.lastaction
 	category = "Other"
 	if lastaction == "CONNECTED":
@@ -153,7 +163,7 @@ class telnetd(StatefulTelnetProtocol, object):
 		 "data"        : "\n".join(self._data),
         }
         
-	self.logger.info(json.dumps(data))
+	logger.info(json.dumps(data))
 
     def showBanner(self):
  	self.transport.write("""
@@ -168,14 +178,6 @@ class telnetd(StatefulTelnetProtocol, object):
     def promptUsername(self):
 	self.transport.write(self.MSG_PRELOGIN)
 	self.transport.write("Username: ")
-
-    def setLogging(self, logname):
-	self.logger = logging.getLogger(__name__)
-	self.logger.setLevel(logging.INFO)
-	handler = logging.FileHandler(logname)
-	handler.setLevel(logging.INFO)
-
-	self.logger.addHandler(handler)
 
     def enableRemote(self, option):
 	return False
