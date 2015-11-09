@@ -2,13 +2,14 @@
 
 require 'hiredis'
 require 'logger'
+require 'optparse'
 
 class Interrupted < StandardError; end
 #Thread.abort_on_exception=true
 Thread.current["name"] = "perf_redis_reader.rb"
 $logger = Logger.new(STDOUT)
 # DEBUG < INFO < WARN < ERROR < FATAL < UNKNOWN
-$logger.level = Logger::DEBUG
+$logger.level = Logger::INFO
 $logger.formatter = proc do |severity, datetime, progname, msg|
 	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
 	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
@@ -18,6 +19,12 @@ $options["redis_host"] = "127.0.0.1"
 $options["redis_port"] = 16379
 $options["redis_key"] = "r6test"
 $options["batch"] = 1000
+OptionParser.new do |opts|
+	opts.banner = "Usage: example.rb [options]"
+	opts.on("-d", "--debug", "debug") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
+	opts.on("-i", "--testid ID", "testid") do |v| $options["tid"] = v end
+end.parse!
+
 $logger.info("startup options #{$options}")
 
 $count = 0
@@ -56,8 +63,10 @@ while true do
 				begin
 					a = conn.read
 					if a
-			        		#$logger.debug("read #{a.rstrip()}")
-						$count = $count + 1
+			        		$logger.debug("read #{a.rstrip()}")
+						if a.start_with?("perftestmessage")
+							$count = $count + 1
+						end
 				 	end
 				rescue => e
 					$logger.error(e)

@@ -4,16 +4,26 @@ set -e
 . /puppet/metalib/bin/lib.sh
 
 TESTID="ti$(date +%s)"
-if [ -z $1 ]; then
-    LEN=11
-else
-    LEN=$1
-fi
-#if [ -z $2 ]; then
-#    DISRUPT="none"
-#else
-#    DISRUPT=$2
-#fi
+LEN=11
+VERSIONTOTEST="new"
+
+usage() { echo "Usage: $0 [-c <TESTLEN>] [-n new|old]" 1>&2; exit 1; }
+while getopts "c:n:" o; do
+    case "${o}" in
+        c)
+            LEN=${OPTARG}
+            ;;
+        n)
+            VERSIONTOTEST=${OPTARG}
+            ;;
+        *)
+            usage
+        ;;
+    esac
+done
+shift $((OPTIND-1))
+
+
 
 LOG="/tmp/perf_test_rediser6.sh.log.$$"
 handler()
@@ -49,10 +59,14 @@ TIME_START=$(date +%s)
 
 #start rediser
 #new
-###ruby bin/rediser6.rb --rediser-port 1234 --redis-host 127.0.0.1 --redis-port 16379 --redis-key r6test --flush-size 1000 --flush-timeout 3 --max-enqueue 500000 &
-###PID_REDISER=$!
+if [ $VERSIONTOTEST = "new" ]; then
+	ruby bin/rediser6.rb --rediser-port 1234 --redis-host 127.0.0.1 --redis-port 16379 --redis-key r6test --flush-size 1000 --flush-timeout 10 --max-enqueue 500000 &
+	PID_REDISER=$!
+fi
 #old
-sh bin/rediser-r6test.init start
+if [ $VERSIONTOTEST = "old" ]; then
+	sh bin/rediser-r6test.init start
+fi
 
 sleep 3
 
@@ -70,9 +84,13 @@ sleep 10
 
 #stop rediser/teardown
 #new
-###kill -TERM $PID_REDISER
+if [ $VERSIONTOTEST = "new" ]; then
+	kill -TERM $PID_REDISER
+fi
 #old
-sh bin/rediser-r6test.init stop
+if [ $VERSIONTOTEST = "old" ]; then
+	sh bin/rediser-r6test.init stop
+fi
 count 30 #rediser4 has hardcoded teardown
 
 

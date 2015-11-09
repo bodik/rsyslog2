@@ -6,6 +6,8 @@ require 'socket'
 require 'logger'
 require 'optparse'
 
+require 'stackprof'
+
 
 #############################################app classes
 
@@ -15,10 +17,10 @@ end
 class Rediser < Thread
    	def initialize(connection, redis_host, redis_port, redis_key, flush_size, flush_timeout, max_enqueue)
     		super(&method(:thread))
-
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
-
 		@queue = []
+		@conn = nil
+
 		@connection = connection
 		@redis_host = redis_host
 		@redis_port = redis_port
@@ -38,7 +40,6 @@ class Rediser < Thread
 		        end
 		end
 
-		@conn = connect()
 		@logger.info("rediser thread initialized")
 	end
 	
@@ -53,18 +54,22 @@ class Rediser < Thread
 		end
 	end
 
-	def connect()
+	def redis_connect()
 		@logger.info("connecting to redis server")
-		conn = Hiredis::Connection.new
-		conn.connect(@redis_host, @redis_port)
-		@logger.info("connected to redis server #{conn}")
-		return conn
+		begin
+			@conn = Hiredis::Connection.new
+			@conn.connect(@redis_host, @redis_port)
+			@logger.info("connected to redis server #{@conn}")
+		rescue Exception => e
+			@logger.error(e)
+			raise e, "cannot connect to rediser server"
+		end
 	end
 
 	def flush()
 		@logger.debug("rediser flush begin")
 		if !@flush_mutex.try_lock # failed to get lock
-			@logger.warn("rediser flush failed to lock mutex")
+			@logger.debug("rediser flush failed to lock mutex")
 			return
 		end
 
@@ -101,7 +106,7 @@ class Rediser < Thread
 		@logger.debug("rediser flush end")
 	end
 
-	def close()
+	def close_client()
 		if not @connection.closed? then @connection.close end
 	end
 
@@ -127,17 +132,20 @@ class Rediser < Thread
 			Thread.current["name"] = "rediser-#{remote_ip}-#{remote_port}"
 			@logger.info("client #{remote_ip} connected")
 
+			redis_connect()
 			while line = @connection.gets 
 				#@logger.debug("#{@connection} received: "+line.rstrip())
+				line = line.gsub(/[^[:print:]]/,'?')
 				receive(line)
 		    	end
 		rescue Exception => e
 			@logger.error("exception #{e}, receiving data from client")
 		end
 
-		close()
+		close_client()
 		@logger.info("client #{remote_ip} disconnected")
 		teardown()
+		@conn.disconnect()
 	end
 end
 
@@ -149,7 +157,7 @@ class Tlister < Thread
 	end
 	def thread() 
 		Thread.current["name"] = "tlister"; 
-		while sleep(3) do Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")} end 
+		while sleep(60) do Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")} end 
 	end
 end
 
@@ -198,7 +206,7 @@ def shutdown()
 	$logger.info("received shutdown")
 
 	$threads.each do |x|
-		x.close()
+		x.close_client()
 		x.join
 	end
 
