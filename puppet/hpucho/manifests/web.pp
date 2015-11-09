@@ -19,10 +19,6 @@ class hpucho::web (
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 
-	# application
-	package { "python-flask": #uchoweb1
-		ensure => installed, 
-	}
 	package { "python-jinja2": #uchoweb2
 		ensure => installed, 
 	}
@@ -31,9 +27,9 @@ class hpucho::web (
 		owner => "root", group => "root", mode => "0755",
 	}
 	file { "${install_dir}/uchoweb.py":
-		source => "puppet:///modules/${module_name}/uchoweb/uchoweb2.py",
+		source => "puppet:///modules/${module_name}/uchoweb/uchoweb.py",
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}"], Package["python-flask"]],
+		require => [File["${install_dir}"], Package["python-jinja2"]],
 		notify => Service["uchoweb"],
 	}
 	file { "${install_dir}/content.tgz":
