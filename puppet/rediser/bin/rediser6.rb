@@ -6,7 +6,7 @@ require 'socket'
 require 'logger'
 require 'optparse'
 
-require 'stackprof'
+require 'ruby-prof'
 
 
 #############################################app classes
@@ -20,6 +20,11 @@ class Rediser < Thread
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
 		@queue = []
 		@conn = nil
+
+		#http://www.regular-expressions.info/posixbrackets.html
+		#[:print:] 	Visible characters and spaces (i.e. anything except control characters, etc.) 	[\x20-\x7E]
+		@allowed_chars = ""
+		(32..126).to_a.each { |x| @allowed_chars+=x.chr }
 
 		@connection = connection
 		@redis_host = redis_host
@@ -127,6 +132,8 @@ class Rediser < Thread
 	end
 
 	def thread()
+		#RubyProf.start
+
 		begin
 			sock_domain, remote_port, remote_hostname, remote_ip = @connection.peeraddr
 			Thread.current["name"] = "rediser-#{remote_ip}-#{remote_port}"
@@ -135,7 +142,7 @@ class Rediser < Thread
 			redis_connect()
 			while line = @connection.gets 
 				#@logger.debug("#{@connection} received: "+line.rstrip())
-				line = line.gsub(/[^[:print:]]/,'?')
+				line = line.tr("^#{@allowed_chars}",'?')
 				receive(line)
 		    	end
 		rescue Exception => e
@@ -145,7 +152,14 @@ class Rediser < Thread
 		close_client()
 		@logger.info("client #{remote_ip} disconnected")
 		teardown()
-		@conn.disconnect()
+		if @conn
+			@conn.disconnect()
+		end
+	
+		#result = RubyProf.stop
+		## Print a flat profile to text
+		#printer = RubyProf::FlatPrinter.new(result)
+		#printer.print(STDOUT)
 	end
 end
 
@@ -157,7 +171,10 @@ class Tlister < Thread
 	end
 	def thread() 
 		Thread.current["name"] = "tlister"; 
-		while sleep(60) do Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")} end 
+		while sleep(10) do 
+			Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")}
+			@logger.info($threads)
+		end 
 	end
 end
 
@@ -223,6 +240,7 @@ server = TCPServer.new($options["rediser_port"])
 loop do
 	begin
 		connection = server.accept
+		connection.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
 		$logger.info("accepted connection #{connection}")
 		$threads << Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
 	rescue RediserShutdown => e
