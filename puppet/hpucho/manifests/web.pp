@@ -26,6 +26,10 @@ class hpucho::web (
 	package { "python-jinja2": 
 		ensure => installed, 
 	}
+	user { "$uchoweb_user":
+                ensure => present,
+                managehome => false,
+        }
 	file { ["${install_dir}"]:
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
@@ -88,13 +92,6 @@ class hpucho::web (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-uchoweb.cfg":
-		content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
-		require => File["${install_dir}"],
-		notify => Service["uchoweb"],
-	}
 
         # reporting
 
@@ -107,6 +104,7 @@ class hpucho::web (
                 owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
                 require => File["${install_dir}/w3utils_flab.py"],
         }
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
         file { "${install_dir}/warden_client-uchoweb.cfg":
                 content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
                 owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",

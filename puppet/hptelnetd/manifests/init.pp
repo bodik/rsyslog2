@@ -3,7 +3,7 @@
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
 
-	$telnetd_user = "telnetd",
+	$telnetd_user = "root",
 
 	$telnetd_port = 63023,
 
@@ -77,12 +77,6 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-telnetd.cfg":
-		content => template("${module_name}/warden_client-telnetd.cfg.erb"),
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
-		require => File["${install_dir}"],
-	}
 
 	# reporting
 
@@ -95,10 +89,11 @@ class hptelnetd (
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         	require => File["${install_dir}/w3utils_flab.py"],
 	}
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/warden_client-telnetd.cfg":
                 content => template("${module_name}/warden_client-telnetd.cfg.erb"),
                 owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-                require => File["${install_dir}/telnetd.py","{install_dir}/w3utils_flab.py","${install_dir}/warden3-telnetd-sender.py"],
+                require => File["${install_dir}/telnetd.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-telnetd-sender.py"],
         }
     	file { "/etc/cron.d/warden-telnetd":
                 content => template("${module_name}/warden-telnetd.cron.erb"),

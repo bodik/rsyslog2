@@ -1,9 +1,9 @@
 {
     "warden": "warden_client.cfg",
-    "name": "<%= fqdn_rev %>.telnetd",
+    "name": "<%= @fqdn_rev %>.telnetd",
 
     "anonymised": "yes",
-    "target_net": "<%= anonymised_target_net %>",
+    "target_net": "<%= @anonymised_target_net %>",
 
-    "logfile" : <%= logfile =%>
+    "logfile" : "<%= @logfile %>"
 }

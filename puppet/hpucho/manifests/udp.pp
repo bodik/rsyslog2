@@ -24,6 +24,11 @@ class hpucho::udp (
         }
 
 	# application
+	user { "$uchoudp_user":
+                ensure => present,
+                managehome => false,
+        }
+
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
@@ -77,14 +82,6 @@ class hpucho::udp (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-uchoudp.cfg":
-		content => template("${module_name}/warden_client-uchoudp.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
-		require => File["${install_dir}"],
-		notify => Service["uchoudp"],
-	}
-
 
         # reporting
 
@@ -97,6 +94,7 @@ class hpucho::udp (
                 owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
                 require => File["${install_dir}/w3utils_flab.py"],
         }
+	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
         file { "${install_dir}/warden_client-uchoudp.cfg":
                 content => template("${module_name}/warden_client-uchoudp.cfg.erb"),
                 owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
@@ -105,7 +103,7 @@ class hpucho::udp (
         file { "/etc/cron.d/warden-uchoudp":
                 content => template("${module_name}/warden-uchoudp.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
-                require => User["$uchoudp_user"],
+        #        require => User["$uchoudp_user"],
         }
 
 	class { "warden3::hostcert": 

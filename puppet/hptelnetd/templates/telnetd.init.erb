@@ -10,7 +10,7 @@
 ### END INIT INFO
 
 
-BASE=<%= install_dir %>
+BASE=<%= @install_dir %>
 NAME="telnetd"
 PYTHON=`which python`
 PIDFILE="/var/run/telnetd.pid"
@@ -36,9 +36,9 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		su -c "$PYTHON ${BASE}/telnetd.py 1>telnetd-run.log 2>&1 &" <%= telnetd_user %>
+		su -c "$PYTHON ${BASE}/telnetd.py 1>telnetd-run.log 2>&1 &" <%= @telnetd_user %>
 	        echo $! > $PIDFILE
-		iptables -t nat -I PREROUTING 1 -p tcp --dport 23 -j REDIRECT --to-port <%= telnetd_port %>
+		iptables -t nat -I PREROUTING 1 -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
 
 	        echo "done"
 	;;
@@ -49,7 +49,7 @@ case "$1" in
 		        rm $PIDFILE
 		fi
 	        killwaitpids $(pgrep -f ${BASE}/telnetd.py)
-		iptables -t nat -D PREROUTING -p tcp --dport 23 -j REDIRECT --to-port <%= telnetd_port %>
+		iptables -t nat -D PREROUTING -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
 	        echo "done"
 	;;
 	status)
