@@ -2,11 +2,15 @@
 
 class hpucho::udp (
 	$install_dir = "/opt/uchoudp",
+
+	$uchoudp_user = "root",
 	
 	$port_start = 1,
 	$port_end = 32768,
 	$port_skip = "[67, 137, 138, 1433, 5678, 65535]",
-	
+
+	$logfile = "uchoudp.log",
+		
 	$warden_server = undef,
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
@@ -30,6 +34,11 @@ class hpucho::udp (
 		require => File["${install_dir}"],
 		notify => Service["uchoudp"],
 	}
+        file { "${install_dir}/uchoudp.cfg":
+                content => template("${module_name}/uchoudp.cfg.erb"),
+                owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
+                require => File["${install_dir}/uchoudp.py"],
+        }
 	package { ["python-twisted", "python-scapy"]: 
 		ensure => installed, 
 	}
@@ -37,7 +46,7 @@ class hpucho::udp (
 	file { "/etc/init.d/uchoudp":
 		content => template("${module_name}/uchoudp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/uchoudp.py", "${install_dir}/warden_client-uchoudp.cfg"],
+		require => File["${install_dir}/uchoudp.py", "${install_dir}/uchoudp.cfg"],
 		notify => [Service["uchoudp"], Exec["systemd_reload"]]
 	}
 	exec { "systemd_reload":
@@ -54,8 +63,6 @@ class hpucho::udp (
 
 	#autotest
 	package { ["netcat"]: ensure => installed, }
-
-
 
 
 	# warden_client
@@ -77,6 +84,30 @@ class hpucho::udp (
 		require => File["${install_dir}"],
 		notify => Service["uchoudp"],
 	}
+
+
+        # reporting
+
+        file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
+        }
+        file { "${install_dir}/warden3-uchoudp-sender.py":
+                source => "puppet:///modules/${module_name}/reporter/warden3-uchoudp-sender.py",
+                owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
+                require => File["${install_dir}/w3utils_flab.py"],
+        }
+        file { "${install_dir}/warden_client-uchoudp.cfg":
+                content => template("${module_name}/warden_client-uchoudp.cfg.erb"),
+                owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
+                require => File["${install_dir}/uchoudp.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchoudp-sender.py"],
+        }
+        file { "/etc/cron.d/warden-uchoudp":
+                content => template("${module_name}/warden-uchoudp.cron.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => User["$uchoudp_user"],
+        }
+
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
@@ -85,5 +116,6 @@ class hpucho::udp (
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
+
 
 }

@@ -4,8 +4,10 @@ class hptelnetd (
 	$install_dir = "/opt/telnetd",
 
 	$telnetd_user = "telnetd",
+
 	$telnetd_port = 63023,
-	$telnetd_logfile = "telnetd.log",	
+
+	$logfile = "telnetd.log",	
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -50,7 +52,7 @@ class hptelnetd (
 	file { "/etc/init.d/telnetd":
 		content => template("${module_name}/telnetd.init.erb"),
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}/telnetd.py", "${install_dir}/warden_client-telnetd.cfg"],
+		require => File["${install_dir}/telnetd.py", "${install_dir}/telnetd.cfg"],
 	}
 	service { "telnetd": 
 		enable => true,
@@ -81,6 +83,29 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
+
+	# reporting
+
+	file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
+        }
+	file { "${install_dir}/warden3-telnetd-sender.py":
+                source => "puppet:///modules/${module_name}/reporter/warden3-telnetd-sender.py",
+                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
+        	require => File["${install_dir}/w3utils_flab.py"],
+	}
+   	file { "${install_dir}/warden_client-telnetd.cfg":
+                content => template("${module_name}/warden_client-telnetd.cfg.erb"),
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
+                require => File["${install_dir}/telnetd.py","{install_dir}/w3utils_flab.py","${install_dir}/warden3-telnetd-sender.py"],
+        }
+    	file { "/etc/cron.d/warden-telnetd":
+                content => template("${module_name}/warden-telnetd.cron.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => User["$telnetd_user"],
+        }
+
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
@@ -90,30 +115,4 @@ class hptelnetd (
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
-
-	# reporting
-
-	file { "${install_dir}/pygtail.py":
-                source => "puppet:///modules/${module_name}/lib/pygtail.py",
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-        }
-
-	file { "${install_dir}/warden3-telnetd-sender.py":
-                source => "puppet:///modules/${module_name}/reporter/warden3-telnetd-sender.py",
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-        	require => File["${install_dir}/pygtail.py"],
-	}
-
-   	file { "${install_dir}/warden_client-telnetd.cfg":
-                content => template("${module_name}/warden_client-telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-                require => File["${install_dir}/telnetd.py","${install_dir}/pygtail.py","${install_dir}/warden3-telnetd-sender.py"],
-        }
-
-    	file { "/etc/cron.d/warden-telnetd":
-                content => template("${module_name}/warden-telnetd.cron.erb"),
-                owner => "root", group => "root", mode => "0644",
-                require => User["$telnetd_user"],
-        }
-
 }

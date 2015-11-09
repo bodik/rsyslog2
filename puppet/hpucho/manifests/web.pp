@@ -2,10 +2,14 @@
 
 class hpucho::web (
 	$install_dir = "/opt/uchoweb",
+
+	$uchoweb_user = "root",
 	
 	$port = 8080,
 	$personality = "Apache Tomcat/7.0.56 (Debian)",
 	$content = "content-tomcat.tgz",
+
+	$logfile = "uchoweb.log",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -19,7 +23,7 @@ class hpucho::web (
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 
-	package { "python-jinja2": #uchoweb2
+	package { "python-jinja2": 
 		ensure => installed, 
 	}
 	file { ["${install_dir}"]:
@@ -32,6 +36,11 @@ class hpucho::web (
 		require => [File["${install_dir}"], Package["python-jinja2"]],
 		notify => Service["uchoweb"],
 	}
+	file { "${install_dir}/uchoweb.cfg":
+                content => template("${module_name}/uchoweb.cfg.erb"),
+                owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
+                require => File["${install_dir}/uchoweb.py"],
+        }
 	file { "${install_dir}/content.tgz":
 		source => "puppet:///modules/${module_name}/uchoweb/${content}",
 		owner => "root", group => "root", mode => "0644",
@@ -46,7 +55,7 @@ class hpucho::web (
 	file { "/etc/init.d/uchoweb":
 		content => template("${module_name}/uchoweb.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/uchoweb.py", "${install_dir}/warden_client-uchoweb.cfg"], Exec["content"]],
+		require => [File["${install_dir}/uchoweb.py", "${install_dir}/uchoweb.cfg"], Exec["content"]],
 		notify => [Service["uchoweb"], Exec["systemd_reload"]]
 	}
 	exec { "systemd_reload":
@@ -86,6 +95,29 @@ class hpucho::web (
 		require => File["${install_dir}"],
 		notify => Service["uchoweb"],
 	}
+
+        # reporting
+
+        file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
+        }
+        file { "${install_dir}/warden3-uchoweb-sender.py":
+                source => "puppet:///modules/${module_name}/reporter/warden3-uchoweb-sender.py",
+                owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
+                require => File["${install_dir}/w3utils_flab.py"],
+        }
+        file { "${install_dir}/warden_client-uchoweb.cfg":
+                content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
+                owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
+                require => File["${install_dir}/uchoweb.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchoweb-sender.py"],
+        }
+        file { "/etc/cron.d/warden-uchoweb":
+                content => template("${module_name}/warden-uchoweb.cron.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => User["$uchoweb_user"],
+        }
+	
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}
@@ -94,5 +126,4 @@ class hpucho::web (
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
-
 }

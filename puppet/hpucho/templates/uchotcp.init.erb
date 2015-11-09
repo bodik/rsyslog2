@@ -37,7 +37,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		$PYTHON ${BASE}/uchotcp.py 1>uchotcp-init.log 2>&1 &
+		$PYTHON ${BASE}/uchotcp.py 1>uchotcp-run.log 2>&1 &
 	        echo $! > $PIDFILE
 
 	        echo "done"
