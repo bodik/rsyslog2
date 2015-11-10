@@ -70,7 +70,7 @@ vm_ssh() {
 
 vm_start() {
 	if [ -z $1 ]; then
-		TEMPLATE="debian80"
+		TEMPLATE="debian80:cl_minos"
 	else
 		TEMPLATE=$1
 	fi
