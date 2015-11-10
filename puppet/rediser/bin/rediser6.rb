@@ -4,6 +4,7 @@ require 'hiredis'
 require 'timeout'
 require 'socket'
 require 'logger'
+require 'syslog/logger'
 require 'optparse'
 
 #require 'ruby-prof'
@@ -45,7 +46,6 @@ class Rediser < Thread
 			Thread.current["name"] = "flush-#{@connection_remote_ip}-#{@connection_remote_port}"
 			@logger.info("flush thread initialized")
 		        while sleep(@flush_timeout) do
-				@logger.debug("flush thread waked")
 	        	        flush()
 		        end
 		end
@@ -82,9 +82,10 @@ class Rediser < Thread
 	end
 
 	def flush()
-		@logger.debug("rediser flush begin")
+		#debug level is not working well with syslog
+		####@logger.debug("rediser flush begin")
 		if !@flush_mutex.try_lock # failed to get lock
-			@logger.debug("rediser flush failed to lock mutex")
+			####@logger.debug("rediser flush failed to lock mutex")
 			return
 		end
 
@@ -116,7 +117,7 @@ class Rediser < Thread
 			end
 		end
 		@flush_mutex.unlock
-		@logger.debug("rediser flush end")
+		####@logger.debug("rediser flush end")
 	end
 
 
@@ -179,15 +180,12 @@ class Tlister < Thread
 
 			$tlister_mutex.lock
 			begin
-				@logger.debug("pregc #{$threads}")
 				#protoze ruby loop delete
 				$threads.delete_if do |th|
 					if th.alive?
-						@logger.debug("#{th} skipped alive")
 						false
     					else
 						if th.join
-							@logger.debug("#{th} joined")
 							true
 						else
 							@logger.error("#{th} not joined. should not happen!")
@@ -235,7 +233,7 @@ OptionParser.new do |opts|
 	opts.on("-t", "--flush-timeout TIMEOUT", "flush at least in x second") do |v| $options["flush_timeout"] = v.to_i end
 	opts.on("-m", "--max-enqueue MAX", "maximum redis queue len") do |v| $options["max_enqueue"] = v.to_i end
 	opts.on("-x", "--x-lister-perion PERIOD", "tlister period") do |v| $options["tlisterperiod"] = v.to_i end
-	opts.on("-o", "--output LOGFILE", "log output to file") do |v| $options["output"] = v; $logger = Logger.new($options["output"]) end
+	opts.on("-s", "--syslog", "log to syslog") do |v| $options["syslog"] = v; $logger = Syslog::Logger.new("rediser6") end
 	opts.on("-d", "--debug", "debug mode") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
 end.parse!
 $logger.formatter = proc do |severity, datetime, progname, msg|
@@ -269,23 +267,27 @@ $threads = []
 $tlister_mutex = Mutex.new
 $tlister_thread = Tlister.new($options["tlisterperiod"])
 
-server = TCPServer.new($options["rediser_port"])
-loop do
-	begin
-
-		connection = server.accept
-		connection.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
-		$logger.info("accepted connection #{connection}")
-		tmp = Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
-		$tlister_mutex.lock
-		$threads << tmp
-		$tlister_mutex.unlock
-
-	rescue RediserShutdown => e
-		shutdown()
-	rescue Exception => e
-		$logger.error("exception #{e}, accepting connection")
+begin
+	server = TCPServer.new($options["rediser_port"])
+	loop do
+		begin
+	
+			connection = server.accept
+			connection.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
+			$logger.info("accepted connection #{connection}")
+			tmp = Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
+			$tlister_mutex.lock
+			$threads << tmp
+			$tlister_mutex.unlock
+	
+		rescue RediserShutdown => e
+			shutdown()
+		rescue Exception => e
+			$logger.error("exception #{e}, accepting connection")
+		end
 	end
+rescue Exception => e
+	$logger.error("exception #{e}, starting server")
 end
 
 shutdown()
