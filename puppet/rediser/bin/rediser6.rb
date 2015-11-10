@@ -77,10 +77,9 @@ class Rediser < Thread
 	end
 
 	def flush()
-		#debug level is not working well with syslog
-		####@logger.debug("rediser flush begin")
+		@logger.debug("rediser flush begin")
 		if !@flush_mutex.try_lock # failed to get lock
-			####@logger.debug("rediser flush failed to lock mutex")
+			@logger.debug("rediser flush failed to lock mutex")
 			return
 		end
 
@@ -113,7 +112,7 @@ class Rediser < Thread
 			end
 		end
 		@flush_mutex.unlock
-		####@logger.debug("rediser flush end")
+		@logger.debug("rediser flush end")
 	end
 
 
@@ -229,13 +228,22 @@ OptionParser.new do |opts|
 	opts.on("-t", "--flush-timeout TIMEOUT", "flush at least in x second") do |v| $options["flush_timeout"] = v.to_i end
 	opts.on("-m", "--max-enqueue MAX", "maximum redis queue len") do |v| $options["max_enqueue"] = v.to_i end
 	opts.on("-x", "--x-lister-perion PERIOD", "tlister period") do |v| $options["tlisterperiod"] = v.to_i end
-	opts.on("-s", "--syslog", "log to syslog") do |v| $options["syslog"] = v; $logger = Syslog::Logger.new("rediser6") end
-	opts.on("-d", "--debug", "debug mode") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
+	opts.on("-s", "--syslog", "log to syslog") do |v| $options["syslog"] = v end
+	opts.on("-d", "--debug", "debug mode") do |v| $options["debug"] = v end
 end.parse!
-$logger.formatter = proc do |severity, datetime, progname, msg|
-	date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
-	"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
+if $options["syslog"]
+	$logger = Syslog::Logger.new("rediser6-#{$options["redis_key"]}")
+	$logger.level = Logger::INFO
+	$logger.formatter = proc do |severity, datetime, progname, msg|
+		"#{Logger::SEV_LABEL[severity]} #{Thread.current["name"]}: #{msg}\n"
+	end
+else
+	$logger.formatter = proc do |severity, datetime, progname, msg|
+		date_format = datetime.strftime("%Y-%m-%d %H:%M:%S")
+		"[#{date_format}] #{severity} #{Thread.current["name"]}: #{msg}\n"
+	end
 end
+if $options["debug"] then $logger.level = Logger::DEBUG end
 $logger.info("startup options #{$options}")
 
 
