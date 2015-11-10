@@ -123,7 +123,7 @@ class Rediser < Thread
 	end
 
 	def teardown()
-		@logger.info("rediser teardown begin")
+		@logger.info("rediser teardown begin #{@queue.size}")
 	
 		#sure that flusher will not pop deadlock when killed insinde flush()
 		@flush_mutex.lock
@@ -135,7 +135,7 @@ class Rediser < Thread
 			flush()
 		end
 
-		@logger.info("rediser teardown end")
+		@logger.info("rediser teardown end #{@queue.size}")
 	end
 
 	def thread()
@@ -170,7 +170,7 @@ end
 
 
 class Tlister < Thread
-	def initialize(tlisterperiod) 
+	def initialize(tlisterperiod=60) 
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
 		@tlisterperiod = tlisterperiod
     		super(&method(:thread))
@@ -179,15 +179,30 @@ class Tlister < Thread
 		Thread.current["name"] = "tlister"; 
 		while sleep(@tlisterperiod) do 
 			Thread.list.select {|th| @logger.info("#{th.inspect}: #{th[:name]}")}
-			@logger.info($threads)
-			$threads.each do |th|
-				if not th.alive?
-					#@logger.info("to be joined #{th}")
-					th.join(2)
-					$threads.delete(th)
-					#@logger.info("joined succesfully #{th}")
+
+			$tlister_mutex.lock
+			begin
+				@logger.debug("pregc #{$threads}")
+				#protoze ruby loop delete
+				$threads.delete_if do |th|
+					if th.alive?
+						@logger.debug("#{th} skipped alive")
+						false
+    					else
+						if th.join
+							@logger.debug("#{th} joined")
+							true
+						else
+							@logger.error("#{th} not joined. should not happen!")
+							false
+						end
+					end
 				end
+				@logger.info("postgc #{$threads}")
+			rescue Exception => e
+				@logger.error("exception #{e}")
 			end
+			$tlister_mutex.unlock
 		end 
 	end
 end
@@ -222,6 +237,7 @@ OptionParser.new do |opts|
 	opts.on("-f", "--flush-size SIZE", "flush x buffered events to redis using pipeline") do |v| $options["flush_size"] = v.to_i end
 	opts.on("-t", "--flush-timeout TIMEOUT", "flush at least in x second") do |v| $options["flush_timeout"] = v.to_i end
 	opts.on("-m", "--max-enqueue MAX", "maximum redis queue len") do |v| $options["max_enqueue"] = v.to_i end
+	opts.on("-x", "--x-lister-perion PERIOD", "tlister period") do |v| $options["tlisterperiod"] = v.to_i end
 	opts.on("-o", "--output LOGFILE", "log output to file") do |v| $options["output"] = v; $logger = Logger.new($options["output"]) end
 	opts.on("-d", "--debug", "debug mode") do |v| $options["debug"] = v; $logger.level = Logger::DEBUG end
 end.parse!
@@ -250,9 +266,12 @@ def shutdown()
 	exit!
 end
 
-$tlister_thread = Tlister.new($options["tlisterperiod"])
 
 $threads = []
+
+$tlister_mutex = Mutex.new
+$tlister_thread = Tlister.new($options["tlisterperiod"])
+
 server = TCPServer.new($options["rediser_port"])
 loop do
 	begin
@@ -260,7 +279,10 @@ loop do
 		connection = server.accept
 		connection.setsockopt(Socket::SOL_SOCKET, Socket::SO_KEEPALIVE, true)
 		$logger.info("accepted connection #{connection}")
-		$threads << Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
+		tmp = Rediser.new(connection, $options["redis_host"], $options["redis_port"], $options["redis_key"], $options["flush_size"], $options["flush_timeout"], $options["max_enqueue"])
+		$tlister_mutex.lock
+		$threads << tmp
+		$tlister_mutex.unlock
 
 	rescue RediserShutdown => e
 		shutdown()
