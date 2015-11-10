@@ -71,14 +71,9 @@ class Rediser < Thread
 	end
 
 	def redis_connect()
-		begin
-			@conn = Hiredis::Connection.new
-			@conn.connect(@redis_host, @redis_port)
-			@logger.info("connected to redis server #{@conn}")
-		rescue Exception => e
-			@logger.error("exception #{e}, cannot connect to redis server")
-			raise e, "cannot connect to rediser server"
-		end
+		@conn = Hiredis::Connection.new
+		@conn.connect(@redis_host, @redis_port)
+		@logger.info("connected to redis server #{@conn}")
 	end
 
 	def flush()
@@ -114,6 +109,7 @@ class Rediser < Thread
 			begin
 				redis_connect()
 			rescue Exception => e
+				@logger.error("exception #{e}, reconnecting to redis failed")
 			end
 		end
 		@flush_mutex.unlock
