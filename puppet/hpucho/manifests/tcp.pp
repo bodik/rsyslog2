@@ -2,10 +2,14 @@
 
 class hpucho::tcp (
 	$install_dir = "/opt/uchotcp",
+
+	$uchotcp_user = "root",
 	
 	$port_start = 1,
 	$port_end = 9999,
 	$port_skip = "[1433,65535]",
+
+	$logfile = "uchotcp.log",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -20,6 +24,11 @@ class hpucho::tcp (
         }
 
 	# application
+	user { "$uchotcp_user":
+                ensure => present,
+                managehome => false,
+        }
+
 	file { "${install_dir}":
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
@@ -30,6 +39,11 @@ class hpucho::tcp (
 		require => File["${install_dir}"],
 		notify => Service["uchotcp"],
 	}
+        file { "${install_dir}/uchotcp.cfg":
+                content => template("${module_name}/uchotcp.cfg.erb"),
+                owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
+                require => File["${install_dir}/uchotcp.py"],
+        }
 	package { ["python-twisted"]: 
 		ensure => installed, 
 	}
@@ -37,9 +51,10 @@ class hpucho::tcp (
 	file { "/etc/init.d/uchotcp":
 		content => template("${module_name}/uchotcp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/uchotcp.py", "${install_dir}/warden_client-uchotcp.cfg"],
+		require => File["${install_dir}/uchotcp.py", "${install_dir}/uchotcp.cfg"],
 		notify => [Service["uchotcp"], Exec["systemd_reload"]]
 	}
+
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
@@ -56,8 +71,6 @@ class hpucho::tcp (
 	package { ["netcat"]: ensure => installed, }
 
 
-
-
 	# warden_client
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/warden_client.py",
@@ -70,13 +83,30 @@ class hpucho::tcp (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
+
+        # reporting
+
+        file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
+        }
+        file { "${install_dir}/warden3-uchotcp-sender.py":
+                source => "puppet:///modules/${module_name}/reporter/warden3-uchotcp-sender.py",
+                owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
+                require => File["${install_dir}/w3utils_flab.py"],
+        }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-uchotcp.cfg":
-		content => template("${module_name}/warden_client-uchotcp.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
-		require => File["${install_dir}"],
-		notify => Service["uchotcp"],
-	}
+        file { "${install_dir}/warden_client-uchotcp.cfg":
+                content => template("${module_name}/warden_client-uchotcp.cfg.erb"),
+                owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
+                require => File["${install_dir}/uchotcp.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchotcp-sender.py"],
+        }
+        file { "/etc/cron.d/warden-uchotcp":
+                content => template("${module_name}/warden-uchotcp.cron.erb"),
+                owner => "root", group => "root", mode => "0644",
+                require => User["$uchotcp_user"],
+        }
+		
 	class { "warden3::hostcert": 
 		warden_server => $warden_server_real,
 	}

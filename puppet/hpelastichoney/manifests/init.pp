@@ -8,6 +8,9 @@ class hpelastichoney (
 	$warden_server = undef,
 	$warden_server_auto = true,
 	$warden_server_service = "_warden-server._tcp",
+
+	$logfile = "elastichoney.log",
+
 ) {
 
 	if ($warden_server) {
@@ -64,8 +67,6 @@ class hpelastichoney (
 	#package { ["netcat"]: ensure => installed, }
 
 
-
-
 	# warden_client
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/warden_client.py",
@@ -79,8 +80,8 @@ class hpelastichoney (
 		require => File["${install_dir}"],
 	}
 	package { ["python-dateutil"]: ensure => installed, }
-	file { "${install_dir}/elastichoney-reporter.py":
-		source => "puppet:///modules/${module_name}/elastichoney-reporter.py",
+	file { "${install_dir}/warden3-elastichoney-sender.py":
+		source => "puppet:///modules/${module_name}/warden3-elastichoney-sender.py",
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
 		require => File["${install_dir}"],
 	}

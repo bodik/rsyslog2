@@ -36,7 +36,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		$PYTHON ${BASE}/uchoweb.py 1>uchoweb.log 2>&1 &
+		$PYTHON ${BASE}/uchoweb.py 1>uchoweb-run.log 2>&1 &
 	        echo $! > $PIDFILE
 
 	        echo "done"
