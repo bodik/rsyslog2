@@ -51,30 +51,16 @@ while true do
 		while true do
 			#hopefully pipeline read ;)
 			(0..$options["batch"]).each do |i|
-				begin
-					conn.write ["LPOP", $options["redis_key"]]
-				rescue => e
-					$logger.error(e)
-					$logger.error("error sending %s, retry ..." % i)
-					sleep 1
-					retry
-				end
+				conn.write ["LPOP", $options["redis_key"]]
 			end
 			#must read responses from redise server	
 			(0..$options["batch"]).each do
-				begin
-					a = conn.read
-					if a
-			        		$logger.debug("read #{a.rstrip()}")
-						if a.start_with?("perftestmessage")
-							$count = $count + 1
-						end
-				 	end
-				rescue => e
-					$logger.error(e)
-					$logger.error("error reading pipe response, retry ...")
-					sleep 1
-					retry
+				a = conn.read
+				if a
+			        	$logger.debug("read #{a.rstrip()}")
+					if a.start_with?("perftestmessage")
+						$count = $count + 1
+					end
 				end
 			end
 

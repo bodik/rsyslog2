@@ -6,7 +6,7 @@ require 'socket'
 require 'logger'
 require 'optparse'
 
-require 'ruby-prof'
+#require 'ruby-prof'
 
 
 #############################################app classes
@@ -56,24 +56,27 @@ class Rediser < Thread
 	end
 	
 	def receive(line)
-		##@logger.debug("rediser receive line: "+line.rstrip())
 		@flush_mutex.lock
 	        @queue << line
 		@flush_mutex.unlock
 		
-		while (@queue.size >= @flush_size) do
-			flush()
+		while (@queue.size >= @flush_size) do flush() end
+	end
+
+	def client_close()
+		if not @connection.closed? then 
+			@connection.close 
+			@logger.info("client #{@connection_remote_ip} disconnected")
 		end
 	end
 
 	def redis_connect()
-		@logger.info("connecting to redis server")
 		begin
 			@conn = Hiredis::Connection.new
 			@conn.connect(@redis_host, @redis_port)
 			@logger.info("connected to redis server #{@conn}")
 		rescue Exception => e
-			@logger.error(e)
+			@logger.error("exception #{e}, cannot connect to redis server")
 			raise e, "cannot connect to rediser server"
 		end
 	end
@@ -85,42 +88,37 @@ class Rediser < Thread
 			return
 		end
 
-		# musim explicitne hlidat delku fronty protoze
-		# pipeline write se spatne hlida na chyby
-		begin 
-			@conn.write ["LLEN", @redis_key]
-			l = @conn.read
-		end while (l >= @max_enqueue) and @logger.info("rediser sleeping on queue length, qlen #{l}, max_enqueue #{@max_enqueue}") and sleep(3)
+		begin
 
-		@queue.each do |i|
-			begin
-				@conn.write ["RPUSH", @redis_key, i]
-			rescue Exception => e
-				@logger.error("exception #{e}, rpush %s, retry ..." % i)
-				sleep 1
-				retry
-			end
-		end
+			# musim explicitne hlidat delku fronty protoze
+			# pipeline write se spatne hlida na chyby
+			begin 
+				@conn.write ["LLEN", @redis_key]
+				l = @conn.read
+			end while (l >= @max_enqueue) and @logger.info("rediser sleeping on queue length, qlen #{l}, max_enqueue #{@max_enqueue}") and sleep(3)
 	
-		#must read responses from redise server	
-		@queue.size.times do
-			begin
+			@queue.each do |i|
+				@conn.write ["RPUSH", @redis_key, i]
+			end
+			#must read responses from redis server	
+			@queue.size.times do
 				@conn.read
+			end
+			@queue.clear
+
+		rescue Exception => e
+			@logger.error("exception #{e}, pipeline to redis failed")
+			sleep(10)
+			#we'll try to reconnect as much as possible, nothing should be raised to flush_thread, rediser_thread should deal with exception by itself
+			begin
+				redis_connect()
 			rescue Exception => e
-				@logger.error("exception #{e}, reading pipe response, retry ...")
-				sleep 1
-				retry
 			end
 		end
-		@queue.clear
-
 		@flush_mutex.unlock
 		@logger.debug("rediser flush end")
 	end
 
-	def close_client()
-		if not @connection.closed? then @connection.close end
-	end
 
 	def teardown()
 		@logger.info("rediser teardown begin #{@queue.size}")
@@ -140,13 +138,15 @@ class Rediser < Thread
 
 	def thread()
 		#RubyProf.start
+
 		begin
 			Thread.current["name"] = "rediser-#{@connection_remote_ip}-#{@connection_remote_port}"
 			@logger.info("client #{@connection_remote_ip} connected")
 
+			#if redis connection fails, nothing is read from client, connection is closed and thread ends
+			#if read occures druing transfer we at least try to teardown
 			redis_connect()
 			while line = @connection.gets 
-				#@logger.debug("#{@connection} received: "+line.rstrip())
 				line = line.tr("^#{@allowed_chars}",'?')
 				receive(line)
 		    	end
@@ -154,17 +154,14 @@ class Rediser < Thread
 			@logger.error("exception #{e}, receiving data from client")
 		end
 
-		close_client()
-		@logger.info("client #{@connection_remote_ip} disconnected")
+		client_close()
 		teardown()
-		if @conn
+		begin
 			@conn.disconnect()
+		rescue Exception => e
 		end
-	
-		#result = RubyProf.stop
-		## Print a flat profile to text
-		#printer = RubyProf::FlatPrinter.new(result)
-		#printer.print(STDOUT)
+
+		#RubyProf::FlatPrinter.new(RubyProf.stop).print(STDOUT)
 	end
 end
 
@@ -256,7 +253,7 @@ def shutdown()
 	$logger.info("received shutdown")
 
 	$threads.each do |x|
-		x.close_client()
+		x.client_close()
 		x.join
 	end
 
