@@ -22,12 +22,12 @@ fi
 
 
 #rediser kontrolle
-/usr/lib/nagios/plugins/check_procs --argument-array=rediser-syslog-filter -c 1:
+/usr/lib/nagios/plugins/check_procs --argument-array="--redis-key syslog" -c 1:1
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rediser check_procs"
 fi
 
-netstat -nlpa | grep "/ncat " | grep LISTEN | grep :49558
+netstat -nlpa | grep "/ruby " | grep LISTEN | grep :49558
 if [ $? -ne 0 ]; then
 	rreturn 1 "$0 rediser listener"
 fi

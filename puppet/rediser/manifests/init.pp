@@ -47,19 +47,19 @@ class rediser {
                 unless => "/usr/bin/gem list | /bin/grep hiredis",
                 require => [Package["ruby-dev"], Package["make"]],
         }
-	file { "/etc/init.d/rediser":
+	file { "/etc/init.d/rediser6":
 		ensure => link,
-		target => "/puppet/rediser/bin/rediser.init",
+		target => "/puppet/rediser/bin/rediser6.init",
 		notify => Exec["systemd_reload"],
 	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
 	}
-	service { "rediser":
+	service { "rediser6":
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => [File["/etc/init.d/rediser"], Exec["gem install hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
+		require => [File["/etc/init.d/rediser6"], Exec["gem install hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
 	}
 }
