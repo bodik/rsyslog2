@@ -242,7 +242,6 @@ $logger.info("startup options #{$options}")
 
 Signal.trap("INT") { raise RediserShutdown }
 Signal.trap("TERM") { raise RediserShutdown }
-
 def shutdown()
 	$logger.info("received shutdown")
 
@@ -259,10 +258,8 @@ end
 
 
 $threads = []
-
 $tlister_mutex = Mutex.new
 $tlister_thread = Tlister.new($options["tlisterperiod"])
-
 begin
 	server = TCPServer.new($options["rediser_port"])
 	loop do
@@ -285,6 +282,4 @@ begin
 rescue Exception => e
 	$logger.error("exception #{e}, starting server")
 end
-
 shutdown()
-
