@@ -32,8 +32,7 @@ vm_id() {
 
 vm_destroy() {
 	VBoxManage unregistervm ${VMNAME} --delete
-
-	rreturn 0 "$0 destroy $@"
+	rreturn $? "$0 destroy $@"
 }
 
 vm_ssh() {
@@ -54,7 +53,7 @@ vm_start() {
 		rreturn $? "vbox vm already running"
 	fi
 	VBoxHeadless -s ${VMNAME} --vrdeproperty "TCP/Ports=$(perl -e "print int(50000+rand(1000));")" --vrdeproperty="TCP/Address=127.0.0.1" --vrdeproperty VNCPassword="$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')" &
-	rreturn 1 "$0 start failed"
+	rreturn $? "$0 start"
 }
 
 vm_status() {
@@ -69,7 +68,7 @@ vm_fixup() {
 
 vm_shutdown() {
 	VBoxManage controlvm $VMNAME acpipowerbutton 
-	rreturn 0 "$0 shutdown"
+	rreturn $? "$0 shutdown"
 }
 
 vm_build() {
@@ -79,10 +78,13 @@ vm_build() {
 	fi
 
 	VBoxManage clonevm debian-jessie --name ${VMNAME}
+	if [ $? -ne 0 ]; then
+		rreturn 1 "$0 clone failed"
+	fi
 	VBoxManage registervm ${VBOXBASE}/vms/${VMNAME}/${VMNAME}.vbox
 
 	sleep 5
-	rreturn $? "$0"
+	rreturn $? "$0 build"
 }
 
 vbox_login() {
