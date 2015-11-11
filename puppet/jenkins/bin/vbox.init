@@ -106,7 +106,7 @@ vm_list() {
 		#echo $all
 		NAME=$(echo $all | awk '{print $1}')
 		UID=$(echo $all | awk '{print $2}')
-		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s*(.*/\1/')
+		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
 		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
 	done
 }
@@ -115,8 +115,8 @@ metacloud_update() {
 	echo "ERROR: not implemented"
 	exit 1
 
-	for all in $(/puppet/jenkins/bin/metacloud.init list|grep "R[CS]-"| awk '{print $4}'); do
-		VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	for all in $(x.init list|grep "R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all x.init ssh 'cd /puppet && sh bootstrap.install.sh'
 	done
 }
 
@@ -126,8 +126,8 @@ all_warden3_nodes() {
 
 	CMD=$1
 
-	for all in $( /puppet/jenkins/bin/metacloud.init list | egrep "(WS-|H[A-Z]+-)" | awk '{print $4}' ); do
-                VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh "$CMD"
+	for all in $( x.init list | egrep "(WS-|H[A-Z]+-)" | awk '{print $4}' ); do
+                VMNAME=$all x.init ssh "$CMD"
 	done
 	rreturn 0 "$0 aw3"
 }
@@ -164,22 +164,22 @@ case "$1" in
 		vm_ssh "$2"
 	;;
 	node)
-		VMNAME=$2 /puppet/jenkins/bin/metacloud.init ssh "$3"
+		VMNAME=$2 x.init ssh "$3"
 	;;
 	sshs)
-		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+		VMNAME=$(x.init list|grep "RS-"|awk '{print $4}') x.init ssh "$2"
 	;;
 	sshc)
-		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+		VMNAME=$(x.init list|grep "RC-"|head -1|awk '{print $4}') x.init ssh "$2"
 	;;
 	sshe)
-		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+		VMNAME=$(x.init list|grep "ELK-"|head -1|awk '{print $4}') x.init ssh "$2"
 	;;
 	sshdev)
-		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+		VMNAME=$(x.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') x.init ssh "$2"
 	;;
 	sshw)
-		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "WS-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+		VMNAME=$(x.init list|grep "WS-"|head -1|awk '{print $4}') x.init ssh "$2"
 	;;
 	fixup)
 		vm_fixup
