@@ -1,0 +1,191 @@
+#!/bin/sh
+
+VBOXBASE="/data"
+
+if [ -z $VMNAME ]; then
+	VMNAME="RS"
+fi
+cd /tmp || exit 1
+
+
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+vm_id() {
+	echo "ERROR: not implemented"
+	exit 1
+}
+
+
+vm_destroy() {
+	VBoxManage unregistervm ${VMNAME} --delete
+
+	rreturn 0 "$0 destroy $@"
+}
+
+vm_ssh() {
+	echo "ERROR: not implemented"
+	exit 1
+
+	VMIP=$(onevm show $(/puppet/jenkins/bin/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
+	if [ -z "$VMIP" ]; then
+		rreturn 1 "vm ip not detected from metacloud"
+	fi
+	ssh -i $ONERSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
+	rreturn $? "$0 ssh $@"
+}
+
+vm_start() {
+	/puppet/jenkins/bin/vbox.init status
+	if [ $? -eq 0 ]; then
+		rreturn $? "vbox vm already running"
+	fi
+	VBoxHeadless -s ${VMNAME} --vrdeproperty "TCP/Ports=$(perl -e "print int(50000+rand(1000));")" --vrdeproperty="TCP/Address=127.0.0.1" --vrdeproperty VNCPassword="$(/bin/dd if=/dev/urandom bs=100 count=1 2>/dev/null | /usr/bin/sha256sum | /usr/bin/awk '{print $1}' | sed 's/^.\{50\}//')" &
+	rreturn 1 "$0 start failed"
+}
+
+vm_status() {
+	/puppet/jenkins/bin/vbox.init list | grep "^\"$VMNAME\" "
+	rreturn $? "$0 status"
+}
+
+vm_fixup() {
+	echo "ERROR: not implemented"
+	exit 1
+}
+
+vm_shutdown() {
+	VBoxManage controlvm $VMNAME acpipowerbutton 
+	rreturn 0 "$0 shutdown"
+}
+
+vm_build() {
+	mkdir "${VBOXBASE}/vms/${VMNAME}"
+	if [ $? -ne 0 ]; then
+		rreturn 1 "vm already exists"
+	fi
+
+	VBoxManage clonevm debian-jessie --name ${VMNAME}
+	VBoxManage registervm ${VBOXBASE}/vms/${VMNAME}/${VMNAME}.vbox
+
+	sleep 5
+	rreturn $? "$0"
+}
+
+vbox_login() {
+	echo "INFO: no login in vbox"
+}
+
+vbox_creds() {
+	echo "INFO: no creds in vbox"
+}
+
+vbox_console() {
+	ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/'
+}
+
+vm_list() {
+	VBoxManage list runningvms
+	#VBoxManage list vms
+}
+
+metacloud_update() {
+	echo "ERROR: not implemented"
+	exit 1
+
+	for all in $(/puppet/jenkins/bin/metacloud.init list|grep "R[CS]-"| awk '{print $4}'); do
+		VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh 'cd /puppet && sh bootstrap.install.sh'
+	done
+}
+
+all_warden3_nodes() {
+	echo "ERROR: not implemented"
+	exit 1
+
+	CMD=$1
+
+	for all in $( /puppet/jenkins/bin/metacloud.init list | egrep "(WS-|H[A-Z]+-)" | awk '{print $4}' ); do
+                VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh "$CMD"
+	done
+	rreturn 0 "$0 aw3"
+}
+
+case "$1" in
+	creds)
+		vbox_creds
+	;;
+	login)
+		vbox_login
+	;;
+	console|con)
+		vbox_console
+	;;
+	list)
+		vm_list "$2"
+	;;
+	build)
+		vm_build
+	;;
+	start)
+		vm_start "$2"
+	;;
+	status)
+		vm_status
+	;;
+	shutdown)
+		vm_shutdown
+	;;
+	destroy)
+		vm_destroy
+	;;
+	ssh)
+		vm_ssh "$2"
+	;;
+	node)
+		VMNAME=$2 /puppet/jenkins/bin/metacloud.init ssh "$3"
+	;;
+	sshs)
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RS-"|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	sshc)
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RC-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	sshe)
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "ELK-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	sshdev)
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "RDEVCLIENTX"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	sshw)
+		VMNAME=$(/puppet/jenkins/bin/metacloud.init list|grep "WS-"|head -1|awk '{print $4}') /puppet/jenkins/bin/metacloud.init ssh "$2"
+	;;
+	fixup)
+		vm_fixup
+	;;
+	update)
+		metacloud_update
+	;;
+	aw3)
+		all_warden3_nodes "$2"
+	;;
+	id)
+		vm_id
+	;;
+	*)
+		rreturn 1 "$0 wrong command"
+	;;
+esac
+
