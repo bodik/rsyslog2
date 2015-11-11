@@ -58,7 +58,7 @@ vm_start() {
 }
 
 vm_status() {
-	/puppet/jenkins/bin/vbox.init list | grep "^\"$VMNAME\" "
+	/puppet/jenkins/bin/vbox.init list | grep running | grep "^\"$VMNAME\" "
 	rreturn $? "$0 status"
 }
 
@@ -94,12 +94,19 @@ vbox_creds() {
 }
 
 vbox_console() {
-	ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/'
+	CMD=$(ps faxu | grep "/usr/lib/virtualbox/VBoxHeadless -s ${VMNAME}" | grep -v grep | sed 's/.* TCP\/Ports=\(.*\) .*=TCP\/Address=\(.*\) .* VNCPassword=\(.*\)$/echo -n "\3" | xvncviewer -autopass \2:\1/')
+	sh -c "$CMD"
 }
 
 vm_list() {
-	VBoxManage list runningvms
-	#VBoxManage list vms
+	ALLVMS=$(VBoxManage list vms)
+	echo "$ALLVMS" | while read all; do 
+		#echo $all
+		NAME=$(echo $all | awk '{print $1}')
+		UID=$(echo $all | awk '{print $2}')
+		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s*(.*/\1/')
+		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
+	done
 }
 
 metacloud_update() {
