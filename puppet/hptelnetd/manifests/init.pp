@@ -67,7 +67,7 @@ class hptelnetd (
 
 	# warden_client
 	file { "${install_dir}/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
@@ -81,11 +81,11 @@ class hptelnetd (
 	# reporting
 
 	file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         }
 	file { "${install_dir}/warden3-telnetd-sender.py":
-                source => "puppet:///modules/${module_name}/reporter/warden3-telnetd-sender.py",
+                source => "puppet:///modules/${module_name}/sender/warden3-telnetd-sender.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         	require => File["${install_dir}/w3utils_flab.py"],
 	}

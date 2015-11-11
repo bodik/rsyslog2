@@ -3,8 +3,8 @@
     "name": "<%= @fqdn_rev %>.dionaea",
     "secret": "",
 
-    "anonymised": "yes",
-    "target_net": "195.113.0.0/16",
+    "anonymised": "<%= @anonymised %>",
+    "target_net": "<%= @anonymised_target_net %>",
 
     "dbfile": "/opt/dionaea/var/dionaea/logsql.sqlite",
     "binaries_path" : "/opt/dionaea/var/dionaea/binaries",

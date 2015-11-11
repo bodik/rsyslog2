@@ -123,7 +123,7 @@ class hpglastopf (
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
@@ -133,17 +133,15 @@ class hpglastopf (
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-	class { "warden3::hostcert": 
-		warden_server => $warden_server_real,
-	}
-	exec { "register kippo sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n glastopf -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => File["$install_dir"],
-	}
 
+	#reporter
+
+        file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+                owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
+        }
 	file { "${install_dir}/warden/glastopf-reporter.py":
-		source => "puppet:///modules/${module_name}/reporter/glastopf-reporter.py",
+		source => "puppet:///modules/${module_name}/sender/warden3-glastopf-sender.py",
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
@@ -160,4 +158,12 @@ class hpglastopf (
 	}
 
 	
+	class { "warden3::hostcert": 
+		warden_server => $warden_server_real,
+	}
+	exec { "register glastopf sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n glastopf -d ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => File["$install_dir"],
+	}
 }
