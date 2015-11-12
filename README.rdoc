@@ -84,7 +84,7 @@ Following commands will ensure installation of basic components for data analysi
   $ sh elk.install.sh
   $ sh rediser/tests/rediser.sh
   $ sh elk/tests/elk.sh
-  $ links http://$(facter fqdn)/dash.html
+  $ links https://$(facter fqdn)/dash.html
  
 ==== Example installation of rsyslog development node
 
