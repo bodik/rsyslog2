@@ -82,7 +82,7 @@ class hpcowrie (
 		#command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
 		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/start.sh",
-	}	
+	} 
 	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
 		ensure => installed, 
 	}
@@ -195,7 +195,7 @@ class hpcowrie (
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
@@ -205,22 +205,16 @@ class hpcowrie (
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-	class { "warden3::hostcert": 
-		warden_server => $warden_server_real,
-	}
-	exec { "register cowrie sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n cowrie -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["clone cowrie"],
-	}
+
+	#reporting
+
+	file { "${install_dir}/warden/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+                owner => "${$cowrie_user}", group => "${$cowrie_user}", mode => "0755",
+        }
 
 	file { "${install_dir}/warden/warden3-cowrie-sender.py":
-		source => "puppet:///modules/${module_name}/reporter/warden3-cowrie-sender.py",
-		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
-		require => File["${install_dir}/warden"],
-	}
-	file { "${install_dir}/warden/cowrie-reporter.py":
-		source => "puppet:///modules/${module_name}/reporter/cowrie-reporter.py",
+		source => "puppet:///modules/${module_name}/sender/warden3-cowrie-sender.py",
 		owner => "${cowrie_user}", group => "${cowrie_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
@@ -234,5 +228,14 @@ class hpcowrie (
 		content => template("${module_name}/warden-cowrie.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => User["$cowrie_user"],
+	}
+	
+	class { "warden3::hostcert": 
+		warden_server => $warden_server_real,
+	}
+	exec { "register cowrie sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n cowrie -d ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => Exec["clone cowrie"],
 	}
 }

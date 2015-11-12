@@ -34,7 +34,7 @@ class hpucho::udp (
 		owner => "root", group => "root", mode => "0755",
 	}
 	file { "${install_dir}/uchoudp.py":
-		source => "puppet:///modules/${module_name}/uchoudp.py",
+		source => "puppet:///modules/${module_name}/uchoudp/uchoudp.py",
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
 		notify => Service["uchoudp"],
@@ -72,7 +72,7 @@ class hpucho::udp (
 
 	# warden_client
 	file { "${install_dir}/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
 	}
@@ -86,13 +86,19 @@ class hpucho::udp (
         # reporting
 
         file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
                 owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
         }
         file { "${install_dir}/warden3-uchoudp-sender.py":
-                source => "puppet:///modules/${module_name}/reporter/warden3-uchoudp-sender.py",
+                source => "puppet:///modules/${module_name}/sender/warden3-uchoudp-sender.py",
                 owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
                 require => File["${install_dir}/w3utils_flab.py"],
+        }
+ 	file { "${install_dir}/${logfile}":
+                ensure  => 'present',
+                replace => 'no',
+                owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0644",
+                content => "",
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
         file { "${install_dir}/warden_client-uchoudp.cfg":

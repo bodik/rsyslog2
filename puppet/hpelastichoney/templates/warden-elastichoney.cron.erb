@@ -1,1 +1,1 @@
-*/5 * * * * <%= @elastichoney_user %> /usr/bin/python <%= @install_dir %>/elastichoney-reporter.py 1>><%= @install_dir %>/warden3-elastichoney-sender.log 2>&1
+*/5 * * * * <%= @elastichoney_user %> cd <%= @install_dir %>; /usr/bin/python warden3-elastichoney-sender.py 1>><%= @install_dir %>/warden3-elastichoney-sender.log 2>&1

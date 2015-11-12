@@ -117,17 +117,13 @@ class hpdio (
 	package { ["netcat"]: ensure => installed, }
 
 
-
-
-
-
 	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon)
 	file { "${install_dir}/warden":
 		ensure => directory,
 		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
 	}
 	file { "${install_dir}/warden/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
@@ -137,20 +133,19 @@ class hpdio (
 		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-	class { "warden3::hostcert": 
-		warden_server => $warden_server_real,
-	}
-	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n dionaea -d ${install_dir}",
-		creates => "${install_dir}/registered-at-warden-server",
-		require => Exec["do install"],
-	}
 
+
+	#reporting
+	file { "${install_dir}/w3utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+                owner => "${dio_user}", group => "${dio_user}", mode => "0755",
+        }
 	file { "${install_dir}/warden/warden3-dio-sender.py":
-		source => "puppet:///modules/${module_name}/hp-dio/warden3-dio-sender.py",
+		source => "puppet:///modules/${module_name}/sender/warden3-dio-sender.py",
 		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
+	$anonymised = "yes"
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	file { "${install_dir}/warden/warden_client-dio.cfg":
 		content => template("${module_name}/warden_client-dio.cfg.erb"),
@@ -163,4 +158,12 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
+	class { "warden3::hostcert": 
+		warden_server => $warden_server_real,
+	}
+	exec { "register dio sensor":
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n dionaea -d ${install_dir}",
+		creates => "${install_dir}/registered-at-warden-server",
+		require => Exec["do install"],
+	}
 }

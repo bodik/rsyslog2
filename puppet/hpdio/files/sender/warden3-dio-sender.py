@@ -16,25 +16,25 @@ import base64
 import sqlite3
 import sys
 import re
+import w3utils_flab as w3u
 
-DEFAULT_ACONFIG = 'warden_client-dio.cfg'
-DEFAULT_WCONFIG = 'warden_client.cfg'
-DEFAULT_BINPATH = '/opt/dionaea/var/dionaea/binaries'
-DEFAULT_DBFILE  = '/opt/dionea/var/dionea/logsql.sqlite'
-DEFAULT_NAME = 'org.example.warden.test'
-DEFAULT_REPORT_BINARIES = 'false'
-DEFAULT_AWIN = 5
-DEFAULT_CON_ATTEMPTS = 3
-DEFAULT_CON_RETRY_INTERVAL = 5
-DEFAULT_ATTACH_NAME = 'att1'
-DEFAULT_HASHTYPE = 'md5'
-DEFAULT_ANONYMISED = 'no'
-DEFAULT_TARGET_NET = '0.0.0.0/0'
-DEFAULT_SECRET = ''
-DEFAULT_CONTENT_ENCODING = 'base64'
+aconfig = read_cfg('warden_client-dio.cfg')
+wconfig = read_cfg('warden_client.cfg')
+aclient_name = aconfig['name']
+wconfig['name'] = aclient_name
+aanonymised = aconfig['anonymised']
+aanonymised_net  = aconfig['target_net']
+aanonymised = aanonymised if (aanonymised_net != '0.0.0.0/0') or (aanonymised_net == 'omit') else '0.0.0.0/0'
 
-CONTENT_TYPE_OCTET_STREAM = 'application/octet-stream'
-CONTENT_TYPE_TEXT_PLAIN = 'text/plain'
+awin = aconfig['awin'] * 60
+abinpath = aconfig['binaries_path']
+adbfile = aconfig['dbfile']
+aconattempts = aconfig['con_attempts']
+aretryinterval = aconfig['con_retry_interval']
+areportbinaries = aconfig['report_binaries']
+
+wconfig['secret'] = aconfig.get('secret', '')
+wclient = Client(**wconfig)
 
 def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashtype, hashdigest, vtpermalink, avref):
     
@@ -62,8 +62,8 @@ def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashty
       fpath = path.join(binaries_path, hashdigest)
       with open(fpath, "r") as f:
         fdata = f.read()
-        attach['ContentType'] = CONTENT_TYPE_OCTET_STREAM
-        attach['ContentEncoding'] = DEFAULT_CONTENT_ENCODING
+        attach['ContentType'] = 'application/octet-stream'
+        attach['ContentEncoding'] = 'base64'
         attach['Size'] = len(fdata)
         attach['Content'] = base64.b64encode(fdata)
     except (IOError) as e:
@@ -74,9 +74,9 @@ def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashty
 def gen_attach_idea_mysql(logger, mysql_query):
   
   attach = {} 
-  attach["Handle"] = DEFAULT_ATTACH_NAME
+  attach["Handle"] = 'att1'
   attach["Type"] = ["Malware"]
-  attach['ContentType'] = CONTENT_TYPE_TEXT_PLAIN
+  attach['ContentType'] = 'text/plain'
   attach['Size'] = len(mysql_query)
   attach['Content'] = mysql_query
 
@@ -104,9 +104,6 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
      ]
   }
 
-  # Determine IP address family
-  af = "IP4" if not ':' in data['src_ip'] else "IP6"
-  
   # Save TCP/UDP proto
   proto = [data['proto']]
 
@@ -121,7 +118,7 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
 
     if filename != '' and data['download_md5_hash'] != '':
       # Generate "SMB Attach" part of IDEA
-      a = gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, DEFAULT_HASHTYPE, data['download_md5_hash'], data['virustotal_permalink'], data['scan_result'])
+      a = gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, "md5", data['download_md5_hash'], data['virustotal_permalink'], data['scan_result'])
     
       event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
       event['Attach'] = [a]
@@ -138,18 +135,12 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
     	event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
     	event['Attach'] = [a]
 	
-  event['Source'][0][af]      = [data['src_ip']]
   event['Source'][0]['Port']  = [data['src_port']]
-
-  if anonymised != 'omit':
-    if anonymised == 'yes':
-      event['Target'][0]['Anonymised'] = True
-      event['Target'][0][af] = [target_net]
-    else:
-      event['Target'][0][af] = [data['dst_ip']]
-
   event['Target'][0]['Port']  = [data['dst_port']]
   event['Target'][0]['Proto'] = proto
+
+  w3u.IDEA_fill_addresses(event, data['src_ip'], data['dst_ip'], aanonymised, aanonymised_net)
+  
 
   # Add default category
   if not category:
@@ -160,32 +151,6 @@ def gen_event_idea(logger, binaries_path, report_binaries, client_name, anonymis
   return event
 
 def main():
-  aconfig = read_cfg(DEFAULT_ACONFIG)
-  wconfig = read_cfg(aconfig.get('warden', DEFAULT_WCONFIG))
-  
-  aname = aconfig.get('name', DEFAULT_NAME)
-  wconfig['name'] = aname   
-
-  asecret = aconfig.get('secret', DEFAULT_SECRET)
-  if asecret:
-    wconfig['secret'] = asecret
-  
-  wclient = Client(**wconfig)
-
-  awin = aconfig.get('awin', DEFAULT_AWIN) * 60
-  abinpath = aconfig.get('binaries_path', DEFAULT_BINPATH)
-  adbfile = aconfig.get('dbfile', DEFAULT_DBFILE)
-  aconattempts = aconfig.get('con_attempts', DEFAULT_CON_ATTEMPTS)
-  aretryinterval = aconfig.get('con_retry_interval', DEFAULT_CON_RETRY_INTERVAL)
-  areportbinaries = aconfig.get('report_binaries', DEFAULT_REPORT_BINARIES)
-  
-  aanonymised = aconfig.get('anonymised', DEFAULT_ANONYMISED)
-  if aanonymised not in ['no', 'yes', 'omit']:
-    wclient.logger.error("Configuration error: anonymised: '%s' - possible typo? use 'no', 'yes' or 'omit'" % aanonymised)
-    sys.exit(2)
-
-  atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
-  aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
 
   con = sqlite3.connect(adbfile)
   con.row_factory = sqlite3.Row

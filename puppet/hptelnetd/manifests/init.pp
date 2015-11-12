@@ -25,8 +25,6 @@ class hptelnetd (
 	user { "$telnetd_user": 	
 		ensure => present, 
 		managehome => false,
-		shell => "/bin/bash",
-		home => "${install_dir}",
 	}
 
 	file { "${install_dir}":
@@ -67,7 +65,7 @@ class hptelnetd (
 
 	# warden_client
 	file { "${install_dir}/warden_client.py":
-		source => "puppet:///modules/${module_name}/warden_client.py",
+		source => "puppet:///modules/${module_name}/sender/warden_client.py",
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
@@ -81,14 +79,20 @@ class hptelnetd (
 	# reporting
 
 	file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/lib/w3utils_flab.py",
+                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         }
 	file { "${install_dir}/warden3-telnetd-sender.py":
-                source => "puppet:///modules/${module_name}/reporter/warden3-telnetd-sender.py",
+                source => "puppet:///modules/${module_name}/sender/warden3-telnetd-sender.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         	require => File["${install_dir}/w3utils_flab.py"],
 	}
+ 	file { "${install_dir}/${logfile}":
+                ensure  => 'present',
+                replace => 'no',
+                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0644",
+                content => "",
+        }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/warden_client-telnetd.cfg":
                 content => template("${module_name}/warden_client-telnetd.cfg.erb"),

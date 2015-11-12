@@ -9,33 +9,25 @@ import json
 from time import time, gmtime, strftime, sleep
 from uuid import uuid4
 import sqlite3
+import w3utils_flab as w3u
 
-DEFAULT_ACONFIG = 'warden_client-glastopf.cfg'
-DEFAULT_WCONFIG = 'warden_client.cfg'
-DEFAULT_NAME = 'org.example.warden.test'
-DEFAULT_AWIN = 5
-DEFAULT_ANONYMISED = 'no'
-DEFAULT_TARGET_NET = '0.0.0.0/0'
+aconfig = read_cfg('warden_client-glastopf.cfg')
+wconfig = read_cfg('warden_client.cfg')
+aclient_name = aconfig['name']
+wconfig['name'] = aclient_name
+aanonymised = aconfig['anonymised']
+aanonymised_net  = aconfig['target_net']
+aanonymised = aanonymised if (aanonymised_net != '0.0.0.0/0') or (aanonymised_net == 'omit') else '0.0.0.0/0'
 
-DEFAULT_CON_ATTEMPTS = 3
-DEFAULT_CON_RETRY_INTERVAL = 5
-DEFAULT_DBFILE  = '/opt/glastopf/db/glastopf.db'
+awin = aconfig['awin'] * 60
+aconattempts = aconfig['con_attempts']
+aretryinterval = aconfig['con_retry_interval']
+adbfile = aconfig['dbfile']
+
+wclient = Client(**wconfig)
 
 
-def fill_addresses(event, src_ip, anonymised, target_net):
-	af = "IP4" if not ':' in src_ip else "IP6"
-	event['Source'][0][af] = [src_ip]
-	if anonymised != 'omit':
-		if anonymised == 'yes':
-			event['Target'][0]['Anonymised'] = True
-			event['Target'][0][af] = [target_net]
-		else:
-			event['Target'][0][af] = [dst_ip]
-
-	return event
-
-def gen_event_idea_g1(client_name, detect_time, conn_count, src_ip, anonymised, target_net, 
-	request_url, request_raw, pattern, filename):
+def gen_event_idea_gl(detect_time, src_ip, src_port, request_url, request_raw, pattern, filename):
 
 	event = {
 		"Format": "IDEA0",
@@ -43,19 +35,24 @@ def gen_event_idea_g1(client_name, detect_time, conn_count, src_ip, anonymised, 
 		"DetectTime": detect_time,
 		"Category": ["Other"],
 		"Note": "webhoneypot event",
-		"ConnCount": conn_count,
-		"Source": [{}],
+		"ConnCount": 1,
+		"Source": [{"Port" : [src_port]}],
 		"Target": [{ "Proto": ["tcp", "http"], "Port" : [80] }],
 		"Node": [
 			{
-				"Name": client_name,
+				"Name": aclient_name,
 				"Tags": ["Honeypot", "Connection"],
 				"SW": ["Glastopf"],
 			}
 		],
-		"Attach": [{ "request_url": request_url, "request_raw": request_raw, "pattern": pattern, "filename": filename }]
+		"Attach": [{ 	"request_url" : request_url, 
+				"request_raw" : request_raw, 
+				"pattern"     : pattern, 
+				"filename"    : filename }]
 	}
-	event = fill_addresses(event, src_ip, anonymised, target_net)
+
+	event = w3u.IDEA_fill_addresses(event, src_ip, "0.0.0.0", aanonymised, aanonymised_net)
+
 	try:
 		event["Attach"][0]["smart"] = request_raw.split("\n")[0]
 	except:
@@ -66,30 +63,10 @@ def gen_event_idea_g1(client_name, detect_time, conn_count, src_ip, anonymised, 
 
 
 def main():
-	#warden client startup
-	aconfig = read_cfg(DEFAULT_ACONFIG)
-	wconfig = read_cfg(aconfig.get('warden', DEFAULT_WCONFIG))
-	aname = aconfig.get('name', DEFAULT_NAME)
-	awin = aconfig.get('awin', DEFAULT_AWIN) * 60
-	wconfig['name'] = aname
-	wclient = Client(**wconfig)   
-	aanonymised = aconfig.get('anonymised', DEFAULT_ANONYMISED)
-	if aanonymised not in ['no', 'yes', 'omit']:
-		wclient.logger.error("Configuration error: anonymised: '%s' - possible typo? use 'no', 'yes' or 'omit'" % aanonymised)
-		sys.exit(2)
-	atargetnet  = aconfig.get('target_net', DEFAULT_TARGET_NET)
-	aanonymised = aanonymised if (atargetnet != DEFAULT_TARGET_NET) or (aanonymised == 'omit') else DEFAULT_ANONYMISED
-
-	aconattempts = aconfig.get('con_attempts', DEFAULT_CON_ATTEMPTS)
-	aretryinterval = aconfig.get('con_retry_interval', DEFAULT_CON_RETRY_INTERVAL)
-	adbfile = aconfig.get('dbfile', DEFAULT_DBFILE)
-
-
 	con = sqlite3.connect(adbfile)
 	con.row_factory = sqlite3.Row
 	crs = con.cursor()
 	events = []
-
 
 	query =  "SELECT id, strftime('%%s',time ,'utc') as utime, source, request_url, request_raw, pattern, filename \
 			FROM events \
@@ -121,19 +98,14 @@ def main():
 		dtime = format_timestamp(float(row['utime']))
 		source_info = row['source'].split(":")
 		a = gen_event_idea_g1(
-			client_name = aname, 
 			detect_time = dtime, 
-			conn_count = 1, 
 			src_ip = source_info[0], 
-			anonymised = aanonymised, 
-			target_net = atargetnet,
-
+			src_port = int(source_info[1]),
 			request_url = row['request_url'],
 			request_raw = row['request_raw'],
 			pattern = row['pattern'],
 			filename = row['filename'],
 		)
-		a['Source'][0]['Port']=[int(source_info[1])]
 		#print json.dumps(a)
 		events.append(a)
 
