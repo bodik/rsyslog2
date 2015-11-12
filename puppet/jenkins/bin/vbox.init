@@ -25,8 +25,8 @@ rreturn() {
 }
 
 vm_id() {
-	echo "ERROR: not implemented"
-	exit 1
+	#not really used
+	/puppet/jenkins/bin/vbox.init list | grep "$VMNAME" | awk '{print $2}'
 }
 
 
@@ -36,14 +36,7 @@ vm_destroy() {
 }
 
 vm_ssh() {
-	echo "ERROR: not implemented"
-	exit 1
-
-	VMIP=$(onevm show $(/puppet/jenkins/bin/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
-	if [ -z "$VMIP" ]; then
-		rreturn 1 "vm ip not detected from metacloud"
-	fi
-	ssh -i $ONERSA -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMIP "$1"
+	ssh -o 'StrictHostKeyChecking=no' -o 'UserKnownHostsFile=/dev/null' -o 'ConnectTimeout=5' -o 'LogLevel=quiet' root@$VMNAME "$1"
 	rreturn $? "$0 ssh $@"
 }
 
@@ -57,7 +50,7 @@ vm_start() {
 }
 
 vm_status() {
-	/puppet/jenkins/bin/vbox.init list | grep running | grep "^\"$VMNAME\" "
+	/puppet/jenkins/bin/vbox.init list | grep running | grep "^$VMNAME "
 	rreturn $? "$0 status"
 }
 
@@ -77,7 +70,7 @@ vm_build() {
 		rreturn 1 "vm already exists"
 	fi
 
-	VBoxManage clonevm debian-jessie --name ${VMNAME}
+	VBoxManage clonevm template-debian-jessie --name ${VMNAME}
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 clone failed"
 	fi
@@ -104,7 +97,7 @@ vm_list() {
 	ALLVMS=$(VBoxManage list vms)
 	echo "$ALLVMS" | while read all; do 
 		#echo $all
-		NAME=$(echo $all | awk '{print $1}')
+		NAME=$(echo $all | awk '{print $1}' | sed 's/"//g')
 		UID=$(echo $all | awk '{print $2}')
 		STATE=$(VBoxManage showvminfo $UID | grep "^State" | sed 's/State:\s*\(.*\)\s* (.*/\1/' | sed 's/ /_/g')
 		printf "%-25s %-40s %-10s\n" "${NAME}" "${UID}" "${STATE}"
