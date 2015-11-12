@@ -64,6 +64,7 @@ class hpcowrie (
                 mysql_user { "${mysql_user}@localhost":
                                 ensure => present,
                                 password_hash => mysql_password($mysql_password_real),
+				require => Mysql_database["${mysql_db}"],
                 }
                 mysql_grant { "${mysql_db}@localhost/${mysql_db}.*":
                                 ensure     => present,
@@ -72,6 +73,12 @@ class hpcowrie (
                                 user       => "${mysql_db}@localhost",
                                 require => Mysql_user["${mysql_db}@localhost"],
                 }
+		exec { "install database":
+			command => "/usr/bin/mysql ${mysql_db} < ${install_dir}/doc/sql/mysql.sql",
+			#command runs if ret is not 0
+			unless => "/usr/bin/test \"$(echo 'select count(*) from tables where TABLE_SCHEMA=\"${mysql_db}\"' | /usr/bin/mysql -Nb information_schema)\" -eq \"$(cat ${install_dir}/doc/sql/mysql.sql | grep 'CREATE TABLE' | wc -l)\" ",
+			require => [ Mysql_database["${mysql_db}"], Exec["clone cowrie"] ],
+		}
         }
 
 
@@ -178,7 +185,7 @@ class hpcowrie (
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => [File["/etc/init.d/cowrie"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/cowrie"], Exec["systemd_reload"], Exec["install database"], Mysql_grant["${mysql_db}@localhost/${mysql_db}.*"] ],
 	}
 
 
