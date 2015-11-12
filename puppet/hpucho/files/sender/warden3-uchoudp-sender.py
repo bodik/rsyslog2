@@ -50,23 +50,25 @@ def gen_event_idea_uchoudp(detect_time, src_ip, src_port, dst_ip, dst_port, prot
         return event
 
 events = []
-for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
-	data = json.loads(line)
+try:
+	for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
+		data = json.loads(line)
 
-	a = gen_event_idea_uchoudp(
-		detect_time = data['detect_time'], 
-		src_ip      = data['src_ip'],
-		src_port    = data['src_port'], 
-		dst_ip      = data['dst_ip'],
-		dst_port    = data['dst_port'],
-		proto       = data['proto'],
-		decoded     = data['decoded'],
-		smart	    = data['smart'],
-		data        = data['data']	
-	)
-	#print json.dumps(a)
-	events.append(a)
-
+		a = gen_event_idea_uchoudp(
+			detect_time = data['detect_time'], 
+			src_ip      = data['src_ip'],
+			src_port    = data['src_port'], 
+			dst_ip      = data['dst_ip'],
+			dst_port    = data['dst_port'],
+			proto       = data['proto'],
+			decoded     = data['decoded'],
+			smart	    = data['smart'],
+			data        = data['data']	
+		)
+		#print json.dumps(a)
+		events.append(a)
+except:
+	pass
 #print json.dumps(events, indent=3)
 
 print "=== Sending ==="

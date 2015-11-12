@@ -49,22 +49,24 @@ def gen_event_idea_elastichoney(detect_time, src_ip, dst_ip, data):
 
 
 events = []
-for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
-	#sys.stdout.write(line)
-	data = json.loads(line)
+try:
+	for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
+		#sys.stdout.write(line)
+		data = json.loads(line)
 
-	#import pdb; pdb.set_trace()
-	#yes gringo ;) text > object > unixtime > text again
-	dtime = format_timestamp( calendar.timegm( dateutil.parser.parse(data["@timestamp"]).utctimetuple() ) )
-	a = gen_event_idea_elastichoney(
-		detect_time = dtime, 
-		src_ip = data['source'], 
-		dst_ip = data['honeypot'],
-		data = data	
-	)
-	#print json.dumps(a)
-	events.append(a)
-
+		#import pdb; pdb.set_trace()
+		#yes gringo ;) text > object > unixtime > text again
+		dtime = format_timestamp( calendar.timegm( dateutil.parser.parse(data["@timestamp"]).utctimetuple() ) )
+		a = gen_event_idea_elastichoney(
+			detect_time = dtime, 
+			src_ip = data['source'], 
+			dst_ip = data['honeypot'],
+			data = data	
+		)
+		#print json.dumps(a)
+		events.append(a)
+except:
+	pass
 #print json.dumps(events, indent=3)
 
 print "=== Sending ==="
