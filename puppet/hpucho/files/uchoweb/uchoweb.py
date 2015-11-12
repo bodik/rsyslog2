@@ -8,7 +8,7 @@ import os
 import sys
 import re
 import base64
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 import mimetypes
 
 hconfig = read_cfg('uchoweb.cfg')

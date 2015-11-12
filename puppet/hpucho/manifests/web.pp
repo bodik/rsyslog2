@@ -95,14 +95,14 @@ class hpucho::web (
 
         # reporting
 
-        file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+        file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
         }
-        file { "${install_dir}/warden3-uchoweb-sender.py":
-                source => "puppet:///modules/${module_name}/sender/warden3-uchoweb-sender.py",
+        file { "${install_dir}/warden_sender_uchoweb.py":
+                source => "puppet:///modules/${module_name}/sender/warden_sender_uchoweb.py",
                 owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
-                require => File["${install_dir}/w3utils_flab.py"],
+                require => File["${install_dir}/warden_utils_flab.py"],
         }
  	file { "${install_dir}/${logfile}":
                 ensure  => 'present',
@@ -111,13 +111,13 @@ class hpucho::web (
                 content => "",
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-        file { "${install_dir}/warden_client-uchoweb.cfg":
-                content => template("${module_name}/warden_client-uchoweb.cfg.erb"),
+        file { "${install_dir}/warden_client_uchoweb.cfg":
+                content => template("${module_name}/warden_client_uchoweb.cfg.erb"),
                 owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
-                require => File["${install_dir}/uchoweb.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchoweb-sender.py"],
+                require => File["${install_dir}/uchoweb.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_uchoweb.py"],
         }
-        file { "/etc/cron.d/warden-uchoweb":
-                content => template("${module_name}/warden-uchoweb.cron.erb"),
+        file { "/etc/cron.d/warden_uchoweb":
+                content => template("${module_name}/warden_uchoweb.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
                 require => User["$uchoweb_user"],
         }

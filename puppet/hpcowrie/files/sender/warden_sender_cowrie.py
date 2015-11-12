@@ -14,10 +14,10 @@ import json
 import string
 import os
 import sys
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
 #warden client startup
-aconfig = read_cfg('warden_client-cowrie.cfg')
+aconfig = read_cfg('warden_client_cowrie.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name

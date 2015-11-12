@@ -48,7 +48,7 @@ class hpelastichoney (
 	file { "/etc/init.d/elastichoney":
 		content => template("${module_name}/elastichoney.init.erb"),
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
-		require => File["${install_dir}/elastichoney", "${install_dir}/warden_client-elastichoney.cfg", "${install_dir}/config.json"],
+		require => File["${install_dir}/elastichoney", "${install_dir}/warden_client_elastichoney.cfg", "${install_dir}/config.json"],
 		notify => [Service["elastichoney"], Exec["systemd_reload"]],
 	}
 	exec { "systemd_reload":
@@ -82,13 +82,13 @@ class hpelastichoney (
 
 	#reporting
 
- 	file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+ 	file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${elastichoney_user}", group => "${elastichoney_user}", mode => "0755",
         }
 	package { ["python-dateutil"]: ensure => installed, }
-	file { "${install_dir}/warden3-elastichoney-sender.py":
-		source => "puppet:///modules/${module_name}/sender/warden3-elastichoney-sender.py",
+	file { "${install_dir}/warden_sender_elastichoney.py":
+		source => "puppet:///modules/${module_name}/sender/warden_sender_elastichoney.py",
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
@@ -99,13 +99,13 @@ class hpelastichoney (
                 content => "",
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden_client-elastichoney.cfg":
-		content => template("${module_name}/warden_client-elastichoney.cfg.erb"),
+	file { "${install_dir}/warden_client_elastichoney.cfg":
+		content => template("${module_name}/warden_client_elastichoney.cfg.erb"),
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	file { "/etc/cron.d/warden-elastichoney":
-		content => template("${module_name}/warden-elastichoney.cron.erb"),
+	file { "/etc/cron.d/warden_elastichoney":
+		content => template("${module_name}/warden_elastichoney.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => User["$elastichoney_user"],
 	}

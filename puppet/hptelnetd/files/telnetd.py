@@ -8,7 +8,7 @@ from twisted.internet.protocol import ServerFactory
 from twisted.internet import reactor
 from time import sleep
 import json
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
 hconfig = read_cfg('telnetd.cfg')
 logger = w3u.getLogger(hconfig['logfile'])

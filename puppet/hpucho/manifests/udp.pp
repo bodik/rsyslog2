@@ -85,14 +85,14 @@ class hpucho::udp (
 
         # reporting
 
-        file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+        file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
         }
-        file { "${install_dir}/warden3-uchoudp-sender.py":
-                source => "puppet:///modules/${module_name}/sender/warden3-uchoudp-sender.py",
+        file { "${install_dir}/warden_sender_uchoudp.py":
+                source => "puppet:///modules/${module_name}/sender/warden_sender_uchoudp.py",
                 owner => "${uchoudp_user}", group => "${uchoudp_user}", mode => "0755",
-                require => File["${install_dir}/w3utils_flab.py"],
+                require => File["${install_dir}/warden_utils_flab.py"],
         }
  	file { "${install_dir}/${logfile}":
                 ensure  => 'present',
@@ -101,13 +101,13 @@ class hpucho::udp (
                 content => "",
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-        file { "${install_dir}/warden_client-uchoudp.cfg":
-                content => template("${module_name}/warden_client-uchoudp.cfg.erb"),
+        file { "${install_dir}/warden_client_uchoudp.cfg":
+                content => template("${module_name}/warden_client_uchoudp.cfg.erb"),
                 owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
-                require => File["${install_dir}/uchoudp.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchoudp-sender.py"],
+                require => File["${install_dir}/uchoudp.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_uchoudp.py"],
         }
-        file { "/etc/cron.d/warden-uchoudp":
-                content => template("${module_name}/warden-uchoudp.cron.erb"),
+        file { "/etc/cron.d/warden_uchoudp":
+                content => template("${module_name}/warden_uchoudp.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
         #        require => User["$uchoudp_user"],
         }

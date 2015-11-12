@@ -16,9 +16,9 @@ import base64
 import sqlite3
 import sys
 import re
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
-aconfig = read_cfg('warden_client-dio.cfg')
+aconfig = read_cfg('warden_client_dio.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name

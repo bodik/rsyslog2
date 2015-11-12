@@ -136,24 +136,24 @@ class hpdio (
 
 
 	#reporting
-	file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+	file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${dio_user}", group => "${dio_user}", mode => "0755",
         }
-	file { "${install_dir}/warden/warden3-dio-sender.py":
-		source => "puppet:///modules/${module_name}/sender/warden3-dio-sender.py",
+	file { "${install_dir}/warden/warden_sender_dio.py":
+		source => "puppet:///modules/${module_name}/sender/warden_sender_dio.py",
 		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised = "yes"
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden/warden_client-dio.cfg":
-		content => template("${module_name}/warden_client-dio.cfg.erb"),
+	file { "${install_dir}/warden/warden_client_dio.cfg":
+		content => template("${module_name}/warden_client_dio.cfg.erb"),
 		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-	file { "/etc/cron.d/warden-dio":
-		content => template("${module_name}/warden-dio.cron.erb"),
+	file { "/etc/cron.d/warden_dio":
+		content => template("${module_name}/warden_dio.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => User["$dio_user"],
 	}

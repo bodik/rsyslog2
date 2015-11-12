@@ -7,7 +7,7 @@ import json, socket, re
 import os
 import sys
 import logging
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
 hconfig = read_cfg('uchotcp.cfg')
 skipports = hconfig.get('port_skip', [])

@@ -8,12 +8,12 @@ from math import trunc
 from uuid import uuid4
 import os
 import sys
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 import dateutil.parser, calendar
 import json
 import string
 
-aconfig = read_cfg('warden_client-elastichoney.cfg')
+aconfig = read_cfg('warden_client_elastichoney.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name

@@ -9,9 +9,9 @@ import json
 import string
 import os
 import sys
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
-aconfig = read_cfg('warden_client-telnetd.cfg')
+aconfig = read_cfg('warden_client_uchoweb.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name
@@ -20,53 +20,49 @@ aanonymised_net  = aconfig['target_net']
 aanonymised = aanonymised if (aanonymised_net != '0.0.0.0/0') or (aanonymised_net == 'omit') else '0.0.0.0/0'
 wclient = Client(**wconfig)
 
-def gen_event_idea_telnetd(detect_time, src_ip, src_port, dst_ip, dst_port, proto, category, data):
+def gen_event_idea_uchoweb(detect_time, src_ip, src_port, dst_ip, dst_port, proto, data):
 
         event = {
                 "Format": "IDEA0",
                 "ID": str(uuid4()),
                 "DetectTime": detect_time,
-                "Category": [category],
-                "Note": "telnetd event",
+                "Category": ["Other"],
+                "Note": "Uchoweb event",
                 "ConnCount": 1,
-                "Source": [{ "Proto": [proto], "Port": [src_port] }], 
-                "Target": [{ "Proto": [proto], "Port": [dst_port] }],
+                "Source": [{ "Proto": proto, "Port": [src_port] }],
+                "Target": [{ "Proto": proto, "Port": [dst_port] }],
                 "Node": [
-                        { 
+                        {
                                 "Name": aclient_name,
-                                "Tags": ["Honeypot", "Connection"],
-                                "SW": ["telnetd"],
+                                "Tags": ["Honeypot"],
+                                "SW": ["Uchoweb"],
                         }
-                ],      
-                "Attach": [{ "data": data, "datalen": len(data) }]
+                ],
+                "Attach": [{ "request": data, "smart": data["requestline"] }]
         }
+
         event = w3u.IDEA_fill_addresses(event, src_ip, dst_ip, aanonymised, aanonymised_net)
 
         return event
-
 
 events = []
 try:
 	for line in w3u.Pygtail(filename=aconfig.get('logfile'), wait_timeout=0):
 		data = json.loads(line)
 
-		a = gen_event_idea_telnetd(
+		a = gen_event_idea_uchoweb(
 			detect_time = data['detect_time'], 
 			src_ip      = data['src_ip'],
 			src_port    = data['src_port'], 
 			dst_ip      = data['dst_ip'],
 			dst_port    = data['dst_port'],
 			proto       = data['proto'],
-			category    = data['category'],
-			data        = data['data']	
+			data        = data['data'],	
 		)
-		#print json.dumps(a)
+		
 		events.append(a)
 except:
 	pass
-
-#print json.dumps(events, indent=3)
-
 print "=== Sending ==="
 start = time()
 ret = wclient.sendEvents(events)

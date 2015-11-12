@@ -86,14 +86,14 @@ class hpucho::tcp (
 
         # reporting
 
-        file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+        file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
         }
-        file { "${install_dir}/warden3-uchotcp-sender.py":
-                source => "puppet:///modules/${module_name}/sender/warden3-uchotcp-sender.py",
+        file { "${install_dir}/warden_sender_uchotcp.py":
+                source => "puppet:///modules/${module_name}/sender/warden_sender_uchotcp.py",
                 owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
-                require => File["${install_dir}/w3utils_flab.py"],
+                require => File["${install_dir}/warden_utils_flab.py"],
         }
  	file { "${install_dir}/${logfile}":
     		ensure  => 'present',
@@ -102,13 +102,13 @@ class hpucho::tcp (
     		content => "",
   	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-        file { "${install_dir}/warden_client-uchotcp.cfg":
-                content => template("${module_name}/warden_client-uchotcp.cfg.erb"),
+        file { "${install_dir}/warden_client_uchotcp.cfg":
+                content => template("${module_name}/warden_client_uchotcp.cfg.erb"),
                 owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
-                require => File["${install_dir}/uchotcp.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-uchotcp-sender.py"],
+                require => File["${install_dir}/uchotcp.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_uchotcp.py"],
         }
-        file { "/etc/cron.d/warden-uchotcp":
-                content => template("${module_name}/warden-uchotcp.cron.erb"),
+        file { "/etc/cron.d/warden_uchotcp":
+                content => template("${module_name}/warden_uchotcp.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
                 require => User["$uchotcp_user"],
         }

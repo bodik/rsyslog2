@@ -9,9 +9,9 @@ import json
 from time import time, gmtime, strftime, sleep
 from uuid import uuid4
 import sqlite3
-import w3utils_flab as w3u
+import warden_utils_flab as w3u
 
-aconfig = read_cfg('warden_client-glastopf.cfg')
+aconfig = read_cfg('warden_client_glastopf.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name

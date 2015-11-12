@@ -78,14 +78,14 @@ class hptelnetd (
 
 	# reporting
 
-	file { "${install_dir}/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+	file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         }
-	file { "${install_dir}/warden3-telnetd-sender.py":
-                source => "puppet:///modules/${module_name}/sender/warden3-telnetd-sender.py",
+	file { "${install_dir}/warden_sender_telnetd.py":
+                source => "puppet:///modules/${module_name}/sender/warden_sender_telnetd.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-        	require => File["${install_dir}/w3utils_flab.py"],
+        	require => File["${install_dir}/warden_utils_flab.py"],
 	}
  	file { "${install_dir}/${logfile}":
                 ensure  => 'present',
@@ -94,13 +94,13 @@ class hptelnetd (
                 content => "",
         }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-   	file { "${install_dir}/warden_client-telnetd.cfg":
-                content => template("${module_name}/warden_client-telnetd.cfg.erb"),
+   	file { "${install_dir}/warden_client_telnetd.cfg":
+                content => template("${module_name}/warden_client_telnetd.cfg.erb"),
                 owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-                require => File["${install_dir}/telnetd.py","${install_dir}/w3utils_flab.py","${install_dir}/warden3-telnetd-sender.py"],
+                require => File["${install_dir}/telnetd.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_telnetd.py"],
         }
-    	file { "/etc/cron.d/warden-telnetd":
-                content => template("${module_name}/warden-telnetd.cron.erb"),
+    	file { "/etc/cron.d/warden_telnetd":
+                content => template("${module_name}/warden_telnetd.cron.erb"),
                 owner => "root", group => "root", mode => "0644",
                 require => User["$telnetd_user"],
         }

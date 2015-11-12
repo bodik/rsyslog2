@@ -136,23 +136,23 @@ class hpglastopf (
 
 	#reporter
 
-        file { "${install_dir}/warden/w3utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
+        file { "${install_dir}/warden/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
         }
-	file { "${install_dir}/warden/glastopf-reporter.py":
-		source => "puppet:///modules/${module_name}/sender/warden3-glastopf-sender.py",
+	file { "${install_dir}/warden/warden_sender_glastopf.py":
+		source => "puppet:///modules/${module_name}/sender/warden_sender_glastopf.py",
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
-	file { "${install_dir}/warden/warden_client-glastopf.cfg":
-		content => template("${module_name}/warden_client-glastopf.cfg.erb"),
+	file { "${install_dir}/warden/warden_client_glastopf.cfg":
+		content => template("${module_name}/warden_client_glastopf.cfg.erb"),
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0640",
 		require => File["${install_dir}/warden"],
 	}
-	file { "/etc/cron.d/warden-glastopf":
-		content => template("${module_name}/warden-glastopf.cron.erb"),
+	file { "/etc/cron.d/warden_glastopf":
+		content => template("${module_name}/warden_glastopf.cron.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => User["$glastopf_user"],
 	}
