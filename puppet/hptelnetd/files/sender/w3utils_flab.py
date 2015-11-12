@@ -7,7 +7,8 @@ import signal
 import socket
 import sys
 import time
-from optparse import OptionParser
+import socket, fcntl, struct
+import logging
 
 __version__ = '0.5.3'
 
@@ -53,6 +54,15 @@ def force_text(s, encoding='utf-8', errors='strict'):
         return s
     return s.decode(encoding, errors)
 
+def getLogger(logname):
+   logger = logging.getLogger(__name__)
+   logger.setLevel(logging.INFO)
+   handler = logging.FileHandler(logname)
+   handler.setLevel(logging.INFO)
+
+   logger.addHandler(handler)
+
+   return logger
 
 class Pygtail(object):
     """

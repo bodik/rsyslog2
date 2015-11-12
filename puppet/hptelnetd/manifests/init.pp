@@ -87,6 +87,12 @@ class hptelnetd (
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         	require => File["${install_dir}/w3utils_flab.py"],
 	}
+ 	file { "${install_dir}/${logfile}":
+                ensure  => 'present',
+                replace => 'no',
+                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0644",
+                content => "",
+        }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/warden_client-telnetd.cfg":
                 content => template("${module_name}/warden_client-telnetd.cfg.erb"),

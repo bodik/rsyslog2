@@ -92,6 +92,12 @@ class hpelastichoney (
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
+ 	file { "${install_dir}/${logfile}":
+                ensure  => 'present',
+                replace => 'no',
+		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0644",
+                content => "",
+        }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
 	file { "${install_dir}/warden_client-elastichoney.cfg":
 		content => template("${module_name}/warden_client-elastichoney.cfg.erb"),
