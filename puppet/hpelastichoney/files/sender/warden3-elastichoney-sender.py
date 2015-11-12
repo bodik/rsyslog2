@@ -70,11 +70,11 @@ except:
 #print json.dumps(events, indent=3)
 
 print "=== Sending ==="
-start = time.time()
+start = time()
 ret = wclient.sendEvents(events)
 
 if 'saved' in ret:
 	wclient.logger.info("%d event(s) successfully delivered." % ret['saved'])
 
-print "Time: %f" % (time.time() - start)
+print "Time: %f" % (time() - start)
 

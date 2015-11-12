@@ -136,7 +136,7 @@ class hpglastopf (
 
 	#reporter
 
-        file { "${install_dir}/w3utils_flab.py":
+        file { "${install_dir}/warden/w3utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
                 owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
         }

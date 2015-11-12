@@ -82,7 +82,7 @@ class hpcowrie (
 		#command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
 		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/start.sh",
-	}	
+	} 
 	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
 		ensure => installed, 
 	}
@@ -208,7 +208,7 @@ class hpcowrie (
 
 	#reporting
 
-	file { "${install_dir}/w3utils_flab.py":
+	file { "${install_dir}/warden/w3utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/w3utils_flab.py",
                 owner => "${$cowrie_user}", group => "${$cowrie_user}", mode => "0755",
         }

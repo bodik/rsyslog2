@@ -17,7 +17,7 @@ import sys
 import w3utils_flab as w3u
 
 #warden client startup
-aconfig = read_cfg('warden_client-telnetd.cfg')
+aconfig = read_cfg('warden_client-cowrie.cfg')
 wconfig = read_cfg('warden_client.cfg')
 aclient_name = aconfig['name']
 wconfig['name'] = aclient_name
@@ -162,7 +162,7 @@ query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(a.timestamp, @@global.time_zone, '+00
 	WHERE a.success=1 AND CONVERT_TZ(a.timestamp, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 	ORDER BY a.timestamp ASC;"
 
-crs.execute(query, awin)
+crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_cowrie_auth(
@@ -183,7 +183,7 @@ query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00
           WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
           ORDER BY s.starttime ASC;"
 
-crs.execute(query, awin)
+crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_ttylog(
@@ -206,7 +206,7 @@ query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00
 	WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
 	ORDER BY s.starttime ASC;"
 
-crs.execute(query, awin)
+crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_download(
