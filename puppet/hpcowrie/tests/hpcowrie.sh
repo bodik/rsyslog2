@@ -11,7 +11,7 @@ for all in $(cat $INSTALL_DIR/data/userdb.txt | grep -v "^#" ); do
 	if [ $? -ne 0 ]; then
 		rreturn 1 "$0 failed to login to hpcowrie"
 	fi
-        sshpass -p $P ssh -o 'StrictHostKeyChecking=no' -o 'PubkeyAuthentication=no' -p 45356 -l $U $(facter ipaddress) 'wget http://www.google.com'
+        sshpass -p $P ssh -o 'StrictHostKeyChecking=no' -o 'PubkeyAuthentication=no' -o 'UserKnownHostsFile=/dev/null' -p 45356 -l $U $(facter ipaddress) 'wget http://www.google.com'
 done
 
 rreturn 0 "$0"
