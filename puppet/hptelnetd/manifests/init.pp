@@ -25,8 +25,6 @@ class hptelnetd (
 	user { "$telnetd_user": 	
 		ensure => present, 
 		managehome => false,
-		shell => "/bin/bash",
-		home => "${install_dir}",
 	}
 
 	file { "${install_dir}":
