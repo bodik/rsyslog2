@@ -24,7 +24,12 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rediser/tests/rediser.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh rsyslog-server.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-server_netstat.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-server_avahi.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh elk-full.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x elk/tests/elk.sh&apos;
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh warden3-server.install.sh&apos;

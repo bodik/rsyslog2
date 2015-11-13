@@ -22,7 +22,8 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x mongomine.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;ps faxu&apos;
-/puppet/jenkins/bin/magrathea.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x mongomine/tests/mongomine.sh&apos;
 </command>
     </hudson.tasks.Shell>

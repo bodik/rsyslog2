@@ -20,6 +20,9 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb.metacentrum.cz/rsyslog2.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ################
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog-client.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog_installed.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpdio.install.sh&apos;
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpdio/tests/hpdio.sh&apos;
