@@ -87,7 +87,8 @@ class hpcowrie (
 	exec { "clone cowrie":
 		#command => "/usr/bin/git clone https://github.com/desaster/kippo.git ${install_dir}",
 		#command => "/usr/bin/git clone https://gitlab.labs.nic.cz/honeynet/kippo.git ${install_dir}",
-		command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; /usr/bin/git checkout 064c5d9e960e1444a35a7ea6ffd0d6b4108d8561; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
+		#command => "/usr/bin/git clone https://github.com/micheloosterhof/cowrie.git ${install_dir}; cd ${install_dir}; /usr/bin/git checkout 064c5d9e960e1444a35a7ea6ffd0d6b4108d8561; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
+		command => "/usr/bin/git clone https://github.com/bodik/cowrie.git ${install_dir}; cd ${install_dir}; /usr/bin/git checkout wget-and-defers; sh /puppet/hpcowrie/bin/postinst.sh ${install_dir}",
 		creates => "${install_dir}/start.sh",
 	} 
 	package { ["python-twisted", "python-mysqldb", "python-simplejson"]: 
