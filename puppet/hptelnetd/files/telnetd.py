@@ -9,6 +9,7 @@ from twisted.internet import reactor
 from time import sleep
 import json
 import warden_utils_flab as w3u
+import os
 
 hconfig = read_cfg('telnetd.cfg')
 logger = w3u.getLogger(hconfig['logfile'])
@@ -35,14 +36,7 @@ class telnetd(StatefulTelnetProtocol, object):
                     # Sent only as a reply to ECHO or NO ECHO..
 
     CMD_DIR = "commands"
-    CMD_REF = {
-		"id"       : { "src" : "code", "ref" : "uid=0(root) gid=0(root) groups=0(root)"},
-		"whoami"   : { "src" : "code", "ref" : "root"},
-		"uname"    : { "src" : "code", "ref" : "Linux fc01 3.13.3-7-brocade #1 SMP x86_64 x86_64 Fabric OS"},
-		"ifconfig" : { "src" : "file", "ref" : "ifconfig.cmd"},
-		"ls"       : { "src" : "file", "ref" : "ls.cmd"},
-	      }
-
+    
     def __init__(self):
 	pass
 
@@ -72,23 +66,30 @@ class telnetd(StatefulTelnetProtocol, object):
 	self.lastaction = "COMMAND"
 	if cmd != "":
 		self._data.append("%s" % (cmd))
-		cmdbase = cmd.split(" ")[0].strip()
+		args = cmd.split(" ")
+		cmdbase = os.path.split(args[0].strip())[1]	
+		
+		cmdarg = ""
+		if len(args) > 1:
+			cmdarg = args[1].strip()		
+	
 		if cmd == "exit" or cmd == "quit" or cmd == "q":
 		    self.transport.loseConnection()
 		    return 'Done'
-		elif cmdbase not in self.CMD_REF:
-		    self.transport.write("ash: %s command not found%s" % (cmdbase, self.NEWLINE))
-		else:
-		    if self.CMD_REF[cmdbase]['src'] == "code":
-			self.transport.write(self.CMD_REF[cmdbase]['ref'] + self.NEWLINE)
-		    elif self.CMD_REF[cmdbase]['src'] == "file":
-			try:
-				with open ("%s/%s" % (self.CMD_DIR, self.CMD_REF[cmdbase]['ref']), "r") as f:
-					data = f.read()
-					self.transport.write(data)
-					f.close()
-			except:
-				self.transport.write("ash: %s command not found%s" % (cmdbase, self.NEWLINE))
+	
+		f = None	
+		try:
+		        f = open ("%s/%s.json" % (self.CMD_DIR, cmdbase), "r")
+			data = json.loads(f.read())
+			if cmdarg in data.keys():	
+				self.transport.write(str(data[cmdarg] + self.NEWLINE))
+			else:	
+				self.transport.write(str(data['default'] + self.NEWLINE))
+		except:
+			self.transport.write("ash: %s command not found%s" % (cmdbase, self.NEWLINE))
+		finally:
+			if f:
+				f.close()
 	
 	self.transport.write(self.PROMPT)
         return 'Command'		
@@ -168,8 +169,6 @@ class telnetd(StatefulTelnetProtocol, object):
     def showBanner(self):
  	self.transport.write("""
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-           Pozor! Cizi komunikacni zarizeni!
-       Neautorizovany pristup zakazan dle zakona!
        Caution! Private communications equipment!
          Unauthorized access prohibited by law!
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n""")
