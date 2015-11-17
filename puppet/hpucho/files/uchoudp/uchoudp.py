@@ -29,22 +29,19 @@ class UchoUDP(DatagramProtocol):
 	if re.match("autotest.*", data):
 		self.transport.write(data, (host, port))
 
-	else:
-		data2log  = {
-			 "detect_time" : format_timestamp(),
-			 "proto"       : [self.proto],
-			 "src_ip"      : host,
-			 "src_port"    : port,
-			 "dst_ip"      : self.dst_ip,
-			 "dst_port"    : self.transport.socket.getsockname()[1],
-			 "decoded"     : "",
-			 "smart"       : "",
-			 "data"        : w3u.hexdump(data),
-		}
-
-		data2log = self.proto_detection(data2log, data)
-		
-		logger.info(json.dumps(data2log))	
+	data2log  = {
+		 "detect_time" : format_timestamp(),
+		 "proto"       : [self.proto],
+		 "src_ip"      : host,
+		 "src_port"    : port,
+		 "dst_ip"      : self.dst_ip,
+		 "dst_port"    : self.transport.socket.getsockname()[1],
+		 "decoded"     : "",
+		 "smart"       : "",
+		 "data"        : w3u.hexdump(data),
+	}
+	data2log = self.proto_detection(data2log, data)
+	logger.info(json.dumps(data2log))	
 
     def proto_detection(self, event, data):
          try:
