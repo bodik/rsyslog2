@@ -137,9 +137,10 @@ class Rediser < Thread
 			while line = @connection.gets
 				#@logger.info("RECV:       #{line}")
 				#thers a big magic in escaping '\' http://ruby-doc.org/core-2.2.0/String.html#method-i-tr
-				line = line.tr('^ !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'+"\t\n",'?')
+				line = line.chomp.tr('^ !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'+"\t",'?')
 				#@logger.info("RECVTRED:   #{line}")
-				receive(line)
+				#must ensure line at the end for logstash codecs
+				receive(line+"\n")
 		    	end
 		rescue Exception => e
 			@logger.error("exception #{e}, receiving data from client")
