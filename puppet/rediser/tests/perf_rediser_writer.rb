@@ -40,7 +40,7 @@ begin
 	while i < $options["count"]
 
 		x = f.read(100)
-		m = "perftestmessage #{$options["tid"]} tmsg#{i} #{x}\n"
+		m = "perftestmessage \\n #{$options["tid"]} tmsg#{i} #{x}\n"
 
 		s.puts m
 		$logger.debug(m)

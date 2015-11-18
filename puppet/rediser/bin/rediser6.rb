@@ -20,14 +20,6 @@ class Rediser < Thread
 		if $logger then @logger = $logger else @logger = Logger.new(STDOUT) end
 		@queue = []
 		@conn = nil
-		#this comes from old rediser, might be a little bit wired but we'll rework it some other time
-		#http://www.regular-expressions.info/posixbrackets.html
-		#[:print:] 	Visible characters and spaces (i.e. anything except control characters, etc.) 	[\x20-\x7E]
-		#[:cntrl:] 	Control characters 	[\x00-\x1F\x7F] 	
-		@allowed_chars = ""
-		(32..126).to_a.each { |x| @allowed_chars+=x.chr }
-		(0..31).to_a.each { |x| @allowed_chars+=x.chr }
-		(127..127).to_a.each { |x| @allowed_chars+=x.chr }
 
 		@connection = connection
 		sock_domain, remote_port, remote_hostname, remote_ip = @connection.peeraddr
@@ -142,8 +134,11 @@ class Rediser < Thread
 			#if redis connection fails, nothing is read from client, connection is closed and thread ends
 			#if read occures druing transfer we at least try to teardown
 			redis_connect()
-			while line = @connection.gets 
-				line = line.tr("^#{@allowed_chars}",'?')
+			while line = @connection.gets
+				#@logger.info("RECV:       #{line}")
+				#thers a big magic in escaping '\' http://ruby-doc.org/core-2.2.0/String.html#method-i-tr
+				line = line.tr('^ !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\\]^_`abcdefghijklmnopqrstuvwxyz{|}~','?')
+				#@logger.info("RECVTRED:   #{line}")
 				receive(line)
 		    	end
 		rescue Exception => e

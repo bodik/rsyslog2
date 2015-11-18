@@ -28,9 +28,9 @@ shift $((OPTIND-1))
 LOG="/tmp/perf_test_rediser6.sh.log.$$"
 handler()
 {
-    kill -s SIGINT $PID_REDISER $PID_READER
+    kill -9 $PID_REDISER $PID_READER
 }
-trap handler SIGINT
+trap handler INT
 
 
 
