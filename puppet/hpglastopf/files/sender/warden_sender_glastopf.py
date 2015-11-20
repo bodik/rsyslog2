@@ -97,7 +97,7 @@ def main():
 		#print row
 		dtime = format_timestamp(float(row['utime']))
 		source_info = row['source'].split(":")
-		a = gen_event_idea_g1(
+		a = gen_event_idea_gl(
 			detect_time = dtime, 
 			src_ip = source_info[0], 
 			src_port = int(source_info[1]),
