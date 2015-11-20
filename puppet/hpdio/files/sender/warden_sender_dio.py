@@ -193,7 +193,7 @@ def main():
 
   for row in rows:
     dtime = format_timestamp(row['timestamp'])
-    events.append(gen_event_idea(logger = wclient.logger, binaries_path = abinpath, report_binaries = areportbinaries, client_name = aname, anonymised = aanonymised, target_net = atargetnet, detect_time = dtime, win_start_time = stime, win_end_time = etime, aggr_win = awin, data = row))
+    events.append(gen_event_idea(logger = wclient.logger, binaries_path = abinpath, report_binaries = areportbinaries, client_name = aclient_name, anonymised = aanonymised, target_net = aanonymised_net, detect_time = dtime, win_start_time = stime, win_end_time = etime, aggr_win = awin, data = row))
       
   print "=== Sending ==="
   start = time()

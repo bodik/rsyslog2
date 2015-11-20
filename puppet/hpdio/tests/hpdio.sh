@@ -26,6 +26,12 @@ ls -l /opt/dionaea/var/dionaea/logsql.sqlite
 if [ $? -ne 0 ]; then
         rreturn 1 "$0 dionaea logdb not created"
 fi
+
+printf "USER autotest\nPASS autotest\nautotest command" | nc -q1 $(facter fqdn) 21 | grep "230 User logged in"
+if [ $? -ne 0 ]; then
+        rreturn 1 "$0 dionaea ftp pot not working"
+fi
+
 	
 rreturn 0 "$0"
 
