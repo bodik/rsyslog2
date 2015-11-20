@@ -2,7 +2,7 @@
 
 . /puppet/metalib/bin/lib.sh
 
-AGE=$(ps h -o etimes $(pgrep -f /opt/dionaea/bin/dionaea))
+AGE=$(ps h -o etimes $(pgrep -f /opt/dionaea/bin/dionaea) | head -n1)
 if [ $AGE -lt 30 ] ; then
 	echo "INFO: dio warming up"
 	sleep 30
