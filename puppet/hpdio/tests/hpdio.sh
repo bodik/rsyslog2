@@ -2,6 +2,11 @@
 
 . /puppet/metalib/bin/lib.sh
 
+AGE=$(ps h -o etimes $(pgrep -f /opt/dionaea/bin/dionaea))
+if [ $AGE -lt 30 ] ; then
+	echo "INFO: dio warming up"
+	sleep 30
+fi
 
 for PORT in 3306 21 445; do 
 	netstat -nlpa | grep "/dionaea" | grep LISTEN | grep :$PORT
