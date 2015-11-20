@@ -136,7 +136,7 @@ class hpdio (
 
 
 	#reporting
-	file { "${install_dir}/warden_utils_flab.py":
+	file { "${install_dir}/warden/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
                 owner => "${dio_user}", group => "${dio_user}", mode => "0755",
         }
