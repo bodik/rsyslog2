@@ -1,2 +1,2 @@
-puppet apply --modulepath=/puppet -e 'include hptelnetd'
+pa.sh -e 'include hptelnetd'
 

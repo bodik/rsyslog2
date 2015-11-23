@@ -32,18 +32,24 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => User["$telnetd_user"],
 	}
+	file { "${install_dir}/commands":
+		ensure => directory,
+		source => "puppet:///modules/${module_name}/commands/",
+		purge => true, recurse => true,
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
+	}
 	file { "${install_dir}/telnetd.py":
 		source => "puppet:///modules/${module_name}/telnetd.py",
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}"],
+		require => File["${install_dir}", "${install_dir}/commands"],
 	}
 	package { ["python-twisted"]:
 		ensure => installed, 
 	}
-	
+
     	file { "${install_dir}/telnetd.cfg":
                 content => template("${module_name}/telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
                 require => File["${install_dir}/telnetd.py"],
         }
 
