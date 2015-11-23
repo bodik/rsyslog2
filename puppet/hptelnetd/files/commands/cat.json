@@ -1,0 +1,5 @@
+{
+	"default" : "", 
+	"/etc/passwd" : "root:x:0:0:root:/root:/bin/bash", 
+	"/etc/shadow" : "root:!*:16548:0:99999:7:::" 
+}
