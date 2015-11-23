@@ -186,7 +186,7 @@ query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00
 crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
-	a = gen_event_idea_ttylog(
+	a = gen_event_idea_cowrie_ttylog(
 		detect_time = format_timestamp(row['timestamp']), 
 		conn_count = 1, 
 		src_ip = row['sourceip'], 
@@ -209,7 +209,7 @@ query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00
 crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
-	a = gen_event_idea_download(
+	a = gen_event_idea_cowrie_download(
 		detect_time = format_timestamp(row['timestamp']), 
 		conn_count = 1, 
 		src_ip = row['sourceip'], 
