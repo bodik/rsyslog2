@@ -4,10 +4,8 @@ class hptelnetd (
 	$install_dir = "/opt/telnetd",
 
 	$telnetd_user = "root",
-
 	$telnetd_port = 63023,
-
-	$logfile = "telnetd.log",	
+	$telnetd_logfile = "telnetd.log",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -32,30 +30,40 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => User["$telnetd_user"],
 	}
+	file { "${install_dir}/commands":
+		ensure => directory,
+		source => "puppet:///modules/${module_name}/commands/",
+		purge => true, recurse => true,
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
+	}
 	file { "${install_dir}/telnetd.py":
 		source => "puppet:///modules/${module_name}/telnetd.py",
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}"],
+		require => File["${install_dir}", "${install_dir}/commands"],
 	}
 	package { ["python-twisted"]:
 		ensure => installed, 
 	}
-	
+
     	file { "${install_dir}/telnetd.cfg":
                 content => template("${module_name}/telnetd.cfg.erb"),
-                owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
+                owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
                 require => File["${install_dir}/telnetd.py"],
         }
-
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
+	}
 	file { "/etc/init.d/telnetd":
 		content => template("${module_name}/telnetd.init.erb"),
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}/telnetd.py", "${install_dir}/telnetd.cfg"],
+		require => [File["${install_dir}/telnetd.py", "${install_dir}/telnetd.cfg"], Exec["systemd_reload"]],
 	}
 	service { "telnetd": 
 		enable => true,
 		ensure => running,
-		require => File["/etc/init.d/telnetd", "${install_dir}/telnetd.py"],
+		provider => init,
+		require => [File["/etc/init.d/telnetd", "${install_dir}/telnetd.py"], Exec["systemd_reload"]],
 	}
 
 
@@ -87,12 +95,6 @@ class hptelnetd (
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
         	require => File["${install_dir}/warden_utils_flab.py"],
 	}
- 	file { "${install_dir}/${logfile}":
-                ensure  => 'present',
-                replace => 'no',
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0644",
-                content => "",
-        }
 	$anonymised_target_net = myexec("/usr/bin/facter ipaddress | sed 's/\\.[0-9]*\\.[0-9]*\\.[0-9]*$/.0.0.0/'")
    	file { "${install_dir}/warden_client_telnetd.cfg":
                 content => template("${module_name}/warden_client_telnetd.cfg.erb"),
