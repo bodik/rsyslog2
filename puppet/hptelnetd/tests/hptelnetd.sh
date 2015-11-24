@@ -1,6 +1,6 @@
 #!/bin/sh
 
-#. /puppet/metalib/bin/lib.sh
+. /puppet/metalib/bin/lib.sh
 
 python -c 'print "autotest\nautotest.123456\nid\nexit"' | timeout 2s nc $(facter ipaddress) 63023 | grep 'uid=0'
 
