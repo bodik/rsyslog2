@@ -187,7 +187,7 @@ crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_cowrie_ttylog(
-		detect_time = format_timestamp(row['timestamp']), 
+		detect_time = format_timestamp(row['starttime']), 
 		conn_count = 1, 
 		src_ip = row['sourceip'], 
 		dst_ip = row['sensor'],
@@ -210,7 +210,7 @@ crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_cowrie_download(
-		detect_time = format_timestamp(row['timestamp']), 
+		detect_time = format_timestamp(row['starttime']), 
 		conn_count = 1, 
 		src_ip = row['sourceip'], 
 		dst_ip = row['sensor'],
