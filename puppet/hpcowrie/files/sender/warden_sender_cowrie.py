@@ -28,6 +28,32 @@ awin = aconfig['awin'] * 60
 
 wclient = Client(**wconfig)
 
+
+def gen_event_idea_cowrie_info(detect_time, src_ip, dst_ip, win_start_time, win_end_time, aggr_win, conn_count):
+	event = {
+		"Format": "IDEA0",
+		"ID": str(uuid4()),
+		"DetectTime": detect_time,
+		"WinStartTime": win_start_time,
+		"WinEndTime": win_end_time,
+		"Category": ["Attempt.Login"],
+		"Note": "SSH login attempt",
+		"ConnCount": conn_count,
+		"Source": [{}],
+		"Target": [{ "Proto": ["tcp", "ssh"], "Port": [22]}],
+		"Node": [
+			{
+				"Name": aclient_name,
+				"Tags": ["Connection","Honeypot","Recon"],
+				"SW": ["Cowrie"],
+				"AggrWin": strftime("%H:%M:%S", gmtime(aggr_win))
+			}
+			]
+	}
+	event = w3u.IDEA_fill_addresses(event, src_ip, dst_ip, aanonymised, aanonymised_net)
+	return event
+
+
 def gen_event_idea_cowrie_auth(detect_time, src_ip, dst_ip, username, password, sessionid):
 
 	event = {
@@ -156,6 +182,34 @@ events = []
 # k sozalenju 
 # >>> int(time.mktime(time.gmtime()[:-1] + (-1,)))-int(time.time()) != 0
 
+
+#old senders data
+query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00')) as starttime, s.ip, COUNT(s.id) as attack_scale, sn.ip as sensor \
+	FROM sessions s \
+	LEFT JOIN sensors sn ON s.sensor=sn.id \
+	WHERE CONVERT_TZ(s.starttime, @@global.time_zone, '+00:00') > DATE_SUB(UTC_TIMESTAMP(), INTERVAL + %s SECOND) \
+	GROUP BY s.ip ORDER BY s.starttime ASC;"
+
+crs.execute(query, awin)
+etime = format_timestamp(time())
+stime = format_timestamp(time() - awin)
+rows = crs.fetchall()
+for row in rows:
+	dtime = format_timestamp(row['starttime'])
+	a = gen_event_idea_cowrie_info(
+		detect_time = format_timestamp(row['starttime']),
+		src_ip = row['ip'],
+		dst_ip = row['sensor'],
+	
+		win_start_time = stime,
+		win_end_time = etime, 
+		aggr_win = awin,
+		conn_count = row['attack_scale']
+	)
+	events.append(a)
+
+
+
 #success login
 query =  "SELECT UNIX_TIMESTAMP(CONVERT_TZ(a.timestamp, @@global.time_zone, '+00:00')) as timestamp, s.ip as sourceip, sn.ip as sensor, a.session as sessionid, a.username as username, a.password as password \
 	FROM auth a JOIN sessions s ON s.id=a.session JOIN sensors sn ON s.sensor=sn.id \
@@ -174,7 +228,6 @@ for row in rows:
 		password = row['password'],
 		sessionid = row['sessionid']
 	)
-
 	events.append(a)
 
 #ttylog+iinput reporter
@@ -187,8 +240,7 @@ crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_cowrie_ttylog(
-		detect_time = format_timestamp(row['timestamp']), 
-		conn_count = 1, 
+		detect_time = format_timestamp(row['starttime']), 
 		src_ip = row['sourceip'], 
 		dst_ip = row['sensor'],
 
@@ -196,7 +248,6 @@ for row in rows:
 		ttylog = get_ttylog(row['sessionid']),
 		iinput = get_iinput(row['sessionid'])
 	)	
-	
 	events.append(a)
 
 
@@ -210,8 +261,7 @@ crs.execute(query, (awin,))
 rows = crs.fetchall()
 for row in rows:
 	a = gen_event_idea_cowrie_download(
-		detect_time = format_timestamp(row['timestamp']), 
-		conn_count = 1, 
+		detect_time = format_timestamp(row['starttime']), 
 		src_ip = row['sourceip'], 
 		dst_ip = row['sensor'],
 
@@ -219,7 +269,6 @@ for row in rows:
 		url = row['url'],
 		outfile = row['ofile']
 	)
-	
 	events.append(a)
 
 
