@@ -198,13 +198,13 @@ all_warden3_nodes() {
 	rreturn 0 "$0 aw3"
 }
 
-all_fdd_nodes() {
+all_sc_nodes() {
 	CMD=$1
 
-	for all in $( /puppet/jenkins/bin/metacloud.init list | egrep "(FD-)" | awk '{print $4}' ); do
+	for all in $( /puppet/jenkins/bin/metacloud.init list | egrep "(SC-)" | awk '{print $4}' ); do
                 VMNAME=$all /puppet/jenkins/bin/metacloud.init ssh "$CMD"
 	done
-	rreturn 0 "$0 afd"
+	rreturn 0 "$0 all sc nodes"
 }
 
 case "$1" in
@@ -268,8 +268,8 @@ case "$1" in
 	aw3)
 		all_warden3_nodes "$2"
 	;;
-	afd)
-		all_fdd_nodes "$2"
+	asc)
+		all_sc_nodes "$2"
 	;;
 	id)
 		vm_id
