@@ -22,8 +22,8 @@
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud/tests/securitycloud-install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud-cluster.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud/tests/securitycloud-cluster.sh&apos;
 
 </command>
     </hudson.tasks.Shell>
