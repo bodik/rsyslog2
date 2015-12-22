@@ -1,0 +1,36 @@
+{
+	"warden": {
+    		"url": "https://<%= @receiver_warden_server_real %>:<%= @receiver_warden_server_port %>/warden3",
+		"certfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.crt",
+		"keyfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.key",
+		"cafile": "<%= @receiver_cert_path %>/cachain.pem",
+		"timeout": 60,
+		"get_events_limit": 1000,
+    		"errlog": {"level": "debug"},
+    		"syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
+		"name": "<%= @fqdn_rev %>.2warden",
+		//"secret": "",
+		"idstore": "warden_client_receiver.id"
+	},
+	"receiver": {
+		// Maildir like directory, whose "incoming" will serve as target for events
+		"dir": "<%= @install_dir %>/var",
+		// Optional filter fields for Warden query
+		"filter": {
+			"cat": null,
+			"nocat": null,
+			"group": null,
+			"nogroup": null,
+			"tag": null,
+			"notag": null
+		},
+		// Optional information about detector to be prepended into Idea Node array
+		"node": {
+			"Name": "cz.example.warden.test_receiver",
+			"Type": ["Relay"],
+			"SW": ["warden_filer-receiver"],
+			"AggrWin": "00:05:00",
+			"Note": "Test warden_filer receiver"
+		}
+	}
+}
