@@ -26,9 +26,10 @@ if [ -f $DEST_DIR/registered-at-warden-server ]; then
 	exit 0
 fi
 
-curl --silent --write-out '%{http_code}' "http://${WARDEN_SERVER}:45444/register_sensor?sensor_name=${SENSOR_NAME}" | grep 200 1>/dev/null 2>/dev/null
+URL="http://${WARDEN_SERVER}:45444/register_sensor?sensor_name=${SENSOR_NAME}"
+curl --silent --write-out '%{http_code}' $URL | grep 200 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
-	touch ${DEST_DIR}/registered-at-warden-server
+	echo "$URL" > ${DEST_DIR}/registered-at-warden-server
 	exit 0
 else
 	echo "ERROR: cannt register at warden server"
