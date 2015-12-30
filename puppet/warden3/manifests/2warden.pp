@@ -1,4 +1,4 @@
-# == Class: warden3::2warden
+# == Resource: warden3::2warden
 #
 # TODO
 #
@@ -22,7 +22,7 @@
 # [*receiver_cert_path*]
 #   warden client cert path
 #
-class warden3::2warden (
+define warden3::2warden (
 	$install_dir = "/opt/warden_2warden",
 	
 	$receiver_warden_server = undef,
@@ -80,12 +80,13 @@ class warden3::2warden (
 		content => template("${module_name}/warden_2warden_receiver.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}/warden_filer.py"],
+		before => Warden3::Hostcert::Hostcert["2warden ${name} receiver $fqdn"],
 	}
-	ensure_resource( 'warden3::hostcert::hostcert', "receiver $fqdn", { "dest_dir" => "${receiver_cert_path}", "warden_server" => "$receiver_warden_server_real"} )	
-	exec { "register warden_2warden receiver sensor":
+	ensure_resource( 'warden3::hostcert::hostcert', "2warden ${name} receiver $fqdn", { "dest_dir" => "${receiver_cert_path}", "warden_server" => "$receiver_warden_server_real"} )	
+	exec { "2warden ${name} register receiver sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${receiver_warden_server_real} -n 2warden -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
-		require => [ File["${install_dir}/warden_2warden_receiver.cfg"], Warden3::Hostcert::Hostcert["receiver $fqdn"] ],
+		require => [ File["${install_dir}/warden_2warden_receiver.cfg"], Warden3::Hostcert::Hostcert["2warden ${name} receiver $fqdn"] ],
 	}
 
 	#sending w3 client
@@ -93,30 +94,31 @@ class warden3::2warden (
 		content => template("${module_name}/warden_2warden_sender.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}/warden_filer.py"],
+		before => Warden3::Hostcert::Hostcert["2warden ${name} sender $fqdn"],
 	}
-	ensure_resource( 'warden3::hostcert::hostcert', "sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )	
-	exec { "register warden_2warden sender sensor":
+	ensure_resource( 'warden3::hostcert::hostcert', "2warden ${name} sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )
+	exec { "2warden ${name} register sender sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n 2warden -d ${sender_cert_path}",
 		creates => "${sender_cert_path}/registered-at-warden-server",
-		require => [ File["${install_dir}/warden_2warden_sender.cfg"], Warden3::Hostcert::Hostcert["sender $fqdn"] ],
+		require => [ File["${install_dir}/warden_2warden_sender.cfg"], Warden3::Hostcert::Hostcert["2warden ${name} sender $fqdn"] ],
 	}
 
 
-	file { "/etc/init.d/warden_2warden":
+	file { "/etc/init.d/warden_2warden_${name}":
 		content => template("${module_name}/warden_2warden.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => [ Exec["register warden_2warden receiver sensor"], Exec["register warden_2warden sender sensor"]],
+		require => [ Exec["2warden ${name} register receiver sensor"], Exec["2warden ${name} register sender sensor"]],
 		notify => Exec["systemd_reload"],
 	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
 	}
-	service { "warden_2warden": 
+	service { "warden_2warden_${name}": 
 		enable => true,
 		ensure => running,
 		provider => init,
-		require => [File["/etc/init.d/warden_2warden"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/warden_2warden_${name}"], Exec["systemd_reload"]],
 	}
 
 

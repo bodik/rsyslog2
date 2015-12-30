@@ -14,10 +14,9 @@
 DAEMON_NAME="warden_filer"
 DAEMON_BASE="<%= @install_dir %>"
 DAEMON_PATH="${DAEMON_BASE}/${DAEMON_NAME}.py"
-SERVICE_NAME="${DAEMON_NAME}"
+SERVICE_NAME="${DAEMON_NAME}_<%= @name %>"
 PIDDIR="${DAEMON_BASE}/var"
 
-#test -f /etc/default/"$SERVICE_NAME" && . /etc/default/"$SERVICE_NAME"
 . /lib/lsb/init-functions
 
 ACTION="$1"
