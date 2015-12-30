@@ -1,3 +1,14 @@
+commit 8476208983737a7dec0cdc9b43604e7a2198a5f9
+Author: root <root@minos47-2.zcu.cz>
+Date:   Thu Jul 16 03:28:21 2015 +0200
+
+    meta-initrefreshcc.patch
+    
+    init.d/rsyslog refreshcc
+    systemd service refreshcc
+    oprava bugu v kinitu pokud existuje defaultni ccache
+    https://rt4.cesnet.cz/rt/Ticket/Display.html?id=126655
+
 diff --git a/debian/rsyslog.init b/debian/rsyslog.init
 index 0389df6..57313e2 100644
 --- a/debian/rsyslog.init

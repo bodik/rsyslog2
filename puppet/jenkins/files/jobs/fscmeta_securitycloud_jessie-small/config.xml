@@ -13,18 +13,18 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;FD-$$&quot;
+      <command>export VMNAME=&quot;SC-$$&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start rsyslog2-jessie-small-metacloud
-/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb.metacentrum.cz/puppet-fdistdump.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb.metacentrum.cz/puppet-securitycloud.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
 
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh fdistdump-dev.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh fdistdump/bin/build.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh fdistdump/tests/fdistdump-singlenode.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud-cluster.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud/tests/securitycloud-cluster.sh&apos;
+
 </command>
     </hudson.tasks.Shell>
   </builders>

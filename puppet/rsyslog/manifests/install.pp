@@ -30,7 +30,7 @@ class rsyslog::install (
 				content => "APT::Get::AllowUnauthenticated yes;\n",
 				owner => "root", group => "root", mode => "0644",
 		 	}
-			$myver="8.4.2+deb8u1.rb33"
+			$myver="8.4.2+deb8u1.rb34"
 			exec { "install_rsyslog":
 				command => "/usr/bin/apt-get update;/usr/bin/apt-get install -q -y --force-yes -o DPkg::Options::=--force-confnew rsyslog=${myver} rsyslog-gssapi=${myver} rsyslog-relp=${myver}",
 				timeout => 600,

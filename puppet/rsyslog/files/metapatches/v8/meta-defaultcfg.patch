@@ -1,4 +1,4 @@
-commit 3fafb77b6169c2e055cfe57d8d33f9e7cca73bb8
+commit c6f99765cea3d27130bbceafdcb3ac42909d61b1
 Author: root <root@minos47-2.zcu.cz>
 Date:   Thu Jul 16 03:30:38 2015 +0200
 
@@ -6,16 +6,6 @@ Date:   Thu Jul 16 03:30:38 2015 +0200
     preservefqdn, stats, ratelimit
     117780: perian - kernel vypisuje chybove hlasky do konzole
 
-diff --git a/debian/changelog b/debian/changelog
-index 66ae525..e87c9a0 100644
---- a/debian/changelog
-+++ b/debian/changelog
-@@ -1,4 +1,4 @@
--rsyslog (8.4.2+deb8u1.rb30) jessie; urgency=medium
-+rsyslog (8.4.2+deb8u1.rb31) jessie; urgency=medium
- 
-   * Non maintainer upload
-   * metacentrum.cz specific changes
 diff --git a/debian/rsyslog.conf b/debian/rsyslog.conf
 index 0e33f48..7ba15dc 100644
 --- a/debian/rsyslog.conf

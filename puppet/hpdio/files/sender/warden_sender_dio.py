@@ -40,7 +40,7 @@ def gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, hashty
     
   refs = []
   attach = { 
-         "Handle": DEFAULT_ATTACH_NAME,
+         "Handle": 'att1',
          "FileName": [filename],
          "Type": ["Malware"],
          "Hash": ["%s:%s" % (hashtype, hashdigest)],
@@ -120,7 +120,7 @@ def gen_event_idea_dio(logger, binaries_path, report_binaries, client_name, anon
       # Generate "SMB Attach" part of IDEA
       a = gen_attach_idea_smb(logger, report_binaries, binaries_path, filename, "md5", data['download_md5_hash'], data['virustotal_permalink'], data['scan_result'])
     
-      event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
+      event['Source'][0]['AttachHand'] = ['att1']
       event['Attach'] = [a]
   
   if data['service'] == 'mysqld':
@@ -132,7 +132,7 @@ def gen_event_idea_dio(logger, binaries_path, report_binaries, client_name, anon
 
 	category.append('Attempt.Exploit')
 	proto.append('mysql')
-    	event['Source'][0]['AttachHand'] = [DEFAULT_ATTACH_NAME]
+    	event['Source'][0]['AttachHand'] = ['att1']
     	event['Attach'] = [a]
 	
   event['Source'][0]['Port']  = [data['src_port']]
