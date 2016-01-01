@@ -35,7 +35,6 @@ def gen_event_idea_uchoweb(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                         {
                                 "Name": aclient_name,
                                 "Type": ["Honeypot"],
-                                "Tags": ["Honeypot"],
                                 "SW": ["Uchoweb"],
                         }
                 ],

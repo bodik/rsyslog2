@@ -35,7 +35,6 @@ def gen_event_idea_telnetd(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                         { 
                                 "Name": aclient_name,
                                 "Type": ["Honeypot", "Connection"],
-                                "Tags": ["Honeypot", "Connection"],
                                 "SW": ["telnetd"],
                         }
                 ],      
