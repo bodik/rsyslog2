@@ -36,7 +36,7 @@ def gen_event_idea_elastichoney(detect_time, src_ip, dst_ip, data):
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Data"],
+				"Type": ["Honeypot", "Data"],
 				"SW": ["Elastichoney"],
 			}
 		],

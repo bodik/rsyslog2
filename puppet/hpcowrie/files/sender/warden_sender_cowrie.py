@@ -44,7 +44,7 @@ def gen_event_idea_cowrie_info(detect_time, src_ip, dst_ip, win_start_time, win_
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Connection","Honeypot","Recon"],
+				"Type": ["Connection","Honeypot","Recon"],
 				"SW": ["Cowrie"],
 				"AggrWin": strftime("%H:%M:%S", gmtime(aggr_win))
 			}
@@ -68,7 +68,7 @@ def gen_event_idea_cowrie_auth(detect_time, src_ip, dst_ip, username, password, 
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Connection", "Auth"],
+				"Type": ["Honeypot", "Connection", "Auth"],
 				"SW": ["Cowrie"],
 			}
 		],
@@ -94,7 +94,7 @@ def gen_event_idea_cowrie_ttylog(detect_time, src_ip, dst_ip, sessionid, ttylog,
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Data"],
+				"Type": ["Honeypot", "Data"],
 				"SW": ["Cowrie"],
 			}
 		],
@@ -120,7 +120,7 @@ def gen_event_idea_cowrie_download(detect_time, src_ip, dst_ip,	sessionid, url, 
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Data"],
+				"Type": ["Honeypot", "Data"],
 				"SW": ["Cowrie"],     
 			}
 			],

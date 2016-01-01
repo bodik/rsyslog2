@@ -41,7 +41,7 @@ def gen_event_idea_gl(detect_time, src_ip, src_port, request_url, request_raw, p
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Connection"],
+				"Type": ["Honeypot", "Connection"],
 				"SW": ["Glastopf"],
 			}
 		],
