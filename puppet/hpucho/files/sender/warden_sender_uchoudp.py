@@ -34,6 +34,7 @@ def gen_event_idea_uchoudp(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "Node": [
                         {
                                 "Name": aclient_name,
+                                "Type": ["Honeypot", "Connection"],
                                 "Tags": ["Honeypot", "Connection"],
                                 "SW": ["Uchoudp"],
                         }

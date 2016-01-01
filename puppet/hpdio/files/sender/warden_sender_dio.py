@@ -97,6 +97,7 @@ def gen_event_idea_dio(logger, binaries_path, report_binaries, client_name, anon
      "Node": [
         {
            "Name": client_name,
+           "Type": ["Connection","Honeypot","Recon"],
            "Tags": ["Connection","Honeypot","Recon"],
            "SW": ["Dionaea"],
            "AggrWin": strftime("%H:%M:%S", gmtime(aggr_win))
