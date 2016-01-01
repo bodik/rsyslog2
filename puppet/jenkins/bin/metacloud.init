@@ -83,7 +83,7 @@ vm_start() {
 		rreturn $RET "$0 start failed $VMNAME"
 	fi
 	sleep 10
-	for i in `seq 1 120`; do
+	for i in `seq 1 300`; do
 		#this is created by rc.local modified by cloudinit
 		/puppet/jenkins/bin/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
 		if [ $? -eq 0 ]; then
@@ -167,6 +167,11 @@ metacloud_templates() {
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-jessie-metacloud
 	onetemplate delete rsyslog2-jessie-small-metacloud 1>/dev/null
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-jessie-small-metacloud
+
+	onetemplate delete rsyslog2-centos7-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.rsyslog2-centos7-metacloud
+	onetemplate delete rsyslog2-centos7-small-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.rsyslog2-centos7-small-metacloud
 }
 
 vm_list() {

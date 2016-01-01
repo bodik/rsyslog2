@@ -1,0 +1,69 @@
+NAME = rsyslog2-centos7-metacloud
+CONTEXT=[EMAIL="$USER[EMAIL]",PUBLIC_IP="$NIC[IP]",SSH_KEY="$USER[SSH_KEY]",TARGET="vdb",TOKEN="YES",USER_DATA="#cloud-config
+# see https://help.ubuntu.com/community/CloudInit
+
+bootcmd:
+- test -L /etc/motd && unlink /etc/motd || /bin/true
+
+runcmd:
+- unlink /etc/nologin || /bin/true
+- touch /root/READY-TO-USE
+
+mounts:
+- [vdc,none,swap,sw,0,0]
+- [vdd,/scratch,ext3,defaults,2,0]
+
+write_files:
+#this is the something alike 'touch /root/READY-TO-USE' which executes correctly after final power_state reboot
+- path: /etc/rc.local
+  content: IyEvYmluL3NoCiMgcmMubG9jYWwKCmVjaG8gJCgoICQoY2F0IC92YXIvY2FjaGUvYm9vdF9jb3VudCAyPi9kZXYvbnVsbCkgKyAxICkpID4gL3Zhci9jYWNoZS9ib290X2NvdW50CmlmIFsgJChjYXQgL3Zhci9jYWNoZS9ib290X2NvdW50KSAtZ2UgMiBdOyB0aGVuCgl0b3VjaCAvcm9vdC9SRUFEWS1UTy1VU0UKZmkKCmV4aXQgMAo=
+  encoding: b64
+  owner: root:root
+  permissions: '0755'
+
+- path: /etc/nologin
+  content: |2
+    
+      *** Initial configuration by cloud-init is in progress. Please wait. ***
+- path: /etc/motd
+  content: |2
+                                   cccccccc
+                                 ::       :::
+                               :c            c:
+                               c              c::
+                           ::::c:             :  :::
+               :::::::::::c:     :                :c:::::::::::
+             :::          :                      ::            :::
+            c:   __  __      _         ____ _                 _  :c
+       :::::c:  |  \/  | ___| |_ __ _ / ___| | ___  _   _  __| |   c
+     :::        | |\/| |/ _ \ __/ _` | |   | |/ _ \| | | |/ _` |  :::::::
+    c           | |  | |  __/ || (_| | |___| | (_) | |_| | (_| |        ::
+    c           |_|  |_|\___|\__\__,_|\____|_|\___/ \__,_|\__,_|         c
+     :::                                                          :     c:
+        ::::c:               cloud@metacentrum.cz      :        :cc:::::
+              :::c                                    :c:::::::::
+                 ::::::::::            ::          :::
+                          :::::      :::::::::::::::
+                              ccccccc:
+
+# sysadmin's master access key
+ssh_authorized_keys:
+- ssh-dss AAAAB3NzaC1kc3MAAACBAJIwhyfTXj6LeaF5adEINIsRawjlYE8vi1rHK9lb3fC0J+58NSL7mRx5zX0r+HPfnyYptciIG9uh0s7RRRu5c6MHPU5L4Vh7CrAT9SkKg7XmdkfNC6k6a6Dpq2hntwEUjxHvaNbuQA+FtiMEYT3M1/RBR6TdvmEFN2FMcHox5L3zAAAAFQC7Uu5YO5vIVRF80LJ2i7TAqYR3FwAAAIB3ioZ1nxwhYatpdIIaLbK8Za+fFzYT3sObea2jzEItGHVK/smyA4CcMw+54clCx726+0DF9nRnoQUWsh0hYGGdo3s5aPMksX+pqE+w0Nv94osVc+3RkixUjPiNnTLWYcZ/o228Du+FpN1o7AtoGYoQgnL/ZDCwyLWJSApdoAJu0AAAAIAIMihuKkNKHPvgVzJNAAtX+10LH7EAA/iY1wBnotLZ+e1doOCOcqnYw/ULJfBYWx9vMle4cPg8o7yioDn/SfO+GUwQNkr2Z1XkmLwmdWVdCeLgbor2hswyZmS7jF8CvdwMHxKD8ve/RrHkyBUkVxiUUnYT8MmInouPGfdmgR5Wow== cloud-support@metacentrum.cz
+
+power_state:
+  mode: reboot
+  message: Initial configuration done by cloud-init, forcing reboot to apply changes.
+
+
+",VM_GID="$GID",VM_GNAME="$GNAME",VM_ID="$VMID",VM_UID="$UID",VM_UNAME="$UNAME"]
+CPU="4"
+DISK=[DEV_PREFIX="vd",IMAGE="METACLOUD-CentOS-7.1.1503-x86_64-201510131631@metacloud-dukan",IMAGE_UNAME="oneadmin"]
+DISK=[DEV_PREFIX="vd",SIZE="2048",TYPE="swap"]
+DISK=[DEV_PREFIX="vd",FORMAT="ext3",SIZE="20480",TYPE="fs"]
+LOGO="images/logos/centos.png"
+MEMORY="4096"
+NIC=[NETWORK="metacloud-brno-public",NETWORK_UNAME="oneadmin"]
+RAW=[DATA="<!-- RAW data follows: --><cpu mode='host-model'></cpu> <devices><serial type='pty'><target port='0'/></serial><console type='pty'><target type='serial' port='0'/></console> <channel type='pty'><target type='virtio' name='org.qemu.guest_agent.0'/></channel></devices>",TYPE="kvm"]
+SCHED_REQUIREMENTS="(HYPERVISOR=\"kvm\") & (CLUSTER=\"metacloud-dukan\")"
+VCPU="4"
+
