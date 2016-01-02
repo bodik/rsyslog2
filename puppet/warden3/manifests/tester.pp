@@ -50,7 +50,7 @@ class warden3::tester (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register warden_tester sensor":

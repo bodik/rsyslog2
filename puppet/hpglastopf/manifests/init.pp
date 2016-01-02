@@ -158,7 +158,7 @@ class hpglastopf (
 	}
 
 	
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register glastopf sensor":

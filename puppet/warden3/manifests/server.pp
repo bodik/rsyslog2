@@ -147,7 +147,7 @@ class warden3::server (
 		unless => "/usr/sbin/a2query -m ssl",
 		notify => Service["apache2"],
 	}
-	class { "warden3::hostcert":
+	warden3::hostcert { "hostcert":
 		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use fqdn
 		warden_server => $fqdn,
 		require => File["/etc/avahi/services/warden-server.service"],
@@ -157,7 +157,7 @@ class warden3::server (
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
-			Class["warden3::hostcert"], 
+			Warden3::Hostcert["hostcert"],
 			Exec["a2enmod ssl"],
 			],
 		notify => Service["apache2"],

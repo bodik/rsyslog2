@@ -158,7 +158,7 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register dio sensor":

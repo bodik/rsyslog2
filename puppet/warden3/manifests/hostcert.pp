@@ -1,8 +1,9 @@
-# == Class: warden3::hostcert
+# == Resource: warden3::hostcert
 #
-# Class will ensure provisioning of SSL certificated used by other w3 components.
+# Resource will ensure provisioning of SSL certificated used by other w3 components.
 # If certificate is not present in install_dir, module will generate new key and
-# request signing it from warden ca service located on warden server
+# request signing it from warden ca service located on warden server. Formelly class 
+# truned into reusable resource.
 #
 # TODO: allow changing ca service port
 #
@@ -20,14 +21,14 @@
 # [*warden_server_service*]
 #   service name to be discovered
 #
-class warden3::hostcert (
+define warden3::hostcert (
 	$dest_dir = "/opt/hostcert",
 
         $warden_server = undef,
         $warden_server_auto = true,
         $warden_server_service = "_warden-server._tcp",
 ) {
-	notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
+	#notice("INFO: puppet apply -v --noop --show_diff --modulepath=/puppet -e \"include ${name}\"")
 
         if ($warden_server) {
                 $warden_server_real = $warden_server
@@ -36,20 +37,17 @@ class warden3::hostcert (
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 	
-	define hostcert ($dest_dir, $warden_server) {
-		if ! defined(Package['curl']) { package { "curl": ensure => installed } }
+	#if ! defined(Package['curl']) { package { "curl": ensure => installed } }
+	ensure_resource( 'package', 'curl', {} )
 
-		file { "$dest_dir":
-			ensure => directory,
-			owner => "root", group => "root", mode => "0755",
-		}
-
-		exec { "gen cert ${name}":
-			command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -s ${warden_server} -d ${dest_dir}",
-			creates => "${dest_dir}/${fqdn}.crt",
-			require => [File["$dest_dir"], Package["curl"]],
-	        }
+	file { "$dest_dir":
+		ensure => directory,
+		owner => "root", group => "root", mode => "0755",
 	}
-	ensure_resource( 'warden3::hostcert::hostcert', $fqdn, { "dest_dir" => "$dest_dir", "warden_server" => "$warden_server_real"} )
-	
+
+	exec { "gen cert ${name}":
+		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -s ${warden_server_real} -d ${dest_dir}",
+		creates => "${dest_dir}/${fqdn}.crt",
+		require => [File["$dest_dir"], Package["curl"]],
+	}
 }

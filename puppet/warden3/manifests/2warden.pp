@@ -80,13 +80,13 @@ define warden3::2warden (
 		content => template("${module_name}/warden_2warden_receiver.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}/warden_filer.py"],
-		before => Warden3::Hostcert::Hostcert["2warden ${name} receiver $fqdn"],
+		before => Warden3::Hostcert["2warden ${name} receiver $fqdn"],
 	}
-	ensure_resource( 'warden3::hostcert::hostcert', "2warden ${name} receiver $fqdn", { "dest_dir" => "${receiver_cert_path}", "warden_server" => "$receiver_warden_server_real"} )	
+	ensure_resource( 'warden3::hostcert', "2warden ${name} receiver $fqdn", { "dest_dir" => "${receiver_cert_path}", "warden_server" => "$receiver_warden_server_real"} )	
 	exec { "2warden ${name} register receiver sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${receiver_warden_server_real} -n 2warden -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
-		require => [ File["${install_dir}/warden_2warden_receiver.cfg"], Warden3::Hostcert::Hostcert["2warden ${name} receiver $fqdn"] ],
+		require => [ File["${install_dir}/warden_2warden_receiver.cfg"], Warden3::Hostcert["2warden ${name} receiver $fqdn"] ],
 	}
 
 	#sending w3 client
@@ -94,13 +94,13 @@ define warden3::2warden (
 		content => template("${module_name}/warden_2warden_sender.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}/warden_filer.py"],
-		before => Warden3::Hostcert::Hostcert["2warden ${name} sender $fqdn"],
+		before => Warden3::Hostcert["2warden ${name} sender $fqdn"],
 	}
-	ensure_resource( 'warden3::hostcert::hostcert', "2warden ${name} sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )
+	ensure_resource( 'warden3::hostcert', "2warden ${name} sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )
 	exec { "2warden ${name} register sender sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n 2warden -d ${sender_cert_path}",
 		creates => "${sender_cert_path}/registered-at-warden-server",
-		require => [ File["${install_dir}/warden_2warden_sender.cfg"], Warden3::Hostcert::Hostcert["2warden ${name} sender $fqdn"] ],
+		require => [ File["${install_dir}/warden_2warden_sender.cfg"], Warden3::Hostcert["2warden ${name} sender $fqdn"] ],
 	}
 
 

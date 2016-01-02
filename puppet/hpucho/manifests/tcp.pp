@@ -113,7 +113,7 @@ class hpucho::tcp (
                 require => User["$uchotcp_user"],
         }
 		
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register uchotcp sensor":

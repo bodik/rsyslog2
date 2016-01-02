@@ -109,7 +109,7 @@ class hpelastichoney (
 		owner => "root", group => "root", mode => "0644",
 		require => User["$elastichoney_user"],
 	}
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register elastichoney sensor":
