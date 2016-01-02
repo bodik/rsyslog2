@@ -34,10 +34,15 @@ class hpucho::web (
 		ensure => directory,
 		owner => "root", group => "root", mode => "0755",
 	}
+        file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
+                owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}"],
+        }
 	file { "${install_dir}/uchoweb.py":
 		source => "puppet:///modules/${module_name}/uchoweb/uchoweb.py",
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}"], Package["python-jinja2"]],
+		require => [File["${install_dir}"], File["${install_dir}/warden_utils_flab.py"], Package["python-jinja2"]],
 		notify => Service["uchoweb"],
 	}
 	file { "${install_dir}/uchoweb.cfg":
@@ -95,10 +100,6 @@ class hpucho::web (
 
         # reporting
 
-        file { "${install_dir}/warden_utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
-        }
         file { "${install_dir}/warden_sender_uchoweb.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_uchoweb.py",
                 owner => "${uchoweb_user}", group => "${uchoweb_user}", mode => "0755",
