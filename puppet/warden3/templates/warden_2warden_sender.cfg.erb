@@ -8,7 +8,7 @@
 		"get_events_limit": 1000,
     		"errlog": {"level": "debug"},
     		"syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
-		"name": "<%= @fqdn_rev %>.2warden",
+		"name": "<%= @w3c_name %>.2warden",
 		//"secret": "",
 		"idstore": "warden_client_sender.id"
 	},
@@ -26,7 +26,7 @@
 		},
 		// Optional information about detector to be prepended into Idea Node array
 		"node": {
-			"Name": "<%= @fqdn_rev %>.2warden",
+			"Name": "<%= @w3c_name %>.2warden",
 			"Type": ["Relay"],
 			"SW": ["warden_filer"]
 		}

@@ -73,7 +73,7 @@ define warden3::2warden (
 	}
 
 
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 
 	#receiving w3 client
 	file { "${install_dir}/warden_2warden_receiver.cfg":
@@ -84,7 +84,7 @@ define warden3::2warden (
 	}
 	ensure_resource( 'warden3::hostcert', "2warden ${name} receiver $fqdn", { "dest_dir" => "${receiver_cert_path}", "warden_server" => "$receiver_warden_server_real"} )	
 	exec { "2warden ${name} register receiver sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${receiver_warden_server_real} -n 2warden -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${receiver_warden_server_real} -n ${w3c_name}.2warden -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => [ File["${install_dir}/warden_2warden_receiver.cfg"], Warden3::Hostcert["2warden ${name} receiver $fqdn"] ],
 	}
@@ -98,7 +98,7 @@ define warden3::2warden (
 	}
 	ensure_resource( 'warden3::hostcert', "2warden ${name} sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )
 	exec { "2warden ${name} register sender sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n 2warden -d ${sender_cert_path}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n ${w3c_name}.2warden -d ${sender_cert_path}",
 		creates => "${sender_cert_path}/registered-at-warden-server",
 		require => [ File["${install_dir}/warden_2warden_sender.cfg"], Warden3::Hostcert["2warden ${name} sender $fqdn"] ],
 	}

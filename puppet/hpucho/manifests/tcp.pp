@@ -77,7 +77,7 @@ class hpucho::tcp (
 		owner => "root", group => "root", mode => "0755",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
@@ -117,7 +117,7 @@ class hpucho::tcp (
 		warden_server => $warden_server_real,
 	}
 	exec { "register uchotcp sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchotcp -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.uchotcp -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

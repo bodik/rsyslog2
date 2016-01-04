@@ -44,7 +44,7 @@ class warden3::tester (
 		owner => "root", group => "root", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client_tester.cfg":
 		content => template("${module_name}/warden_client_tester.cfg.erb"),
 		owner => "root", group => "root", mode => "0640",
@@ -54,7 +54,7 @@ class warden3::tester (
 		warden_server => $warden_server_real,
 	}
 	exec { "register warden_tester sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n tester -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.tester -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

@@ -77,7 +77,7 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
@@ -112,7 +112,7 @@ class hptelnetd (
 	}
 
 	exec { "register telnetd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n telnetd -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}
