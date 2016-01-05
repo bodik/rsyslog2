@@ -14,3 +14,7 @@ GuessMainPID=no
 RemainAfterExit=yes
 ExecStart=/etc/init.d/uchotcp start
 ExecStop=/etc/init.d/uchotcp stop
+
+[Install]
+WantedBy=multi-user.target
+

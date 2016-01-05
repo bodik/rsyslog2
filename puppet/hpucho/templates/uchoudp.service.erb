@@ -14,3 +14,7 @@ GuessMainPID=no
 RemainAfterExit=yes
 ExecStart=/etc/init.d/uchoudp start
 ExecStop=/etc/init.d/uchoudp stop
+
+[Install]
+WantedBy=multi-user.target
+

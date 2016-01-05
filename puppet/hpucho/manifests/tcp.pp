@@ -68,7 +68,7 @@ class hpucho::tcp (
 	}
 	file { "/lib/systemd/system/uchotcp.service":
 		content => template("${module_name}/uchotcp.service.erb"),
-		owner => "root", group => "root", mode => "0755",
+		owner => "root", group => "root", mode => "0644",
 		require => File["/etc/init.d/uchotcp"],
 		notify => [Service["uchotcp"], Exec["systemd_reload"]]
 	}
