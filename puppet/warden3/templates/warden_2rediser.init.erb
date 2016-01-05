@@ -1,0 +1,78 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:		warden_2rediser
+# Required-Start:	$syslog $remote_fs
+# Required-Stop:	$syslog $remote_fs
+# Should-Start:	
+# Should-Stop:
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	warden_2rediser
+# Description:		warden_2rediser
+### END INIT INFO
+
+BASE=<%= @install_dir %>
+NAME="warden_2rediser"
+PYTHON=`which python`
+PIDFILE="/var/run/warden_2rediser.pid"
+
+cd $BASE || exit 1
+
+killwaitpids() {
+        PID="$@"
+        if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
+
+case "$1" in
+
+        start)
+                echo -n "Starting $NAME: "
+
+                su -c "$PYTHON ${BASE}/warden_2rediser.py 1>>warden_2rediser-run.log 2>&1 &" <%= @torediser_user %>
+                echo $! > $PIDFILE
+
+                echo "done"
+        ;;
+        stop)
+                echo -n "Stopping $NAME: "
+                if [ -f $PIDFILE ]; then
+                        killwaitpids $(cat $PIDFILE)
+                        rm $PIDFILE
+                fi
+                killwaitpids $(pgrep -f ${BASE}/warden_2rediser.py)
+                echo "done"
+        ;;
+        status)
+                pgrep -f ${BASE}/warden_2rediser.py 1>/dev/null
+                if [ $? -eq 0 ]; then
+                        rreturn 0 "running"
+                fi
+                rreturn 1 "not running"
+        ;;
+        *)
+                ps faxu | grep ${BASE}/warden_2rediser.py
+                exit 1
+        ;;
+esac
+

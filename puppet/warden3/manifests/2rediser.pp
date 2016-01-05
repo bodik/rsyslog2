@@ -7,6 +7,9 @@
 # [*install_dir*]
 #   directory to install w3 server
 #
+# [*torediser_user*]
+#   user to run the service
+#
 # [*warden_server*]
 #   name or ip of warden server, overrides autodiscovery
 #
@@ -33,6 +36,8 @@
 #
 class warden3::2rediser (
 	$install_dir = "/opt/warden_2rediser",
+
+	$torediser_user = "torediser",
 	
 	$warden_server = undef,
 	$warden_server_auto = true,
@@ -58,20 +63,28 @@ class warden3::2rediser (
         }
 
 
-	# warden_client pro kippo (basic w3 client, reporter stuff, run/persistence/daemon
+	# application
+	user { "$torediser_user": 	
+		ensure => present, 
+		managehome => false,
+		shell => "/bin/bash",
+		home => "${install_dir}",
+	}
+
 	file { "${install_dir}":
 		ensure => directory,
-		owner => "root", group => "root", mode => "0755",
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0755",
+		require => User["${torediser_user}"],
 	}
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_client/warden_client.py",
-		owner => "root", group => "root", mode => "0640",
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
 	warden3::hostcert { "hostcert":
@@ -85,19 +98,19 @@ class warden3::2rediser (
 
 	file { "${install_dir}/warden_2rediser.py":
 		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_2rediser.py",
-		owner => "root", group => "root", mode => "0750",
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0750",
 		require => File["${install_dir}"],
 	}
 	file { "${install_dir}/warden_2rediser.cfg":
 		content => template("${module_name}/warden_2rediser.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
 	file { "/etc/init.d/warden_2rediser":
-		source => "puppet:///modules/${module_name}/opt/warden_2rediser/warden_2rediser.init",
+		content => template("${module_name}/warden_2rediser.init.erb"),
 		owner => "root", group => "root", mode => "0755",
 		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_2rediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_2rediser.py"], Exec["register warden_2rediser sensor"]],
-		notify => Exec["systemd_reload"],
+		notify => [Service["warden_2rediser"], Exec["systemd_reload"]],
 	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
@@ -106,9 +119,7 @@ class warden3::2rediser (
 	service { "warden_2rediser": 
 		enable => true,
 		ensure => running,
-		provider => init,
 		require => [File["/etc/init.d/warden_2rediser"], Exec["systemd_reload"]],
 	}
-
 
 }
