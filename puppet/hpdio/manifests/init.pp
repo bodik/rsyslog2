@@ -73,16 +73,10 @@ class hpdio (
 		recurse => true,
 		require => Exec["do install"],
 	}
-	file { "/etc/init.d/dio":
-		content => template("${module_name}/dio.init.erb"),
-		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/var"], File["/etc/init.d/p0f"]],
-		notify => [Service["dio"], Exec["systemd_reload"]]
-	}
 	file { "${install_dir}/etc/dionaea/dionaea.conf":
 		content => template("${module_name}/dionaea.conf.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["/etc/init.d/dio"],
+		require => Exec["do install"],
 		notify => Service["dio"],
 	}
 	exec { "install selfcert":
@@ -100,6 +94,13 @@ class hpdio (
 		target => "${install_dir}/etc/dionaea/${fqdn}.crt",
 		require => Exec["install selfcert"],
 	}
+
+	file { "/etc/init.d/dio":
+		content => template("${module_name}/dio.init.erb"),
+		owner => "root", group => "root", mode => "0755",
+		require => [File["${install_dir}/var", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], File["/etc/init.d/p0f"]],
+		notify => [Service["dio"], Exec["systemd_reload"]]
+	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
@@ -107,8 +108,7 @@ class hpdio (
 	service { "dio": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/dio", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/dio"], Exec["systemd_reload"]],
 	}
 
 

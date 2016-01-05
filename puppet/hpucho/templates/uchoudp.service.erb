@@ -1,0 +1,20 @@
+[Unit]
+SourcePath=/etc/init.d/uchoudp
+Description=LSB: uchoudp
+After=remote-fs.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=idle
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=/etc/init.d/uchoudp start
+ExecStop=/etc/init.d/uchoudp stop
+
+[Install]
+WantedBy=multi-user.target
+

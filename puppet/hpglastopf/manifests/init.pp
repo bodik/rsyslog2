@@ -83,37 +83,36 @@ class hpglastopf (
 		group => "root", owner => "root", mode => "0755",
 		require => File["/opt/glastopf"],
 	}
-	file { "/etc/init.d/glastopf":
-		ensure => link,
-		target => "${install_dir}/glastopf.init",
-		require => [File["${install_dir}/glastopf.init"], Exec["systemd_reload"]],
-	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
 	file { "${install_dir}/glastopf.cfg":
 		content => template("${module_name}/glastopf.cfg"),
 		group => "root", owner => "root", mode => "0644",
 		require => File["${install_dir}"],
 	}
-
 	package { "libcap2-bin": ensure => installed }
 	exec { "python cap_net":
 		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
 		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
-		require => Package["python"],
+		require => [Package["python"], Package["libcap2-bin"]]
 	}
-
+	file { "/etc/init.d/glastopf":
+		ensure => link,
+		target => "${install_dir}/glastopf.init",
+		require => [File["${install_dir}/glastopf.init"], File["${install_dir}/glastopf.cfg"], Exec["pip install glastopf"], Exec["python cap_net"]],
+		notify => [Service["glastopf"], Exec["systemd_reload"]],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
+	}
 	service { "apache2":
 		ensure => stopped,
+		enable => false,
 		require => Exec["pip install glastopf"],
 	}
 	service { "glastopf":
 		ensure => running,
 		enable => true,
-		provider => init,
-		require => [File["${install_dir}/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/glastopf"], Exec["systemd_reload"]],
 	}
 
 

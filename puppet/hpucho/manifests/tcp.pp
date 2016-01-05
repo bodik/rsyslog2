@@ -3,7 +3,7 @@
 class hpucho::tcp (
 	$install_dir = "/opt/uchotcp",
 
-	$uchotcp_user = "root",
+	$uchotcp_user = "uchotcp",
 	
 	$port_start = 1,
 	$port_end = 9999,
@@ -31,12 +31,17 @@ class hpucho::tcp (
 
 	file { "${install_dir}":
 		ensure => directory,
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
 	}
+        file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
+                owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
+		require => File["${install_dir}"],
+        }
 	file { "${install_dir}/uchotcp.py":
 		source => "puppet:///modules/${module_name}/uchotcp/uchotcp.py",
-		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}"],
+		owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
+		require => [File["${install_dir}"], File["${install_dir}/warden_utils_flab.py"]],
 		notify => Service["uchotcp"],
 	}
         file { "${install_dir}/uchotcp.cfg":
@@ -44,14 +49,27 @@ class hpucho::tcp (
                 owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
                 require => File["${install_dir}/uchotcp.py"],
         }
-	package { ["python-twisted"]: 
+	package { ["python", "python-twisted"]: 
 		ensure => installed, 
 	}
+	package { "libcap2-bin": ensure => installed }
+	exec { "python cap_net":
+		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
+		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
+		require => [Package["python"], Package["libcap2-bin"]]
+	}
+
 
 	file { "/etc/init.d/uchotcp":
 		content => template("${module_name}/uchotcp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/uchotcp.py", "${install_dir}/uchotcp.cfg"],
+		require => [File["${install_dir}/uchotcp.py", "${install_dir}/uchotcp.cfg"], Exec["python cap_net"]],
+		notify => [Service["uchotcp"], Exec["systemd_reload"]]
+	}
+	file { "/lib/systemd/system/uchotcp.service":
+		content => template("${module_name}/uchotcp.service.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => File["/etc/init.d/uchotcp"],
 		notify => [Service["uchotcp"], Exec["systemd_reload"]]
 	}
 
@@ -62,8 +80,7 @@ class hpucho::tcp (
 	service { "uchotcp": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/uchotcp", "${install_dir}/uchotcp.py"], Exec["systemd_reload"]]
+		require => [File["/etc/init.d/uchotcp", "/lib/systemd/system/uchotcp.service"], Exec["systemd_reload"]]
 	}
 
 
@@ -74,22 +91,17 @@ class hpucho::tcp (
 	# warden_client
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "$uchotcp_user", group => "$uchotcp_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
 
         # reporting
-
-        file { "${install_dir}/warden_utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",
-        }
         file { "${install_dir}/warden_sender_uchotcp.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_uchotcp.py",
                 owner => "${uchotcp_user}", group => "${uchotcp_user}", mode => "0755",

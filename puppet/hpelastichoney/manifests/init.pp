@@ -58,8 +58,7 @@ class hpelastichoney (
 	service { "elastichoney": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/elastichoney", "${install_dir}/elastichoney"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/elastichoney"], Exec["systemd_reload"]],
 	}
 
 

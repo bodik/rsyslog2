@@ -15,8 +15,6 @@ NAME="telnetd"
 PYTHON=`which python`
 PIDFILE="/var/run/telnetd.pid"
 
-. /puppet/metalib/bin/lib.sh
-
 cd $BASE || exit 1
 
 killwaitpids() {
@@ -30,13 +28,27 @@ killwaitpids() {
         done
 }
 
+rreturn() {
+	RET=$1
+	MSG=$2
+	if [ $RET -eq 0 ]; then
+		echo "RESULT: OK $MSG"
+		exit 0
+	else
+		echo "RESULT: FAILED $MSG"
+		exit 1
+	fi
+
+	echo "RESULT: FAILED THIS SHOULD NOT HAPPEN $0 $@"
+	exit 1
+}
 
 case "$1" in
 
 	start)
         	echo -n "Starting $NAME: "
 		
-		su -c "$PYTHON ${BASE}/telnetd.py 1>telnetd-run.log 2>&1 &" <%= @telnetd_user %>
+		su -c "$PYTHON ${BASE}/telnetd.py 1>>telnetd-run.log 2>&1 &" <%= @telnetd_user %>
 	        echo $! > $PIDFILE
 		iptables -t nat -I PREROUTING 1 -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
 
