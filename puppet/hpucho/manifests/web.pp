@@ -74,7 +74,6 @@ class hpucho::web (
 	service { "uchoweb": 
 		enable => true,
 		ensure => running,
-		provider  => init,
 		require => [File["/etc/init.d/uchoweb"], Exec["systemd_reload"]]
 	}
 
