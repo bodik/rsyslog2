@@ -1,0 +1,16 @@
+[Unit]
+SourcePath=/etc/init.d/uchotcp
+Description=LSB: uchotcp
+After=remote-fs.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=idle
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+ExecStart=/etc/init.d/uchotcp start
+ExecStop=/etc/init.d/uchotcp stop
