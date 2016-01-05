@@ -184,7 +184,6 @@ class hpcowrie (
 	service { "cowrie": 
 		enable => true,
 		ensure => running,
-		provider => init,
 		require => [File["/etc/init.d/cowrie"], Exec["systemd_reload"], Exec["install database"], Mysql_grant["${mysql_db}@localhost/${mysql_db}.*"] ],
 	}
 
