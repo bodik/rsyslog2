@@ -37,7 +37,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		su -c "$PYTHON ${BASE}/uchotcp.py 1>uchotcp-run.log 2>&1 &" <%= @uchotcp_user %>
+		su -c "$PYTHON ${BASE}/uchotcp.py 1>>uchotcp-run.log 2>&1 &" <%= @uchotcp_user %>
 	        echo $! > $PIDFILE
 
 	        echo "done"
