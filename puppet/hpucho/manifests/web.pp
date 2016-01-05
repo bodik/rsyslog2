@@ -3,7 +3,7 @@
 class hpucho::web (
 	$install_dir = "/opt/uchoweb",
 
-	$uchoweb_user = "root",
+	$uchoweb_user = "uchoweb",
 	
 	$port = 8080,
 	$personality = "Apache Tomcat/7.0.56 (Debian)",
@@ -23,7 +23,7 @@ class hpucho::web (
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 
-	package { "python-jinja2": 
+	package { ["python", "python-jinja2"]: 
 		ensure => installed, 
 	}
 	user { "$uchoweb_user":
@@ -32,16 +32,16 @@ class hpucho::web (
         }
 	file { ["${install_dir}"]:
 		ensure => directory,
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
 	}
         file { "${install_dir}/warden_utils_flab.py":
                 source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "root", group => "root", mode => "0755",
+                owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
 		require => File["${install_dir}"],
         }
 	file { "${install_dir}/uchoweb.py":
 		source => "puppet:///modules/${module_name}/uchoweb/uchoweb.py",
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
 		require => [File["${install_dir}"], File["${install_dir}/warden_utils_flab.py"], Package["python-jinja2"]],
 		notify => Service["uchoweb"],
 	}
@@ -52,19 +52,26 @@ class hpucho::web (
         }
 	file { "${install_dir}/content.tgz":
 		source => "puppet:///modules/${module_name}/uchoweb/${content}",
-		owner => "root", group => "root", mode => "0644",
+		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0644",
 		require => File["${install_dir}"],
 	}
 	exec { "content":
-		command => "/bin/tar xzf content.tgz",
+		command => "/bin/tar xzf content.tgz; chown -R $uchoweb_user:$uchoweb_user content",
 		cwd => "${install_dir}",
 		creates => "${install_dir}/content",
 		require => File["${install_dir}/content.tgz"],
 	}
+	package { "libcap2-bin": ensure => installed }
+	exec { "python cap_net":
+		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
+		unless => "/sbin/getcap /usr/bin/python2.7 | /bin/grep cap_net_bind_service",
+		require => Package["python"],
+	}
+
 	file { "/etc/init.d/uchoweb":
 		content => template("${module_name}/uchoweb.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/uchoweb.py", "${install_dir}/uchoweb.cfg"], Exec["content"]],
+		require => [File["${install_dir}/uchoweb.py", "${install_dir}/uchoweb.cfg"], Exec["content"], Exec["python cap_net"]],
 		notify => [Service["uchoweb"], Exec["systemd_reload"]]
 	}
 	exec { "systemd_reload":
@@ -87,13 +94,13 @@ class hpucho::web (
 	# warden_client
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
 	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "$uchoweb_user", group => "$uchoweb_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
 

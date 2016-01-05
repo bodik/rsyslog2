@@ -36,7 +36,7 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		
-		$PYTHON ${BASE}/uchoweb.py 1>uchoweb-run.log 2>&1 &
+		su -c "$PYTHON ${BASE}/uchoweb.py 1>uchoweb-run.log 2>&1 &" <%= @uchoweb_user %>
 	        echo $! > $PIDFILE
 
 	        echo "done"
