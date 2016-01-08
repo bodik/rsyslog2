@@ -1,43 +1,3 @@
-== Class: warden3::server
-
-Class will ensure installation of warden3 server: apache2, wsgi, server, mysqldb, configuration
-
-=== Parameters
-
-[*install_dir*]
-  directory to install w3 server
-
-[*port*]
-  port number to listen with apache vhost
-
-[*mysql_... *]
-  parameters for mysql database for w3 server
-
-[*avahi_enable*]
-  enable service announcement, enabled by default. for testing and debugging purposes
-
-== Class: warden3::ca
-
-Class will ensure installation of warden3 automated ca for testing.
-CA is build around simple puppet ca which provides list, sign, revoke. 
-Inspired by http://spootnik.org/tech/2013/05/30_neat-trick-using-puppet-as-your-internal-ca.html
-init ca, list
- puppet cert --confdir /opt/warden-ca list
-generate keys
- puppet cert --confdir /opt/warden-ca generate ${admin}.users.priv.example.com
-revoke keys
- puppet cert revoke
-
-TODO: allow changing ca service port
-
-=== Parameters
-
-[*ca_name*]
-  ca name
-
-[*autosign*]
-  handle signing requests automatically (testing)
-
 == Class: warden3::tester
 
 Class will ensure installation of example warden3 testing client. Tester will generate ammount of idea messages and sends them to w3 server.
@@ -59,7 +19,30 @@ TODO: warden server port selection missing
 [*warden_server_service*]
   service name to be discovered
 
-== Class: warden3::2rediser
+== Resource: warden3::hostcert
+
+Resource will ensure provisioning of SSL certificated used by other w3 components.
+If certificate is not present in install_dir, module will generate new key and
+request signing it from warden ca service located on warden server. Formelly class 
+truned into reusable resource.
+
+TODO: allow changing ca service port
+
+=== Parameters
+
+[*dest_dir*]
+  directory to generate certificate
+
+[*warden_server*]
+  name or ip of warden server, overrides autodiscovery
+
+[*warden_server_auto*]
+  enables warden server autodiscovery
+
+[*warden_server_service*]
+  service name to be discovered
+
+== Class: warden3::torediser
 
 Class will ensure installation of warden3 client which receives new events from server and sends them to rediser for ELK processing
 
@@ -67,6 +50,9 @@ Class will ensure installation of warden3 client which receives new events from 
 
 [*install_dir*]
   directory to install w3 server
+
+[*torediser_user*]
+  user to run the service
 
 [*warden_server*]
   name or ip of warden server, overrides autodiscovery
@@ -92,25 +78,67 @@ Class will ensure installation of warden3 client which receives new events from 
 [*rediser_server_warden_port*]
   rediser port for warden stream input
 
-== Class: warden3::hostcert
+== Class: warden3::ca
 
-Class will ensure provisioning of SSL certificated used by other w3 components.
-If certificate is not present in install_dir, module will generate new key and
-request signing it from warden ca service located on warden server
+Class will ensure installation of warden3 automated ca for testing.
+CA is build around simple puppet ca which provides list, sign, revoke. 
+Inspired by http://spootnik.org/tech/2013/05/30_neat-trick-using-puppet-as-your-internal-ca.html
+init ca, list
+ puppet cert --confdir /opt/warden-ca list
+generate keys
+ puppet cert --confdir /opt/warden-ca generate ${admin}.users.priv.example.com
+revoke keys
+ puppet cert revoke
 
 TODO: allow changing ca service port
 
 === Parameters
 
-[*dest_dir*]
-  directory to generate certificate
+[*ca_name*]
+  ca name
 
-[*warden_server*]
+[*autosign*]
+  handle signing requests automatically (testing)
+
+== Class: warden3::server
+
+Class will ensure installation of warden3 server: apache2, wsgi, server, mysqldb, configuration
+
+=== Parameters
+
+[*install_dir*]
+  directory to install w3 server
+
+[*port*]
+  port number to listen with apache vhost
+
+[*mysql_... *]
+  parameters for mysql database for w3 server
+
+[*avahi_enable*]
+  enable service announcement, enabled by default. for testing and debugging purposes
+
+== Resource: warden3::2warden
+
+TODO
+
+=== Parameters
+
+[*install_dir*]
+  directory to install
+
+[*receiver/sender_warden_server*]
   name or ip of warden server, overrides autodiscovery
 
-[*warden_server_auto*]
+[*receiver/sender_warden_server_auto*]
   enables warden server autodiscovery
 
-[*warden_server_service*]
+[*receiver/sender_warden_server_service*]
   service name to be discovered
+
+[*receiver/sender_warden_server_port*]
+  warden server port number
+
+[*receiver_cert_path*]
+  warden client cert path
 

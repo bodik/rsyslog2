@@ -10,16 +10,16 @@ import socket
 import sys
 import signal
 
-DEFAULT_ACONFIG = 'warden_2rediser.cfg'
+DEFAULT_ACONFIG = 'warden_torediser.cfg'
 DEFAULT_WCONFIG = 'warden_client.cfg'
-DEFAULT_NAME = 'org.example.warden.2rediser'
+DEFAULT_NAME = 'org.example.warden.torediser'
 
 pp = pprint.PrettyPrinter(indent=4)
 
 
 
 def handler(signum = None, frame = None):
-	print 'warden_2rediser shutting down...'
+	print 'warden_torediser shutting down...'
 	sys.exit(0)
 
 def fetch_and_send(wclient):
