@@ -35,6 +35,7 @@ class warden3::ca (
 		managehome => false,
 		shell => "/bin/bash",
 		home => "${install_dir}",
+		groups => "www-data",
 	}
 
 	file { "${install_dir}":
