@@ -20,33 +20,46 @@
 # [*autosign*]
 #   handle signing requests automatically (testing)
 #
+# [*ca_user*]
+#   user to run the service
+#
 class warden3::ca (
 	$ca_name = "warden3ca",
 	$autosign = true,
+
+	$ca_user = "wardenca",
 ) {
+	user { "$ca_user": 	
+		ensure => present, 
+		managehome => false,
+		shell => "/bin/bash",
+		home => "${install_dir}",
+	}
+
 	file { "/opt/warden_ca":
 		ensure => directory,
-		owner => "root", group => "root", mode => "0700",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
 	}
 	file { "/opt/warden_ca/puppet.conf":
 		content => template("${module_name}/ca-puppet.conf.erb"),
-		owner => "root", group => "root", mode => "0600",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0600",
 	}
 	file { "/opt/warden_ca/warden_ca.sh":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca.sh",
-		owner => "root", group => "root", mode => "0700",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
 	}
 	exec { "warden_ca.sh init":
 		command => "/bin/sh /opt/warden_ca/warden_ca.sh init",
+		user => "${ca_user}",
 		creates => "/opt/warden_ca/ssl/ca/ca_crt.pem",
 		require => File["/opt/warden_ca/puppet.conf", "/opt/warden_ca/warden_ca.sh"],
 	}
 	file { "/opt/warden_ca/warden_ca_http.py":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
-		owner => "root", group => "root", mode => "0700",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
 	}
 	file { "/etc/init.d/warden_ca_http":
-		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.init",
+		content => template("${module_name}/warden_ca_http.init.erb"),
 		owner => "root", group => "root", mode => "0700",
 		require => File["/opt/warden_ca/warden_ca_http.py"],
 		notify => Exec["systemd_reload"],
@@ -58,13 +71,12 @@ class warden3::ca (
 	service { "warden_ca_http": 
 		enable => true,
 		ensure => running,
-		provider => init,
 		require => [File["/etc/init.d/warden_ca_http"], Exec["systemd_reload"]],
 	}
 	if ($autosign) {
 		file { "/opt/warden_ca/AUTOSIGN":
 			content => "AUTOSIGN ENABLED",
-			owner => "root", group => "root", mode => "0600",
+			owner => "${ca_user}", group => "${ca_user}", mode => "0600",
 	 	}
 	} else {
 		file { "/opt/warden_ca/AUTOSIGN":	ensure => absent }
