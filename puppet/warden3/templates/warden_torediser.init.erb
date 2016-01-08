@@ -14,7 +14,7 @@
 BASE=<%= @install_dir %>
 NAME="warden_torediser"
 PYTHON=`which python`
-PIDFILE="/var/run/warden_torediser.pid"
+PIDFILE="/var/run/torediser/warden_torediser.pid"
 
 . /lib/lsb/init-functions
 
@@ -35,10 +35,7 @@ case "$1" in
 
         start)
                 echo -n "Starting $NAME: "
-
-                su -c "$PYTHON ${BASE}/warden_torediser.py 1>>warden_torediser-run.log 2>&1 &" <%= @torediser_user %>
-                echo $! > $PIDFILE
-
+                su -c "$PYTHON ${BASE}/warden_torediser.py 1>>warden_torediser-run.log 2>&1 & echo \$! > $PIDFILE" <%= @torediser_user %>
                 echo "done"
         ;;
         stop)

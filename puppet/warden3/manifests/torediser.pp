@@ -106,10 +106,14 @@ class warden3::torediser (
 		owner => "${torediser_user}", group => "${torediser_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
+	file { "/var/run/torediser":
+		ensure => directory,
+		owner => "${torediser_user}", group => "${torediser_user}", mode => "0755",
+	}
 	file { "/etc/init.d/warden_torediser":
 		content => template("${module_name}/warden_torediser.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_torediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_torediser.py"], Exec["register warden_torediser sensor"]],
+		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_torediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_torediser.py", "/var/run/torediser"], Exec["register warden_torediser sensor"]],
 		notify => [Service["warden_torediser"], Exec["systemd_reload"]],
 	}
 	exec { "systemd_reload":
