@@ -7,9 +7,13 @@
 #
 #  class { rediser: }
 #
-class rediser {
-	notice($name)
+class rediser (
+	$install_dir = "/opt/rediser",
+	$rediser_user = "rediser",
+) {
+	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
+	#redis
 	package { "redis-server":
 		ensure => installed,
 	}
@@ -39,17 +43,33 @@ class rediser {
 	}
 
 	#rediser
+	user { "$rediser_user":
+		ensure => present, 
+		managehome => false,
+		shell => "/bin/bash",
+		home => "${install_dir}",
+	}
+	file { "${install_dir}":
+		ensure => directory,
+		owner => "${rediser_user}", group => "${rediser_user}", mode => "0755",
+	}
 	package { ["libpcap0.8", "libssl1.0.0", "ruby-dev", "make"]:
 		ensure => installed,
 	}
 	exec { "gem install hiredis":
                 command => "/usr/bin/gem install --no-rdoc --no-ri hiredis",
                 unless => "/usr/bin/gem list | /bin/grep hiredis",
-                require => [Package["ruby-dev"], Package["make"]],
+                require => Package["libpcap0.8", "libssl1.0.0", "ruby-dev", "make"],
         }
+	file { "${install_dir}/rediser6.rb":
+		source => "puppet:///modules/${module_name}/rediser6.rb",
+		owner => "${rediser_user}", group => "${rediser_user}", mode => "0644",
+		require => [File["${install_dir}"], Exec["gem install hiredis"]],
+	}
 	file { "/etc/init.d/rediser6":
-		ensure => link,
-		target => "/puppet/rediser/bin/rediser6.init",
+		content => template("${module_name}/rediser6.init.erb"),
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/rediser6.rb"],
 		notify => Exec["systemd_reload"],
 	}
 	exec { "systemd_reload":
@@ -59,7 +79,6 @@ class rediser {
 	service { "rediser6":
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/rediser6"], Exec["gem install hiredis"], Package["libpcap0.8"], Package["libssl1.0.0"], Package["ruby-dev"]],
+		require => [File["/etc/init.d/rediser6"], Exec["systemd_reload"]],
 	}
 }

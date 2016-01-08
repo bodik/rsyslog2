@@ -43,10 +43,12 @@ class warden3::ca (
 	file { "/opt/warden_ca/puppet.conf":
 		content => template("${module_name}/ca-puppet.conf.erb"),
 		owner => "${ca_user}", group => "${ca_user}", mode => "0600",
+		require => File["/opt/warden_ca"],
 	}
 	file { "/opt/warden_ca/warden_ca.sh":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca.sh",
 		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
+		require => File["/opt/warden_ca"],
 	}
 	exec { "warden_ca.sh init":
 		command => "/bin/sh /opt/warden_ca/warden_ca.sh init",
@@ -57,10 +59,11 @@ class warden3::ca (
 	file { "/opt/warden_ca/warden_ca_http.py":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
 		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
+		require => File["/opt/warden_ca"],
 	}
 	file { "/etc/init.d/warden_ca_http":
 		content => template("${module_name}/warden_ca_http.init.erb"),
-		owner => "root", group => "root", mode => "0700",
+		owner => "root", group => "root", mode => "0755",
 		require => File["/opt/warden_ca/warden_ca_http.py"],
 		notify => Exec["systemd_reload"],
 	}

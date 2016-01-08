@@ -1,4 +1,4 @@
-test -f /etc/init.d/rediser 1>/dev/null 2>/dev/null
+test -f /etc/init.d/rediser6 1>/dev/null 2>/dev/null
 if [ $? -eq 0 ]; then
         echo "INFO: REDISERCHECK ======================="
 
