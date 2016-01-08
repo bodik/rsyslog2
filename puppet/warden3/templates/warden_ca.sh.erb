@@ -8,8 +8,8 @@
 # revoke keys
 #  puppet cert revoke
 
-CADIR="/opt/warden_ca"
-OPTS="--confdir $CADIR"
+export HOME="<%= @install_dir %>"
+OPTS="--confdir $HOME"
 
 usage() {
 	echo "$0 init"
@@ -34,7 +34,7 @@ case "$1" in
 		$0 list
 	;;
 	get_ca_crt)
-		cat $CADIR/ssl/ca/ca_crt.pem
+		cat $HOME/ssl/ca/ca_crt.pem
 	;;
 	get_ca_crl)
 		puppet certificate_revocation_list find dummy --terminus ca $OPTS
