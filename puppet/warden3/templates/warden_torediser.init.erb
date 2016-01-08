@@ -17,9 +17,6 @@ PYTHON=`which python`
 PIDFILE="${BASE}/warden_torediser.pid"
 
 . /lib/lsb/init-functions
-
-cd $BASE || exit 1
-
 killwaitpids() {
         PID="$@"
         if [ -z "$PID" ]; then return; fi
@@ -31,6 +28,7 @@ killwaitpids() {
         done
 }
 
+cd $BASE || exit 1
 case "$1" in
 
         start)
