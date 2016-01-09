@@ -78,11 +78,6 @@ class hpglastopf (
 		group => "${glastopf_user}", owner => "${glastopf_user}", mode => "0644",
 		require => User["glastopf"],
 	}
-	file { "${install_dir}/glastopf.init":
-		content => template("${module_name}/glastopf.init"),
-		group => "root", owner => "root", mode => "0755",
-		require => File["/opt/glastopf"],
-	}
 	file { "${install_dir}/glastopf.cfg":
 		content => template("${module_name}/glastopf.cfg"),
 		group => "root", owner => "root", mode => "0644",
@@ -94,10 +89,11 @@ class hpglastopf (
 		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
 		require => [Package["python"], Package["libcap2-bin"]]
 	}
+
 	file { "/etc/init.d/glastopf":
-		ensure => link,
-		target => "${install_dir}/glastopf.init",
-		require => [File["${install_dir}/glastopf.init"], File["${install_dir}/glastopf.cfg"], Exec["pip install glastopf"], Exec["python cap_net"]],
+		content => template("${module_name}/glastopf.init.erb"),
+		group => "root", owner => "root", mode => "0755",
+		require => [File["${install_dir}/glastopf.cfg"], Exec["pip install glastopf"], Exec["python cap_net"]],
 		notify => [Service["glastopf"], Exec["systemd_reload"]],
 	}
 	exec { "systemd_reload":
@@ -112,7 +108,7 @@ class hpglastopf (
 	service { "glastopf":
 		ensure => running,
 		enable => true,
-		require => [File["/etc/init.d/glastopf"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/glastopf"], Exec["systemd_reload"], Service["apache2"]],
 	}
 
 

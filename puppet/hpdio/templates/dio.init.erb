@@ -16,49 +16,58 @@ USER="<%= @dio_user %>"
 GROUP="<%= @dio_user %>"
 PIDFILE="$BASE/var/$NAME.pid"
 
-cd $BASE
+. /lib/lsb/init-functions
+killwaitpids() {
+        PID="$@"
+        if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
 ulimit -c unlimited
 ulimit -n 50000
 
+cd $BASE || exit 1
 case "$1" in
-  start)
-        echo -n "Starting $NAME: "
-	$0 status 1>/dev/null 2>/dev/null
-	if [ $? -eq 0 ]; then
-		echo "already running"
-		exit 0
-	fi
-        ${BASE}/bin/dionaea -u $USER -g $GROUP -w ${BASE} -p $PIDFILE -D
-        echo "done"
+	start)
+        	echo -n "Starting $NAME: "
+		$0 status 1>/dev/null 2>/dev/null
+		if [ $? -eq 0 ]; then
+			echo "already running"
+			exit 0
+		fi
+		${BASE}/bin/dionaea -u $USER -g $GROUP -w ${BASE} -p $PIDFILE -D
+		echo "done"
+	;;
+	stop)
+        	echo -n "Stopping $NAME: "
+                if [ -f $PIDFILE ]; then
+                        killwaitpids $(cat $PIDFILE)
+                        rm $PIDFILE
+                fi
+                killwaitpids $(pgrep -f ${BASE}/warden_ca_http.py)
+                echo "done"
         ;;
-  stop)
-        echo -n "Stopping $NAME: "
-        kill -TERM `cat $PIDFILE`
-        echo "done"
+	force-reload|restart)
+        	$0 stop
+	        sleep 10
+	        $0 start
+	;;
+	log)
+        	tail -f ${BASE}/var/log/dionaea*log
         ;;
-  force-reload|restart)
-        $0 stop
-        sleep 10
-        $0 start
-        ;;
-  log)
-        tail -f ${BASE}/var/log/dionaea*log
-        ;;
-  status)
-	echo -n "Status of $NAME: "
-	pidof ${BASE}/bin/dionaea 1>/dev/null 2>/dev/null
-	RET=$?
-	if [ $RET -eq 0 ]; then
-		echo "running"
-	else
-		echo "not running"
-	fi
-	exit $RET
-  ;;
-  *)
-        echo "Usage: $0 {start|stop|restart|force-reload}"
-        ps faxu | grep "bin/$NAME"
-        exit 1
+	status)
+		status_of_proc "${BASE}/bin/dionaea" "$NAME" && exit 0 || exit $?
+	;;
+	*)
+        	echo "Usage: $0 {start|stop|restart|force-reload}"
+	        ps faxu | grep "bin/$NAME"
+        	exit 1
+	;;
 esac
 
 exit 0
