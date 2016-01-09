@@ -26,7 +26,7 @@ def gen_event_idea_uchoweb(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "Format": "IDEA0",
                 "ID": str(uuid4()),
                 "DetectTime": detect_time,
-                "Category": ["Other"],
+                "Category": ["Recon", "Test"],
                 "Note": "Uchoweb event",
                 "ConnCount": 1,
                 "Source": [{ "Proto": proto, "Port": [src_port] }],

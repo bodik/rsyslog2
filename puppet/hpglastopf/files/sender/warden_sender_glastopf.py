@@ -33,7 +33,7 @@ def gen_event_idea_gl(detect_time, src_ip, src_port, request_url, request_raw, p
 		"Format": "IDEA0",
 		"ID": str(uuid4()),
 		"DetectTime": detect_time,
-		"Category": ["Other"],
+		"Category": ["Recon", "Test"],
 		"Note": "webhoneypot event",
 		"ConnCount": 1,
 		"Source": [{"Port" : [src_port]}],
