@@ -3,15 +3,13 @@
 # Provides:		warden_ca
 # Required-Start:	$syslog $remote_fs
 # Required-Stop:	$syslog $remote_fs
-# Should-Start:	
-# Should-Stop:
 # Default-Start:	2 3 4 5
 # Default-Stop:		0 1 6
 # Short-Description:	warden_ca
 # Description:		warden_Ca
 ### END INIT INFO
 
-BASE=/opt/warden_ca
+BASE=<%= @install_dir %>
 NAME="warden_ca_http"
 PYTHON=`which python`
 PIDFILE="${BASE}/warden_ca_http.pid"
