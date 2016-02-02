@@ -25,8 +25,8 @@ case "$ACTION" in
         start)
                 mkdir -p "${PID%/*}"
                 log_daemon_msg "Starting $SERVICE_NAME" "$SERVICE_NAME"
-                start_daemon -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_2warden_receiver.cfg" --pid_file "$PIDDIR/receiver.pid" --daemon "receiver"
-                start_daemon -p "$PIDDIR/sender.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_2warden_sender.cfg" --pid_file "$PIDDIR/sender.pid" --daemon "sender"
+                start_daemon -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_receiver.cfg" --pid_file "$PIDDIR/receiver.pid" --daemon "receiver"
+                start_daemon -p "$PIDDIR/sender.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_sender.cfg" --pid_file "$PIDDIR/sender.pid" --daemon "sender"
                 log_end_msg $?
                 ;;
         stop)
