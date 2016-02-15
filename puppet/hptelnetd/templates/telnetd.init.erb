@@ -13,7 +13,7 @@
 BASE=<%= @install_dir %>
 NAME="telnetd"
 PYTHON=`which python`
-PIDFILE="/var/run/telnetd.pid"
+PIDFILE="${BASE}/telnetd.pid"
 
 . /lib/lsb/init-functions
 killwaitpids() {

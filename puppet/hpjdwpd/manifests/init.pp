@@ -4,7 +4,7 @@ class hpjdwpd (
 	$install_dir = "/opt/jdwpd",
 
 	$jdwpd_user = "jdwpd",
-	$jdwpd_port = 58000,
+	$jdwpd_port = 8000,
 	$jdwpd_logfile = "jdwpd.log",
 	
 	$warden_server = undef,

@@ -13,7 +13,7 @@
 BASE=<%= @install_dir %>
 NAME="jdwpd"
 PYTHON=`which python`
-PIDFILE="/var/run/jdwpd.pid"
+PIDFILE="${BASE}/jdwpd.pid"
 
 . /lib/lsb/init-functions
 killwaitpids() {
@@ -34,7 +34,6 @@ case "$1" in
 	start)
         	echo -n "Starting $NAME: "
 		su -c "$PYTHON ${BASE}/jdwpd.py 1>>jdwpd-run.log 2>&1 & echo \$! > $PIDFILE" <%= @jdwpd_user %>
-		iptables -t nat -I PREROUTING 1 -p tcp --dport 8000 -j REDIRECT --to-port <%= @jdwpd_port %>
 	        echo "done"
 	;;
 	stop)
@@ -44,7 +43,6 @@ case "$1" in
 		        rm $PIDFILE
 		fi
 	        killwaitpids $(pgrep -f ${BASE}/jdwpd.py)
-		iptables -t nat -D PREROUTING -p tcp --dport 8000 -j REDIRECT --to-port <%= @jdwpd_port %>
 	        echo "done"
 	;;
 	status)

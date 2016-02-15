@@ -18,7 +18,7 @@ logger 			= w3u.getLogger(hconfig['logfile'])
 
 DEBUG 			= False
 
-DEFAULT_PORT 		= 58000
+DEFAULT_PORT 		= 8000
 
 HANDSHAKE               = "JDWP-Handshake"
 AUTOTEST		= "AUTOTEST\n"
