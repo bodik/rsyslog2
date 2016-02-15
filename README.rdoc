@@ -135,3 +135,4 @@ documentation.
   * hpthin[link:puppet/hpthin/README.rdoc]
   * hpucho[link:puppet/hpucho/README.rdoc]
   * hpelastichoney[link:puppet/hpelastichoney/README.rdoc]
+  * hpjdwpd[link:puppet/hpjdwpd/README.rdoc]
