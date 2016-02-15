@@ -25,7 +25,7 @@
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh -x rsyslog/tests/rsyslog-client_netstat.sh&apos;
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd.install.sh&apos;
-/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd/tests/hpjwdpd.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh hpjdwpd/tests/hpjdwpd.sh&apos;
 
 
 </command>
