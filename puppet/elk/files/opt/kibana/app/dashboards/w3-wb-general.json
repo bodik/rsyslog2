@@ -326,7 +326,7 @@
           "editable": true,
           "type": "terms",
           "loadingEditor": false,
-          "field": "Source.hostname",
+          "field": "Source.hostname.raw",
           "exclude": [],
           "missing": true,
           "other": true,
