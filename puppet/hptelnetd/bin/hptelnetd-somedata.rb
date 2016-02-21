@@ -11,6 +11,11 @@ debug = false
 if ARGV[0]
 	scroll_size = ARGV[0].to_i
 end
+if Facter.value('ipaddress_eth1')
+	addr = Facter.value('ipaddress_eth1')
+else
+	addr = Facter.value('ipaddress_eth0')
+end
 
 
 ###qstring = "type:'nz' AND dp:53"
@@ -23,7 +28,7 @@ query = {
 }
 puts "BENCHMARK: meta: "+query.to_s
 just_search_start = Time.now
-client = Elasticsearch::Client.new(log: false, host: Facter.value('ipaddress')+":39200", transport_options: { request: { timeout: 360 }})
+client = Elasticsearch::Client.new(log: false, host: addr+":39200", transport_options: { request: { timeout: 360 }})
 just_search_data = client.search(index: index, body: query)
 
 #pp just_search_data
