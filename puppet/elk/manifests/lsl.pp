@@ -44,6 +44,7 @@ class elk::lsl (
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
 	$output_es_cluster_name = "mry",
+	$output_es_bind_host = undef,
 	$process_stream_auth = false,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
