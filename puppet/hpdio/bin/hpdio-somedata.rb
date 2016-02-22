@@ -22,8 +22,9 @@ qstring = "type:'wb' AND Node.SW:'Dionaea' AND NOT Category:'Recon.Scanning'"
 index = "_all"
 query = {
 	query: { query_string: { query: qstring } },
+	filter: { exists: { field: "Attach" }},
 	size: 9999,
-	sort: "Attach.datalen"
+	sort: "Size"
 }
 puts "BENCHMARK: meta: "+query.to_s
 just_search_start = Time.now
@@ -36,12 +37,12 @@ just_search_data['hits']['hits'].each do |x|
 	puts [
 		x["_source"]["DetectTime"],
 		x["_source"]["Source"]["hostname"],
-		x["_source"]["Category"],
+		x["_source"]["Attach"]["ContentType"],
 		x["_source"]["Attach"]
 	].join(" ")
 end
 
 just_search_finish = Time.now
 diff = just_search_finish - just_search_start
-puts "RESULT: meta: "+query.to_s+" took "+diff.to_s+"s"
+puts "RESULT: meta: "+query.to_s+" took "+diff.to_s+"s total "+just_search_data['hits']["total"].to_s
 
