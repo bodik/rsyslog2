@@ -2,7 +2,7 @@ output {
         elasticsearch {
                 cluster => "<%= @output_es_cluster_name %>"
 		bind_port => 39500
-<% if @output_es_bind_host -%>		bind_host => "<%= @output_es_bind_host %>",
+<% if @output_es_bind_host -%>		bind_host => "<%= @output_es_bind_host %>"
 <% end -%>
                 port => "39300-39400"
 		protocol => "node"
