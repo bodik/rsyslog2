@@ -87,9 +87,7 @@ class warden3::torediser (
 		owner => "${torediser_user}", group => "${torediser_user}", mode => "0640",
 		require => File["${install_dir}"],
 	}
-	warden3::hostcert { "hostcert":
-		warden_server => $warden_server_real,
-	}
+	ensure_resource('warden3::hostcert', "hostcert", { "warden_server" => $warden_server_real,} )
 	exec { "register warden_torediser sensor":
 		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.torediser -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
@@ -112,10 +110,7 @@ class warden3::torediser (
 		require => [File["${install_dir}/warden_client.cfg", "${install_dir}/warden_torediser.cfg", "${install_dir}/warden_client.py", "${install_dir}/warden_torediser.py"], Exec["register warden_torediser sensor"]],
 		notify => [Service["warden_torediser"], Exec["systemd_reload"]],
 	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
+	ensure_resource( 'exec', "systemd_reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "warden_torediser": 
 		enable => true,
 		ensure => running,

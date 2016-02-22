@@ -72,10 +72,7 @@ class rediser (
 		require => File["${install_dir}/rediser6.rb"],
 		notify => Exec["systemd_reload"],
 	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
+	ensure_resource( 'exec', "systemd_reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "rediser6":
 		enable => true,
 		ensure => running,

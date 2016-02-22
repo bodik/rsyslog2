@@ -37,13 +37,9 @@ define warden3::hostcert (
                 $warden_server_real = avahi_findservice($warden_server_service)
         }
 	
-	#if ! defined(Package['curl']) { package { "curl": ensure => installed } }
 	ensure_resource( 'package', 'curl', {} )
 
-	file { "$dest_dir":
-		ensure => directory,
-		owner => "root", group => "root", mode => "0755",
-	}
+	ensure_resource( 'file', "$dest_dir", { "ensure" => directory, "owner" => "root", "group" => "root", "mode" => "0755",} )
 
 	exec { "gen cert ${name}":
 		command => "/bin/sh /puppet/warden3/bin/install_ssl_warden_ca.sh -s ${warden_server_real} -d ${dest_dir}",
