@@ -40,6 +40,7 @@ just_search_data['hits']['hits'].each do |x|
 		x["_source"]["Attach"]["ContentType"],
 		x["_source"]["Attach"]
 	].join(" ")
+	#File.open("/tmp/w3-dio-#{x['_id']}", 'w') {|f| f.write(x["_source"]["Attach"]["Content"]) }
 end
 
 just_search_finish = Time.now
