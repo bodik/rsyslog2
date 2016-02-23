@@ -1,15 +1,18 @@
 {
 	"warden": {
-    		"url": "https://<%= @receiver_warden_server_real %>:<%= @receiver_warden_server_port %>/warden3",
+    		"url": "https://<%= @receiver_warden_server_real %>:<%= @receiver_warden_server_port %><%= @receiver_warden_server_uri %>",
 		"certfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.crt",
 		"keyfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.key",
 		"cafile": "<%= @receiver_cert_path %>/cachain.pem",
 		"timeout": 60,
-		"get_events_limit": 1000,
+		"get_events_limit": 2000,
+		"send_events_limit": 2000,
     		"errlog": {"level": "debug"},
     		"syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
-		"name": "<%= @w3c_name %>.towarden",
-		//"secret": "",
+		"name": "<%= @receiver_name_real %>",
+<% if @receiver_secret -%>		"secret": "<%= @receiver_secret %>",
+<% else -%>		//"secret": "",
+<% end -%>
 		"idstore": "warden_client_receiver.id"
 	},
 	"receiver": {
@@ -17,10 +20,10 @@
 		"dir": "<%= @install_dir %>/var",
 		// Optional filter fields for Warden query
 		"filter": {
-			"cat": null,
+			"cat": <%= @receiver_cat %>,
 			"nocat": <%= @receiver_nocat %>,
 			"group": <%= @receiver_group %>,
-			"nogroup": null,
+			"nogroup": <%= @receiver_nogroup %>,
 			"tag": null,
 			"notag": null
 		}

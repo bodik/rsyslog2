@@ -29,15 +29,23 @@ define warden3::towarden (
 	$receiver_warden_server_auto = true,
 	$receiver_warden_server_service = "_warden-server._tcp",
 	$receiver_warden_server_port = 45443,
+	$receiver_warden_server_uri = "/warden3",
 	$receiver_cert_path = "/opt/hostcert",
+	$receiver_name = undef,
+	$receiver_cat = undef,
 	$receiver_nocat = '["Test"]',
 	$receiver_group = '["cz.cesnet.flab"]',
+	$receiver_nogroup = '["cz.cesnet.flab"]',
+	$receiver_secret = undef,
 
 	$sender_warden_server = undef,
 	$sender_warden_server_auto = true,
 	$sender_warden_server_service = "_warden-server._tcp",
 	$sender_warden_server_port = 45443,
+	$sender_warden_server_uri = "/warden3",
 	$sender_cert_path = "/opt/warden_towarden/remotecert",
+	$sender_name = undef,
+	$sender_secret = undef,
 ) {
 
 	if ($receiver_warden_server) {
@@ -52,6 +60,19 @@ define warden3::towarden (
                 include metalib::avahi
                 $sender_warden_server_real = avahi_findservice($sender_warden_server_service)
         }
+
+	$w3c_name = "cz.cesnet.flab.${hostname}.towarden"
+	if ( $receiver_name ) {
+		$receiver_name_real = $receiver_name
+	} else {
+		$receiver_name_real = "$w3c_name"
+	}
+	if ( $sender_name ) {
+		$sender_name_real = $sender_name
+	} else {
+		$sender_name_real = "$w3c_name"
+	}
+
 
 
 	# warden_client, filer
@@ -74,8 +95,6 @@ define warden3::towarden (
 		owner => "root", group => "root", mode => "0755",
 	}
 
-
-	$w3c_name = "cz.cesnet.flab.${hostname}"
 
 	#receiving w3 client
 	file { "${install_dir}/warden_towarden_receiver.cfg":
@@ -101,9 +120,13 @@ define warden3::towarden (
 		before => Warden3::Hostcert["towarden ${name} sender $fqdn"],
 	}
 	ensure_resource( 'warden3::hostcert', "towarden ${name} sender $fqdn", { "dest_dir" => "${sender_cert_path}", "warden_server" => "$sender_warden_server_real"} )
+	file { "${install_dir}/sender_registration":
+		ensure => directory,
+		owner => "root", group => "root", mode => "0750",
+	}
 	exec { "towarden ${name} register sender sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n ${w3c_name}.towarden -d ${sender_cert_path}",
-		creates => "${sender_cert_path}/registered-at-warden-server",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${sender_warden_server_real} -n ${w3c_name}.towarden -d ${install_dir}/sender_registration",
+		creates => "${install_dir}/sender_registration/registered-at-warden-server",
 		require => [ File["${install_dir}/warden_towarden_sender.cfg"], Warden3::Hostcert["towarden ${name} sender $fqdn"] ],
 	}
 
@@ -114,14 +137,10 @@ define warden3::towarden (
 		require => [ Exec["towarden ${name} register receiver sensor"], Exec["towarden ${name} register sender sensor"]],
 		notify => Exec["systemd_reload"],
 	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
+	ensure_resource( 'exec', "systemd_reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "warden_towarden_${name}": 
 		enable => true,
 		ensure => running,
-		provider => init,
 		require => [File["/etc/init.d/warden_towarden_${name}"], Exec["systemd_reload"]],
 	}
 

@@ -23,7 +23,7 @@ ACTION="$1"
 
 case "$ACTION" in
         start)
-                mkdir -p "${PID%/*}"
+                mkdir -p "${PIDDIR}"
                 log_daemon_msg "Starting $SERVICE_NAME" "$SERVICE_NAME"
                 start_daemon -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_receiver.cfg" --pid_file "$PIDDIR/receiver.pid" --daemon "receiver"
                 start_daemon -p "$PIDDIR/sender.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_sender.cfg" --pid_file "$PIDDIR/sender.pid" --daemon "sender"
@@ -31,8 +31,8 @@ case "$ACTION" in
                 ;;
         stop)
                 log_daemon_msg "Stopping $SERVICE_NAME" "$SERVICE_NAME"
-                killproc -p "$PIDDIR/receiver.pid" "$DAEMON_PATH"
-                killproc -p "$PIDDIR/sender.pid" "$DAEMON_PATH"
+                killproc -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" && rm "$PIDDIR/receiver.pid"
+                killproc -p "$PIDDIR/sender.pid" "$DAEMON_PATH" && rm "$PIDDIR/sender.pid"
                 log_end_msg $?
                 ;;
         restart|force-reload)
