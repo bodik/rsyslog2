@@ -4,6 +4,8 @@
 
 require 'elasticsearch'
 require 'pp'
+require 'facter'
+Facter.loadfacts()
 
 
 begin
@@ -15,15 +17,21 @@ begin
 	puts "INFO: qstring: "+qstring
 rescue Exception => e
 	puts e.inspect
-	puts "ERROR: usage client.rb query|search qstring"
+	puts "ERROR: usage client.rb search|delete qstring"
 	exit
 end
+if Facter.value('ipaddress_eth1')
+	addr = Facter.value('ipaddress_eth1')
+else
+	addr = Facter.value('ipaddress_eth0')
+end
+
 
 query = {
 	query: { query_string: { query: qstring } },
 }
 
-client = Elasticsearch::Client.new(log: false, host: "localhost:39200")
+client = Elasticsearch::Client.new(log: false, host: addr+":39200", transport_options: { request: { timeout: 360 }})
 
 case cmd
 	when "search"
