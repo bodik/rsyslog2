@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="hudson.scm.NullSCM"/>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers/>
+  <concurrentBuild>true</concurrentBuild>
+  <builders>
+    <hudson.tasks.Shell>
+      <command>export VMNAME=&quot;SCDEV-centos&quot;
+/puppet/jenkins/bin/metacloud.init login
+/puppet/jenkins/bin/metacloud.init build
+/puppet/jenkins/bin/metacloud.init start &quot;rsyslog2-centos7-metacloud&quot;
+/puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb.metacentrum.cz/puppet-securitycloud.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
+############
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh phase2.install.sh&apos;
+
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud-dev.install.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud/bin/build.sh&apos;
+/puppet/jenkins/bin/metacloud.init ssh &apos;cd /puppet &amp;&amp; sh securitycloud/tests/fdistdump-singlenode.sh&apos;
+</command>
+    </hudson.tasks.Shell>
+  </builders>
+  <publishers/>
+  <buildWrappers/>
+</project>

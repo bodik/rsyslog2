@@ -1,9 +1,9 @@
 [main]
-user = root
-group = root
+user = <%= @ca_user %>
+group = <%= @ca_user %>
 ca_name = "<%= @ca_name %>"
-logdir = /opt/warden_ca/log
-vardir = /opt/warden_ca/data
-ssldir = /opt/warden_ca/ssl
-rundir = /opt/warden_ca/run
+logdir = <%= @install_dir %>/log
+vardir = <%= @install_dir %>/data
+ssldir = <%= @install_dir %>/ssl
+rundir = <%= @install_dir %>/run
 

@@ -135,38 +135,30 @@ class warden3::server (
 
 
 	#apache2
-	package { ["apache2", "libapache2-mod-wsgi"]: ensure => installed, }
-	service { "apache2": }
-	file { ["/etc/apache2/mods-enabled/cgid.conf", "/etc/apache2/mods-enabled/cgid.load", "/etc/apache2/sites-enabled/000-default"]: 
-		ensure => absent,
-		require => Package["apache2"],
-		notify => Service["apache2"],
-	}
-	exec { "a2enmod ssl":
-		command => "/usr/sbin/a2enmod ssl",
-		unless => "/usr/sbin/a2query -m ssl",
-		notify => Service["apache2"],
-	}
-	class { "warden3::hostcert":
-		#there might be a better idea to have avahi service for warden_ca, but for simplicity and puppet2.7 we just use fqdn
-		warden_server => $fqdn,
-		require => File["/etc/avahi/services/warden-server.service"],
-	}
+	ensure_resource('package', 'apache2', {})
+	ensure_resource('service', 'apache2', {})
+	package { ["libapache2-mod-wsgi"]: ensure => installed, }
+
+	ensure_resource('file', '/etc/apache2/mods-enabled/cgid.conf', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )
+	ensure_resource('file', '/etc/apache2/mods-enabled/cgid.load', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )
+	ensure_resource('file', '/etc/apache2/sites-enabled/000-default', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )
+
+	ensure_resource( 'metalib::apache2::a2enmod', "ssl", {} )
+
+	ensure_resource('warden3::hostcert', "hostcert", { "warden_server" => $fqdn, "require" => File["/etc/avahi/services/warden-server.service"],} )
 	file { "/etc/apache2/sites-enabled/00warden3.conf":
 		content => template("${module_name}/warden3-virtualhost.conf.erb"),
 		owner => "root", group => "root", mode => "0644",
 		require => [
 			Package["apache2", "libapache2-mod-wsgi"], 
-			Class["warden3::hostcert"], 
+			Warden3::Hostcert["hostcert"],
 			Exec["a2enmod ssl"],
 			],
 		notify => Service["apache2"],
 	}
 
 	#tests
-	#already in warden3::hostcert
-	#package { "curl": ensure => installed, }
-
+	ensure_resource('package', 'curl', {} )
 }
 
 

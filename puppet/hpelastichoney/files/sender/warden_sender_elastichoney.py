@@ -28,7 +28,7 @@ def gen_event_idea_elastichoney(detect_time, src_ip, dst_ip, data):
 		"Format": "IDEA0",
 		"ID": str(uuid4()),
 		"DetectTime": detect_time,
-		"Category": ["Recon.Scanning"],
+		"Category": ["Recon.Scanning", "Test"],
 		"Note": "Elastichoney event",
 		"ConnCount": 1,
 		"Source": [{}],
@@ -36,7 +36,7 @@ def gen_event_idea_elastichoney(detect_time, src_ip, dst_ip, data):
 		"Node": [
 			{
 				"Name": aclient_name,
-				"Tags": ["Honeypot", "Data"],
+				"Type": ["Honeypot", "Data"],
 				"SW": ["Elastichoney"],
 			}
 		],

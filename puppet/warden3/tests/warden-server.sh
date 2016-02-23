@@ -13,7 +13,7 @@
 tmpfile=/tmp/warden-server.selftest
 
 url="https://$(facter fqdn):45443/warden3"
-client="$(echo $(facter fqdn) | awk '{n=split($0,A,".");S=A[n];{for(i=n-1;i>0;i--)S=S"."A[i]}}END{print S}').puppet_test_client"
+client="cz.cesnet.flab.$(facter hostname).puppet_test_client"
 secret=""
 keyfile="/opt/hostcert/$(facter fqdn).key"
 certfile="/opt/hostcert/$(facter fqdn).crt"

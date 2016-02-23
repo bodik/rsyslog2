@@ -73,16 +73,10 @@ class hpdio (
 		recurse => true,
 		require => Exec["do install"],
 	}
-	file { "/etc/init.d/dio":
-		content => template("${module_name}/dio.init.erb"),
-		owner => "root", group => "root", mode => "0755",
-		require => [File["${install_dir}/var"], File["/etc/init.d/p0f"]],
-		notify => [Service["dio"], Exec["systemd_reload"]]
-	}
 	file { "${install_dir}/etc/dionaea/dionaea.conf":
 		content => template("${module_name}/dionaea.conf.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["/etc/init.d/dio"],
+		require => Exec["do install"],
 		notify => Service["dio"],
 	}
 	exec { "install selfcert":
@@ -100,6 +94,13 @@ class hpdio (
 		target => "${install_dir}/etc/dionaea/${fqdn}.crt",
 		require => Exec["install selfcert"],
 	}
+
+	file { "/etc/init.d/dio":
+		content => template("${module_name}/dio.init.erb"),
+		owner => "root", group => "root", mode => "0755",
+		require => [File["${install_dir}/var", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], File["/etc/init.d/p0f"]],
+		notify => [Service["dio"], Exec["systemd_reload"]]
+	}
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
@@ -107,8 +108,7 @@ class hpdio (
 	service { "dio": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/dio", "${install_dir}/etc/dionaea/dionaea.conf", "${install_dir}/etc/dionaea/server.key", "${install_dir}/etc/dionaea/server.crt"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/dio"], Exec["systemd_reload"]],
 	}
 
 
@@ -127,7 +127,7 @@ class hpdio (
 		owner => "${dio_user}", group => "${dio_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"	
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${dio_user}", group => "${dio_user}", mode => "0640",
@@ -158,11 +158,11 @@ class hpdio (
 		require => User["$dio_user"],
 	}
 
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register dio sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n dionaea -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.dionaea -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => Exec["do install"],
 	}

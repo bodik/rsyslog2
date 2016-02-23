@@ -26,7 +26,7 @@ def gen_event_idea_telnetd(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "Format": "IDEA0",
                 "ID": str(uuid4()),
                 "DetectTime": detect_time,
-                "Category": [category],
+                "Category": [category, "Test"],
                 "Note": "telnetd event",
                 "ConnCount": 1,
                 "Source": [{ "Proto": [proto], "Port": [src_port] }], 
@@ -34,7 +34,7 @@ def gen_event_idea_telnetd(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "Node": [
                         { 
                                 "Name": aclient_name,
-                                "Tags": ["Honeypot", "Connection"],
+                                "Type": ["Honeypot", "Connection"],
                                 "SW": ["telnetd"],
                         }
                 ],      

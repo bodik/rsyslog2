@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+### BEGIN INIT INFO
+# Provides:          warden_filer
+# Required-Start:    $local_fs $syslog
+# Required-Stop:     $local_fs $syslog
+# Should-Start:      $network $named
+# Should-Stop:       $network $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Warden Filer
+### END INIT INFO
+
+DAEMON_NAME="warden_filer"
+DAEMON_BASE="<%= @install_dir %>"
+DAEMON_PATH="${DAEMON_BASE}/${DAEMON_NAME}.py"
+SERVICE_NAME="${DAEMON_NAME}_<%= @name %>"
+PIDDIR="${DAEMON_BASE}/var"
+
+. /lib/lsb/init-functions
+
+ACTION="$1"
+
+case "$ACTION" in
+        start)
+                mkdir -p "${PID%/*}"
+                log_daemon_msg "Starting $SERVICE_NAME" "$SERVICE_NAME"
+                start_daemon -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_receiver.cfg" --pid_file "$PIDDIR/receiver.pid" --daemon "receiver"
+                start_daemon -p "$PIDDIR/sender.pid" "$DAEMON_PATH" -c "${DAEMON_BASE}/warden_towarden_sender.cfg" --pid_file "$PIDDIR/sender.pid" --daemon "sender"
+                log_end_msg $?
+                ;;
+        stop)
+                log_daemon_msg "Stopping $SERVICE_NAME" "$SERVICE_NAME"
+                killproc -p "$PIDDIR/receiver.pid" "$DAEMON_PATH"
+                killproc -p "$PIDDIR/sender.pid" "$DAEMON_PATH"
+                log_end_msg $?
+                ;;
+        restart|force-reload)
+                $0 stop && sleep 2 && exec $0 start
+                ;;
+        status)
+                status_of_proc -p "$PIDDIR/receiver.pid" "$DAEMON_PATH" "$SERVICE_NAME"
+                status_of_proc -p "$PIDDIR/sender.pid" "$DAEMON_PATH" "$SERVICE_NAME"
+                ;;
+        *)
+                echo "Usage: $0 {start|stop|restart|status}"
+                exit 2
+                ;;
+esac
+

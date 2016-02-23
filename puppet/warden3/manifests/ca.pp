@@ -20,53 +20,67 @@
 # [*autosign*]
 #   handle signing requests automatically (testing)
 #
+# [*ca_user*]
+#   user to run the service
+#
 class warden3::ca (
+	$install_dir = "/opt/warden_ca",
+	$ca_user = "wardenca",
+
 	$ca_name = "warden3ca",
 	$autosign = true,
 ) {
-	file { "/opt/warden_ca":
+	user { "$ca_user": 	
+		ensure => present, 
+		managehome => false,
+		shell => "/bin/bash",
+		home => "${install_dir}",
+		groups => "www-data",
+	}
+
+	file { "${install_dir}":
 		ensure => directory,
-		owner => "root", group => "root", mode => "0700",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
 	}
-	file { "/opt/warden_ca/puppet.conf":
+	file { "${install_dir}/puppet.conf":
 		content => template("${module_name}/ca-puppet.conf.erb"),
-		owner => "root", group => "root", mode => "0600",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0600",
+		require => File["${install_dir}"],
 	}
-	file { "/opt/warden_ca/warden_ca.sh":
-		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca.sh",
-		owner => "root", group => "root", mode => "0700",
+	file { "${install_dir}/warden_ca.sh":
+		content => template("${module_name}/warden_ca.sh.erb"),
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
+		require => File["${install_dir}"],
 	}
 	exec { "warden_ca.sh init":
-		command => "/bin/sh /opt/warden_ca/warden_ca.sh init",
-		creates => "/opt/warden_ca/ssl/ca/ca_crt.pem",
-		require => File["/opt/warden_ca/puppet.conf", "/opt/warden_ca/warden_ca.sh"],
+		command => "/bin/sh ${install_dir}/warden_ca.sh init",
+		user => "${ca_user}",
+		creates => "${install_dir}/ssl/ca/ca_crt.pem",
+		require => File["${install_dir}/puppet.conf", "${install_dir}/warden_ca.sh"],
 	}
-	file { "/opt/warden_ca/warden_ca_http.py":
+	file { "${install_dir}/warden_ca_http.py":
 		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.py",
-		owner => "root", group => "root", mode => "0700",
+		owner => "${ca_user}", group => "${ca_user}", mode => "0700",
+		require => File["${install_dir}"],
 	}
 	file { "/etc/init.d/warden_ca_http":
-		source => "puppet:///modules/${module_name}/opt/warden_ca/warden_ca_http.init",
-		owner => "root", group => "root", mode => "0700",
-		require => File["/opt/warden_ca/warden_ca_http.py"],
+		content => template("${module_name}/warden_ca_http.init.erb"),
+		owner => "root", group => "root", mode => "0755",
+		require => File["${install_dir}/warden_ca_http.py"],
 		notify => Exec["systemd_reload"],
 	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
+	ensure_resource( 'exec', "systemd_reload", { "command" => '/bin/systemctl daemon-reload', refreshonly => true} )
 	service { "warden_ca_http": 
 		enable => true,
 		ensure => running,
-		provider => init,
 		require => [File["/etc/init.d/warden_ca_http"], Exec["systemd_reload"]],
 	}
 	if ($autosign) {
-		file { "/opt/warden_ca/AUTOSIGN":
+		file { "${install_dir}/AUTOSIGN":
 			content => "AUTOSIGN ENABLED",
-			owner => "root", group => "root", mode => "0600",
+			owner => "${ca_user}", group => "${ca_user}", mode => "0600",
 	 	}
 	} else {
-		file { "/opt/warden_ca/AUTOSIGN":	ensure => absent }
+		file { "${install_dir}/AUTOSIGN":	ensure => absent }
 	}
 }

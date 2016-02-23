@@ -13,13 +13,9 @@
 BASE=<%= @install_dir %>
 NAME="uchoudp"
 PYTHON=`which python`
-PIDFILE="/var/run/uchoudp.pid"
+PIDFILE="${BASE}/uchotcp.pid"
 
-. /puppet/metalib/bin/lib.sh
-
-cd $BASE || exit 1
-ulimit -n 65535
-
+. /lib/lsb/init-functions
 killwaitpids() {
         PID="$@"
 	if [ -z "$PID" ]; then return; fi
@@ -31,15 +27,14 @@ killwaitpids() {
         done
 }
 
+ulimit -n 65535
 
+cd $BASE || exit 1
 case "$1" in
 
 	start)
         	echo -n "Starting $NAME: "
-		
-		$PYTHON ${BASE}/uchoudp.py 1>/uchoudp-run.log 2>&1 &
-	        echo $! > $PIDFILE
-
+		su -c "$PYTHON ${BASE}/uchoudp.py 1>>uchoudp-run.log 2>&1 & echo \$! > $PIDFILE" <%= @uchoudp_user %>
 	        echo "done"
 	;;
 	stop)
@@ -52,11 +47,7 @@ case "$1" in
 	        echo "done"
 	;;
 	status)
-		pgrep -f ${BASE}/uchoudp.py 1>/dev/null
-                if [ $? -eq 0 ]; then
-                        rreturn 0 "running"
-                fi
-		rreturn 1 "not running"
+		status_of_proc "${BASE}/uchoudp.py" "$NAME" && exit 0 || exit $?
 	;;
 	*)
 		ps faxu | grep ${BASE}/uchoudp.py

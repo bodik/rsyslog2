@@ -3,7 +3,7 @@
 class hptelnetd (
 	$install_dir = "/opt/telnetd",
 
-	$telnetd_user = "root",
+	$telnetd_user = "telnetd",
 	$telnetd_port = 63023,
 	$telnetd_logfile = "telnetd.log",
 	
@@ -30,20 +30,28 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => User["$telnetd_user"],
 	}
+	package { ["python-twisted"]:
+		ensure => installed, 
+	}                            	
 	file { "${install_dir}/commands":
 		ensure => directory,
 		source => "puppet:///modules/${module_name}/commands/",
 		purge => true, recurse => true,
                 owner => "$telnetd_user", group => "$telnetd_user", mode => "0644",
+                require => File["${install_dir}"],
 	}
+	file { "${install_dir}/warden_utils_flab.py":
+                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
+                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
+                require => File["${install_dir}"],
+        }
 	file { "${install_dir}/telnetd.py":
 		source => "puppet:///modules/${module_name}/telnetd.py",
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => File["${install_dir}", "${install_dir}/commands"],
+		require => File["${install_dir}", "${install_dir}/commands", "${install_dir}/warden_utils_flab.py"],
 	}
-	package { ["python-twisted"]:
-		ensure => installed, 
-	}
+
+
 
     	file { "${install_dir}/telnetd.cfg":
                 content => template("${module_name}/telnetd.cfg.erb"),
@@ -56,14 +64,14 @@ class hptelnetd (
 	}
 	file { "/etc/init.d/telnetd":
 		content => template("${module_name}/telnetd.init.erb"),
-		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-		require => [File["${install_dir}/telnetd.py", "${install_dir}/telnetd.cfg"], Exec["systemd_reload"]],
+		owner => "root", group => "root", mode => "0755",
+		require => [File["${install_dir}/telnetd.py", "${install_dir}/telnetd.cfg"]],
+		notify => Exec["systemd_reload"],
 	}
 	service { "telnetd": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/telnetd", "${install_dir}/telnetd.py"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/telnetd"], Exec["systemd_reload"]],
 	}
 
 
@@ -77,7 +85,7 @@ class hptelnetd (
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "$telnetd_user", group => "$telnetd_user", mode => "0640",
@@ -85,11 +93,6 @@ class hptelnetd (
 	}
 
 	# reporting
-
-	file { "${install_dir}/warden_utils_flab.py":
-                source => "puppet:///modules/${module_name}/sender/warden_utils_flab.py",
-                owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
-        }
 	file { "${install_dir}/warden_sender_telnetd.py":
                 source => "puppet:///modules/${module_name}/sender/warden_sender_telnetd.py",
                 owner => "${telnetd_user}", group => "${telnetd_user}", mode => "0755",
@@ -99,7 +102,7 @@ class hptelnetd (
    	file { "${install_dir}/warden_client_telnetd.cfg":
                 content => template("${module_name}/warden_client_telnetd.cfg.erb"),
                 owner => "$telnetd_user", group => "$telnetd_user", mode => "0755",
-                require => File["${install_dir}/telnetd.py","${install_dir}/warden_utils_flab.py","${install_dir}/warden_sender_telnetd.py"],
+                require => File["${install_dir}/telnetd.py", "${install_dir}/warden_sender_telnetd.py"],
         }
     	file { "/etc/cron.d/warden_telnetd":
                 content => template("${module_name}/warden_telnetd.cron.erb"),
@@ -107,12 +110,12 @@ class hptelnetd (
                 require => User["$telnetd_user"],
         }
 
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 
 	exec { "register telnetd sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n telnetd -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.telnetd -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

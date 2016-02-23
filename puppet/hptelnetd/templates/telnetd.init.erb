@@ -13,12 +13,9 @@
 BASE=<%= @install_dir %>
 NAME="telnetd"
 PYTHON=`which python`
-PIDFILE="/var/run/telnetd.pid"
+PIDFILE="${BASE}/telnetd.pid"
 
-. /puppet/metalib/bin/lib.sh
-
-cd $BASE || exit 1
-
+. /lib/lsb/init-functions
 killwaitpids() {
         PID="$@"
 	if [ -z "$PID" ]; then return; fi
@@ -31,15 +28,13 @@ killwaitpids() {
 }
 
 
+cd $BASE || exit 1
 case "$1" in
 
 	start)
         	echo -n "Starting $NAME: "
-		
-		su -c "$PYTHON ${BASE}/telnetd.py 1>telnetd-run.log 2>&1 &" <%= @telnetd_user %>
-	        echo $! > $PIDFILE
+		su -c "$PYTHON ${BASE}/telnetd.py 1>>telnetd-run.log 2>&1 & echo \$! > $PIDFILE" <%= @telnetd_user %>
 		iptables -t nat -I PREROUTING 1 -p tcp --dport 23 -j REDIRECT --to-port <%= @telnetd_port %>
-
 	        echo "done"
 	;;
 	stop)
@@ -53,11 +48,7 @@ case "$1" in
 	        echo "done"
 	;;
 	status)
-		pgrep -f ${BASE}/telnetd.py 1>/dev/null
-                if [ $? -eq 0 ]; then
-                        rreturn 0 "running"
-                fi
-		rreturn 1 "not running"
+		status_of_proc "${BASE}/telnetd.py" "$NAME" && exit 0 || exit $?
 	;;
 	*)
 		ps faxu | grep ${BASE}/telnetd.py

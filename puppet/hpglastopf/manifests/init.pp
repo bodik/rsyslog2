@@ -78,42 +78,37 @@ class hpglastopf (
 		group => "${glastopf_user}", owner => "${glastopf_user}", mode => "0644",
 		require => User["glastopf"],
 	}
-	file { "${install_dir}/glastopf.init":
-		content => template("${module_name}/glastopf.init"),
-		group => "root", owner => "root", mode => "0755",
-		require => File["/opt/glastopf"],
-	}
-	file { "/etc/init.d/glastopf":
-		ensure => link,
-		target => "${install_dir}/glastopf.init",
-		require => [File["${install_dir}/glastopf.init"], Exec["systemd_reload"]],
-	}
-	exec { "systemd_reload":
-		command     => '/bin/systemctl daemon-reload',
-		refreshonly => true,
-	}
 	file { "${install_dir}/glastopf.cfg":
 		content => template("${module_name}/glastopf.cfg"),
 		group => "root", owner => "root", mode => "0644",
 		require => File["${install_dir}"],
 	}
-
 	package { "libcap2-bin": ensure => installed }
 	exec { "python cap_net":
 		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
 		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
-		require => Package["python"],
+		require => [Package["python"], Package["libcap2-bin"]]
 	}
 
+	file { "/etc/init.d/glastopf":
+		content => template("${module_name}/glastopf.init.erb"),
+		group => "root", owner => "root", mode => "0755",
+		require => [File["${install_dir}/glastopf.cfg"], Exec["pip install glastopf"], Exec["python cap_net"]],
+		notify => [Service["glastopf"], Exec["systemd_reload"]],
+	}
+	exec { "systemd_reload":
+		command     => '/bin/systemctl daemon-reload',
+		refreshonly => true,
+	}
 	service { "apache2":
 		ensure => stopped,
+		enable => false,
 		require => Exec["pip install glastopf"],
 	}
 	service { "glastopf":
 		ensure => running,
 		enable => true,
-		provider => init,
-		require => [File["${install_dir}/glastopf.cfg"], File["/etc/init.d/glastopf"], Exec["pip install glastopf"], Service["apache2"], Exec["python cap_net"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/glastopf"], Exec["systemd_reload"], Service["apache2"]],
 	}
 
 
@@ -127,7 +122,7 @@ class hpglastopf (
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0755",
 		require => File["${install_dir}/warden"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "${glastopf_user}", group => "${glastopf_user}", mode => "0640",
@@ -158,11 +153,11 @@ class hpglastopf (
 	}
 
 	
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register glastopf sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n glastopf -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.glastopf -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["$install_dir"],
 	}

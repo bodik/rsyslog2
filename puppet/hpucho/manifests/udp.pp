@@ -3,7 +3,7 @@
 class hpucho::udp (
 	$install_dir = "/opt/uchoudp",
 
-	$uchoudp_user = "root",
+	$uchoudp_user = "uchoudp",
 	
 	$port_start = 1,
 	$port_end = 32768,
@@ -31,11 +31,11 @@ class hpucho::udp (
 
 	file { "${install_dir}":
 		ensure => directory,
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
 	}
 	file { "${install_dir}/uchoudp.py":
 		source => "puppet:///modules/${module_name}/uchoudp/uchoudp.py",
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
 		require => File["${install_dir}"],
 		notify => Service["uchoudp"],
 	}
@@ -44,16 +44,29 @@ class hpucho::udp (
                 owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
                 require => File["${install_dir}/uchoudp.py"],
         }
-	package { ["python-twisted", "python-scapy"]: 
+	package { ["python", "python-twisted", "python-scapy"]: 
 		ensure => installed, 
+	}
+	package { "libcap2-bin": ensure => installed }
+	exec { "python cap_net":
+		command => "/sbin/setcap 'cap_net_bind_service=+ep' /usr/bin/python2.7",
+		unless => "/sbin/getcap /usr/bin/python2.7 | grep cap_net_bind_service",
+		require => [Package["python"], Package["libcap2-bin"]]
 	}
 
 	file { "/etc/init.d/uchoudp":
 		content => template("${module_name}/uchoudp.init.erb"),
 		owner => "root", group => "root", mode => "0755",
-		require => File["${install_dir}/uchoudp.py", "${install_dir}/uchoudp.cfg"],
+		require => [File["${install_dir}/uchoudp.py", "${install_dir}/uchoudp.cfg"] , Exec["python cap_net"]],
 		notify => [Service["uchoudp"], Exec["systemd_reload"]]
 	}
+	file { "/lib/systemd/system/uchoudp.service":
+		content => template("${module_name}/uchoudp.service.erb"),
+		owner => "root", group => "root", mode => "0644",
+		require => File["/etc/init.d/uchoudp"],
+		notify => [Service["uchoudp"], Exec["systemd_reload"]]
+	}
+
 	exec { "systemd_reload":
 		command     => '/bin/systemctl daemon-reload',
 		refreshonly => true,
@@ -61,8 +74,7 @@ class hpucho::udp (
 	service { "uchoudp": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/uchoudp", "${install_dir}/uchoudp.py"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/uchoudp", "/lib/systemd/system/uchoudp.service"], Exec["systemd_reload"]],
 	}
 
 
@@ -73,13 +85,13 @@ class hpucho::udp (
 	# warden_client
 	file { "${install_dir}/warden_client.py":
 		source => "puppet:///modules/${module_name}/sender/warden_client.py",
-		owner => "root", group => "root", mode => "0755",
+		owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
-		owner => "root", group => "root", mode => "0640",
+		owner => "$uchoudp_user", group => "$uchoudp_user", mode => "0640",
 		require => File["${install_dir}"],
 	}
 
@@ -112,11 +124,11 @@ class hpucho::udp (
         #        require => User["$uchoudp_user"],
         }
 
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register uchoudp sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n uchoudp -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.uchoudp -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

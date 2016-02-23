@@ -91,11 +91,8 @@ def register_sensor(self):
 			return 400
 	
 		hostname = _resolve_client_address(self.client_address[0])
-		hostname_rev = hostname.split(".")
-		hostname_rev.reverse()
-		hostname_rev = ".".join(hostname_rev)
 
-		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (".".join([hostname_rev,qs['sensor_name'][0]]), hostname)
+		cmd = "/usr/bin/python /opt/warden_server/warden_server.py register -n %s -h %s -r bodik@cesnet.cz --read --write --notest" % (qs['sensor_name'][0], hostname)
 		print "DEBUG:",cmd
 		data = subprocess.check_output(cmd.split(" "))
 

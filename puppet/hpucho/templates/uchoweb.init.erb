@@ -13,15 +13,12 @@
 BASE=<%= @install_dir %>
 NAME="uchoweb"
 PYTHON=`which python`
-PIDFILE="/var/run/uchoweb.pid"
+PIDFILE="${BASE}/uchoweb.pid"
 
-. /puppet/metalib/bin/lib.sh
-
-cd $BASE || exit 1
-
+. /lib/lsb/init-functions
 killwaitpids() {
         PID="$@"
-	if [ -z "$PID" ]; then return; fi
+        if [ -z "$PID" ]; then return; fi
         kill -TERM $PID
         for i in `seq 1 30`; do
                 ps -p $PID >/dev/null || break
@@ -30,15 +27,12 @@ killwaitpids() {
         done
 }
 
-
+cd $BASE || exit 1
 case "$1" in
 
 	start)
         	echo -n "Starting $NAME: "
-		
-		$PYTHON ${BASE}/uchoweb.py 1>uchoweb-run.log 2>&1 &
-	        echo $! > $PIDFILE
-
+		su -c "$PYTHON ${BASE}/uchoweb.py 1>>uchoweb-run.log 2>&1 & echo \$! > $PIDFILE" <%= @uchoweb_user %>
 	        echo "done"
 	;;
 	stop)
@@ -51,11 +45,7 @@ case "$1" in
 	        echo "done"
 	;;
 	status)
-		pgrep -f ${BASE}/uchoweb.py 1>/dev/null
-                if [ $? -eq 0 ]; then
-                        rreturn 0 "running"
-                fi
-		rreturn 1 "not running"
+		status_of_proc "${BASE}/uchoweb.py" "$NAME" && exit 0 || exit $?
 	;;
 	*)
 		ps faxu | grep ${BASE}/uchoweb.py

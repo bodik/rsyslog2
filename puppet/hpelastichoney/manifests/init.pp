@@ -58,8 +58,7 @@ class hpelastichoney (
 	service { "elastichoney": 
 		enable => true,
 		ensure => running,
-		provider => init,
-		require => [File["/etc/init.d/elastichoney", "${install_dir}/elastichoney"], Exec["systemd_reload"]],
+		require => [File["/etc/init.d/elastichoney"], Exec["systemd_reload"]],
 	}
 
 
@@ -73,7 +72,7 @@ class hpelastichoney (
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0755",
 		require => File["${install_dir}"],
 	}
-	$fqdn_rev = myexec("echo ${fqdn} | awk '{n=split(\$0,A,\".\");S=A[n];{for(i=n-1;i>0;i--)S=S\".\"A[i]}}END{print S}'")
+	$w3c_name = "cz.cesnet.flab.${hostname}"
 	file { "${install_dir}/warden_client.cfg":
 		content => template("${module_name}/warden_client.cfg.erb"),
 		owner => "$elastichoney_user", group => "$elastichoney_user", mode => "0640",
@@ -109,11 +108,11 @@ class hpelastichoney (
 		owner => "root", group => "root", mode => "0644",
 		require => User["$elastichoney_user"],
 	}
-	class { "warden3::hostcert": 
+	warden3::hostcert { "hostcert":
 		warden_server => $warden_server_real,
 	}
 	exec { "register elastichoney sensor":
-		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n elastichoney -d ${install_dir}",
+		command	=> "/bin/sh /puppet/warden3/bin/register_sensor.sh -s ${warden_server_real} -n ${w3c_name}.elastichoney -d ${install_dir}",
 		creates => "${install_dir}/registered-at-warden-server",
 		require => File["${install_dir}"],
 	}

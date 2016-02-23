@@ -1,0 +1,28 @@
+{
+	"warden": {
+    		"url": "https://<%= @receiver_warden_server_real %>:<%= @receiver_warden_server_port %>/warden3",
+		"certfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.crt",
+		"keyfile": "<%= @receiver_cert_path %>/<%= @fqdn %>.key",
+		"cafile": "<%= @receiver_cert_path %>/cachain.pem",
+		"timeout": 60,
+		"get_events_limit": 1000,
+    		"errlog": {"level": "debug"},
+    		"syslog": {"socket": "/dev/log", "facility": "local7", "level": "warning"},
+		"name": "<%= @w3c_name %>.towarden",
+		//"secret": "",
+		"idstore": "warden_client_receiver.id"
+	},
+	"receiver": {
+		// Maildir like directory, whose "incoming" will serve as target for events
+		"dir": "<%= @install_dir %>/var",
+		// Optional filter fields for Warden query
+		"filter": {
+			"cat": null,
+			"nocat": <%= @receiver_nocat %>,
+			"group": <%= @receiver_group %>,
+			"nogroup": null,
+			"tag": null,
+			"notag": null
+		}
+	}
+}

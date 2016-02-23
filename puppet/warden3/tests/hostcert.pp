@@ -1,1 +1,1 @@
-include warden3::hostcert
+warden3::hostcert { "hostcert" : }

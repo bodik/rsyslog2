@@ -9,7 +9,10 @@ import json
 import string
 import os
 import sys
+import re
 import warden_utils_flab as w3u
+
+import sys, traceback
 
 aconfig = read_cfg('warden_client_uchoweb.cfg')
 wconfig = read_cfg('warden_client.cfg')
@@ -20,13 +23,26 @@ aanonymised_net  = aconfig['target_net']
 aanonymised = aanonymised if (aanonymised_net != '0.0.0.0/0') or (aanonymised_net == 'omit') else '0.0.0.0/0'
 wclient = Client(**wconfig)
 
+def postprocess(event):
+	try:
+		if ("Attach" in event) and ("request" in event["Attach"][0]) and ("requestline" in event["Attach"][0]["request"]):
+			if re.match("GET.*zc.qq.com/cgi-bin/common", event["Attach"][0]["request"]["requestline"]):
+				event["Attach"][0]["smart"] = "proxy probe GET zc.qq.com"
+	except Exception as e:
+		print "Exception in user code:"
+	        print '-'*60
+	        traceback.print_exc(file=sys.stdout)
+	        print '-'*60
+		
+	return event
+
 def gen_event_idea_uchoweb(detect_time, src_ip, src_port, dst_ip, dst_port, proto, data):
 
         event = {
                 "Format": "IDEA0",
                 "ID": str(uuid4()),
                 "DetectTime": detect_time,
-                "Category": ["Other"],
+                "Category": ["Recon", "Test"],
                 "Note": "Uchoweb event",
                 "ConnCount": 1,
                 "Source": [{ "Proto": proto, "Port": [src_port] }],
@@ -34,12 +50,14 @@ def gen_event_idea_uchoweb(detect_time, src_ip, src_port, dst_ip, dst_port, prot
                 "Node": [
                         {
                                 "Name": aclient_name,
-                                "Tags": ["Honeypot"],
+                                "Type": ["Honeypot"],
                                 "SW": ["Uchoweb"],
                         }
                 ],
                 "Attach": [{ "request": data, "smart": data["requestline"] }]
         }
+	
+	event = postprocess(event)
 
         event = w3u.IDEA_fill_addresses(event, src_ip, dst_ip, aanonymised, aanonymised_net)
 

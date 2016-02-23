@@ -1,0 +1,60 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:		glastopf
+# Required-Start:	$syslog $remote_fs
+# Required-Stop:	$syslog $remote_fs
+# Should-Start:	
+# Should-Stop:
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description:	glastopf
+# Description:		glastopf
+### END INIT INFO
+
+BASE=<%= @install_dir %>
+NAME="glastopf"
+PYTHON=`which python`
+PIDFILE="${BASE}/glastopf.pid"
+
+. /lib/lsb/init-functions
+killwaitpids() {
+        PID="$@"
+        if [ -z "$PID" ]; then return; fi
+        kill -TERM $PID
+        for i in `seq 1 30`; do
+                ps -p $PID >/dev/null || break
+                echo -n "."
+                sleep 1
+        done
+}
+
+
+cd $BASE || exit 1
+case "$1" in
+
+	start)
+        	echo -n "Starting $NAME: "
+		su -c "$PYTHON /usr/local/bin/glastopf-runner 1>>glastopf-run.log 2>&1 & echo \$! > $PIDFILE" <%= @glastopf_user %>
+	        echo "done"
+	;;
+	stop)
+        	echo -n "Stopping $NAME: "
+                if [ -f $PIDFILE ]; then
+                        killwaitpids $(cat $PIDFILE)
+                        rm $PIDFILE
+                fi
+                killwaitpids $(pgrep -f glastopf-runner)
+                echo "done"
+	;;
+	status)
+		status_of_proc "glastopf-runner" "$NAME" && exit 0 || exit $?
+	;;
+	log)
+		tail -f glastopf.log
+	;;
+	*)
+		ps faxu | grep glastopf-runner
+		exit 1
+	;;
+esac
+

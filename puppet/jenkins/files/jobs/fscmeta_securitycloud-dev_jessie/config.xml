@@ -13,7 +13,7 @@
   <concurrentBuild>true</concurrentBuild>
   <builders>
     <hudson.tasks.Shell>
-      <command>export VMNAME=&quot;SCDEV&quot;
+      <command>export VMNAME=&quot;SCDEV-jessie&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
 /puppet/jenkins/bin/metacloud.init start rsyslog2-jessie-metacloud
