@@ -144,11 +144,27 @@ def receiver(config, wclient, sdir, oneshot):
     node = config.get("node", None)
     conf_filt = config.get("filter", {})
     filt = {}
+    waiting_flag = True
     # Extract filter explicitly to be sure we have right param names for getEvents
     for s in ("cat", "nocat", "tag", "notag", "group", "nogroup"):
         filt[s] = conf_filt.get(s, None)
 
     while running_flag:
+	waiting_flag = True
+	while waiting_flag:
+		try:
+			tmp = len(os.listdir(sdir.incoming))
+			if tmp > (10 * wclient.get_events_limit):
+	        	    	wclient.logger.warning("queue too long (%d), waiting" % tmp)
+				time.sleep(10)
+			else:
+		            	wclient.logger.warning("queue ok (%d)" % tmp)
+		 		waiting_flag = False
+		except Exception as e:
+			wclient.logger.warning(e)
+			time.sleep(10)
+		 	waiting_flag = True
+		
         events = wclient.getEvents(**filt)
         count_ok = count_err = 0
         while events:
