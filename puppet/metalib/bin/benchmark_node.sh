@@ -2,7 +2,7 @@
 #time bash metalib/bin/benchmark_node.sh 1>/tmp/benchmark.log 2>&1
 
 #very derty prep
-puppet apply -e 'package { "sysbench": ensure => installed, }'
+puppet apply -e 'package { ["sysbench", "lshw"]: ensure => installed, }'
 
 echo "== h2. DESCRIPTION BEGIN"
 ruby /puppet/metalib/bin/describe_node.rb
