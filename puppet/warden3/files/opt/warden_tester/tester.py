@@ -14,6 +14,7 @@ from pprint import pprint
 from os import path
 from random import randint, randrange, choice, random;
 from base64 import b64encode;
+import argparse
 
 def gen_min_idea():
 
@@ -126,6 +127,14 @@ def gen_random_idea(client_name="cz.example.warden.test"):
     return event
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--count')
+    args = parser.parse_args()
+    count = 100
+    if args.count:
+	count = int(args.count)
+
     wclient = Client(**read_cfg("warden_client_tester.cfg"))
     # Also inline arguments are possible:
     # wclient = Client(
@@ -155,9 +164,9 @@ def main():
     print "=== Server info ==="
     info = wclient.getInfo()
 
-    print "=== Sending 100 event(s) ==="
+    print "=== Sending %d event(s) ===" % count
     start = time()
-    ret = wclient.sendEvents([gen_random_idea(client_name=wclient.name) for i in range(100)])
+    ret = wclient.sendEvents([gen_random_idea(client_name=wclient.name) for i in range(count)])
     print ret
     print "Time: %f" % (time()-start)
 

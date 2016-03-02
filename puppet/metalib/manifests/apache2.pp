@@ -23,6 +23,14 @@ class metalib::apache2() {
 	                notify => Service["apache2"],
 	        }
 	}
+	define a2dismod() {
+		exec { "a2dismod $name":
+	                command => "/usr/sbin/a2dismod $name",
+	                onlyif => "/usr/sbin/a2query -m $name",
+			require => Package["apache2"],
+	                notify => Service["apache2"],
+	        }
+	}
 
 	ensure_resource( 'metalib::apache2::a2enmod', "ssl", {} )
 	ensure_resource( 'metalib::apache2::a2enmod', "rewrite", {} )
