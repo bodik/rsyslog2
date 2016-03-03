@@ -27,6 +27,7 @@ sys.path.append(path.join(path.dirname(__file__), "..", "lib"))
 
 from jsonschema import Draft4Validator
 
+#import cProfile, pstats, cStringIO
 
 VERSION = "3.0-beta2"
 
@@ -1022,6 +1023,18 @@ class WardenHandler(ObjectReq):
                 id = event.get("ID", None)
                 ev_ids.append(id)
         return errlist
+
+
+#    @expose(write=1)
+#    def profile_sendEvents(self, events=[]):
+#        pr = cProfile.Profile()
+#        pr.runcall(self.sendEvents1, events)
+#	stream = cStringIO.StringIO()
+#	ps = pstats.Stats(pr, stream=stream)
+#	ps.sort_stats('cumulative').print_stats(25)
+#	f = open("/tmp/cp.log", "w")
+#	f.write(stream.getvalue())
+#	f.close()
 
 
     @expose(write=1)
