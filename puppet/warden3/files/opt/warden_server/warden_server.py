@@ -322,7 +322,8 @@ class X509Authenticator(NoAuthenticator):
         try:
             cert_names = self.get_cert_dns_names(env["SSL_CLIENT_CERT"])
         except:
-            logging.info("authenticate: cannot get or parse certificate from env")
+            exception = self.req.error(message="authenticate: cannot get or parse certificate from env", error=403, exc=sys.exc_info(), env=env)
+            exception.log(logging.getLogger())
             return None
 
         name = args.get("client", [None])[0]
@@ -712,7 +713,7 @@ class MySQL(ObjectReq):
 
 
     def getLastReceivedId(self, client):
-        row = self.query("SELECT MAX(event_id) as id FROM last_events WHERE client_id = %s", client.id)[0]
+        row = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", client.id)[0]
 
         id = row['id'] if row is not None else 0
         logging.debug("getLastReceivedId: id %i for client %i(%s)" % (id, client.id, client.hostname))
@@ -964,19 +965,25 @@ class WardenHandler(ObjectReq):
             id = None
 
         if id is None:
+            # If client was already here, fetch server notion of his last id
             try:
                 id = self.db.getLastReceivedId(self.req.client)
             except Exception, e:
                 logging.info("cannot getLastReceivedId - " + type(e).__name__ + ": " + str(e))
                 
         if id is None:
-            # First access, remember the guy and get him last event
+            # First access, remember the guy and get him last id
             id = self.db.getLastEventId()
             self.db.insertLastReceivedId(self.req.client, id)
             return {
                 "lastid": id,
                 "events": []
             }
+
+        if id<=0:
+            # Client wants to get only last N events and reset server notion of last id
+            id += self.db.getLastEventId()
+            if id<0: id=0
 
         try:
             count = int(count[0])
