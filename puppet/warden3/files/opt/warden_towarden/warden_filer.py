@@ -137,19 +137,7 @@ class SafeDir(object):
     def get_incoming(self):
         return [NamedFile(self.incoming, n) for n in os.listdir(self.incoming)]
 
-
-
-def receiver(config, wclient, sdir, oneshot):
-    poll_time = config.get("poll_time", 5)
-    node = config.get("node", None)
-    conf_filt = config.get("filter", {})
-    filt = {}
-    waiting_flag = True
-    # Extract filter explicitly to be sure we have right param names for getEvents
-    for s in ("cat", "nocat", "tag", "notag", "group", "nogroup"):
-        filt[s] = conf_filt.get(s, None)
-
-    while running_flag:
+def guard_overfill(wclient, sdir):
 	waiting_flag = True
 	while waiting_flag:
 		try:
@@ -164,7 +152,20 @@ def receiver(config, wclient, sdir, oneshot):
 			wclient.logger.warning(e)
 			time.sleep(10)
 		 	waiting_flag = True
-		
+
+
+def receiver(config, wclient, sdir, oneshot):
+    poll_time = config.get("poll_time", 5)
+    node = config.get("node", None)
+    conf_filt = config.get("filter", {})
+    filt = {}
+    waiting_flag = True
+    # Extract filter explicitly to be sure we have right param names for getEvents
+    for s in ("cat", "nocat", "tag", "notag", "group", "nogroup"):
+        filt[s] = conf_filt.get(s, None)
+
+    while running_flag:
+	guard_overfill(wclient, sdir)
         events = wclient.getEvents(**filt)
         count_ok = count_err = 0
         while events:
@@ -187,6 +188,7 @@ def receiver(config, wclient, sdir, oneshot):
             wclient.logger.info(
                 "warden_filer: received %d, errors %d"
                 % (count_ok, count_err))
+	    guard_overfill(wclient, sdir)
             events = wclient.getEvents(**filt)
             count_ok = count_err = 0
         if oneshot:
