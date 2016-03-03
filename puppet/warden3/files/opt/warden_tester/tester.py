@@ -148,27 +148,17 @@ def main():
     #     idstore="MyClient.id",
     #     name="cz.example.warden.test")
 
-    #print "=== Debug ==="
     #info = wclient.getDebug()
-    #pprint(info)
+    #wclient.logger.debug(info)
 
-    # All methods return something.
-    # If you want to catch possible errors (for example implement some
-    # form of persistent retry, or save failed events for later, you may
-    # check for Error instance and act based on contained info.
-    # If you want just to be informed, this is not necessary, just
-    # configure logging correctly and check logs.
-    #if isinstance(info, Error):
-    #    print info
+    #info = wclient.getInfo()
+    #wclient.logger.info(info)
 
-    print "=== Server info ==="
-    info = wclient.getInfo()
-
-    print "=== Sending %d event(s) ===" % count
+    #wclient.logger.debug("Sending %d event(s)" % count)
     start = time()
     ret = wclient.sendEvents([gen_random_idea(client_name=wclient.name) for i in range(count)])
-    print ret
-    print "Time: %f" % (time()-start)
+    ret['time'] = (time()-start)
+    wclient.logger.info(ret)
 
 if __name__ == "__main__":
     main()
