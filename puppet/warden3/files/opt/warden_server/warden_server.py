@@ -210,7 +210,7 @@ def SysLogger(req, socket="/dev/log", facility=logging.handlers.SysLogHandler.LO
 
 Client = namedtuple("Client",
     ["id", "registered", "requestor", "hostname", "name", "note",
-    "valid", "secret", "read", "debug", "write", "test"])
+    "valid", "secret", "read", "debug", "write", "test", "validate"])
 
 
 
@@ -510,7 +510,7 @@ class MySQL(ObjectReq):
 
 
     def get_client_by_name(self, cert_names, name=None, secret=None):
-        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test FROM clients WHERE valid = 1"]
+        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test, validate FROM clients WHERE valid = 1"]
         params = []
         if name:
             query.append(" AND name = %s")
@@ -531,7 +531,7 @@ class MySQL(ObjectReq):
 
 
     def get_clients(self, id=None):
-        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test FROM clients"]
+        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test, validate FROM clients"]
         params = []
         if id:
             query.append("WHERE id = %s")
@@ -551,7 +551,7 @@ class MySQL(ObjectReq):
         else:
             query.append("UPDATE clients SET")
         for attr in ["name", "hostname", "requestor", "secret", "note",
-                      "valid", "read", "write", "debug", "test"]:
+                      "valid", "read", "write", "debug", "test", "validate"]:
             val = kwargs.get(attr, None)
             if val is not None:
                 if attr in ["name", "hostname"]:
@@ -1051,10 +1051,11 @@ class WardenHandler(ObjectReq):
 
         saved = 0
         for i, event in enumerate(events[0:self.send_events_limit]):
-            v_errs = self.validator.check(event)
-            if v_errs:
-                errs.extend(self.add_event_nums([i], events, v_errs))
-                continue
+            if self.req.client.validate:
+                v_errs = self.validator.check(event)
+                if v_errs:
+                    errs.extend(self.add_event_nums([i], events, v_errs))
+                    continue
 
             node_errs = self.check_node(event, self.req.client.name)
             if node_errs:
@@ -1303,7 +1304,7 @@ def check_config():
 def list_clients(id=None):
     clients = server.handler.db.get_clients(id)
     order = ["id", "registered", "requestor", "hostname", "name",
-             "secret", "valid", "read", "debug", "write", "test", "note"]
+             "secret", "valid", "read", "debug", "write", "test", "validate", "note"]
     lines = [[str(getattr(client, col)) for col in order] for client in clients]
     col_width = [max(len(val) for val in col) for col in zip(*(lines+[order]))]
     divider = ["-" * l for l in col_width]
@@ -1311,19 +1312,20 @@ def list_clients(id=None):
         print " ".join([val.ljust(width) for val, width in zip(line, col_width)])
 
 
-def register_client(name, hostname, requestor, secret, note, valid, read, write, debug, test):
+def register_client(name, hostname, requestor, secret, note, valid, read, write, debug, test, validate):
     # argparse does _always_ return something, so we cannot rely on missing arguments
     if valid is None: valid = 1
     if read is None: read = 1
     if write is None: write = 0
     if debug is None: debug = 0
     if test is None: test = 1
+    if validate is None: validate = 1
     modify_client(id=None,
             name=name, hostname=hostname, requestor=requestor, secret=secret,
-            note=note, valid=valid, read=read, write=write, debug=debug, test=test)
+            note=note, valid=valid, read=read, write=write, debug=debug, test=test, validate=validate)
 
 
-def modify_client(id, name, hostname, requestor, secret, note, valid, read, write, debug, test):
+def modify_client(id, name, hostname, requestor, secret, note, valid, read, write, debug, test, validate):
 
     def isValidHostname(hostname):
         if len(hostname) > 255:
@@ -1338,7 +1340,7 @@ def modify_client(id, name, hostname, requestor, secret, note, valid, read, writ
             for label in hostname.split("."))
 
     def isValidNSID(nsid):
-        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$")
+        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_-]*\\.)*[a-zA-Z_][a-zA-Z0-9_-]*$")
         return allowed.match(nsid)
 
     def isValidEmail(mail):
@@ -1377,7 +1379,7 @@ def modify_client(id, name, hostname, requestor, secret, note, valid, read, writ
     newid = server.handler.db.add_modify_client(
         id=id, name=name, hostname=hostname,
         requestor=requestor, secret=secret, note=note, valid=valid,
-        read=read, write=write, debug=debug, test=test)
+        read=read, write=write, debug=debug, test=test, validate=validate)
 
     list_clients(id=newid)
 
@@ -1437,6 +1439,11 @@ def add_client_args(subargp, mod=False):
     reg_test.add_argument("--test", action="store_const", const=1, default=None,
         help="client is yet in testing phase (default - yes)")
     reg_test.add_argument("--notest", action="store_const", const=0, dest="test", default=None)
+
+    reg_validate = subargp.add_mutually_exclusive_group(required=False)
+    reg_validate.add_argument("--validate", action="store_const", const=1, default=None,
+        help="validate client messages in sendEvents (default - yes)")
+    reg_validate.add_argument("--novalidate", action="store_const", const=0, dest="validate", default=None)
 
 
 def get_args():
