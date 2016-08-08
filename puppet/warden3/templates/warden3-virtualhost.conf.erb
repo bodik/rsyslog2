@@ -30,8 +30,6 @@ Listen *:<%= @port %>
 	SSLCertificateKeyFile   /opt/hostcert/<%= @fqdn %>.key
 	SSLCACertificateFile    /opt/hostcert/cachain.pem
 
-	WSGIProcessGroup warden3
-        WSGIDaemonProcess warden3 threads=1
 	WSGIScriptAlias /warden3 <%= @install_dir %>/warden_server.wsgi
 	<Directory <%= @install_dir %>>
 		Require all granted

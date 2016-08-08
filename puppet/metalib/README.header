@@ -12,6 +12,13 @@ A set of support classes and helpers used within rsyslog2 puppet ecosystem.
   $ avahi.findservice.sh _service1._tcp
   hostnamex.domain.tld
 
+[benchmark_node.sh]
+  Script used for measuring some performance statistic of the node. Mostly used for comparsion test and getting
+  at least some insight of various cloud performance.
+
+[describe_node.rb]
+  Helper script for getting general tested node description for benchmark_node.sh.
+
 [lib.sh]
   Set of shell subroutines used within rsyslog2 puppet ecosystem.
 

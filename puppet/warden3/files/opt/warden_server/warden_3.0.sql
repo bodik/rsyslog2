@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `clients` (
   `debug` tinyint(1) NOT NULL DEFAULT '0',
   `write` tinyint(1) NOT NULL DEFAULT '0',
   `test` int(11) NOT NULL DEFAULT '0',
+  `validate` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci AUTO_INCREMENT=1 ;
 

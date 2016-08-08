@@ -14,6 +14,7 @@ from pprint import pprint
 from os import path
 from random import randint, randrange, choice, random;
 from base64 import b64encode;
+import argparse
 
 def gen_min_idea():
 
@@ -126,6 +127,14 @@ def gen_random_idea(client_name="cz.example.warden.test"):
     return event
 
 def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--count')
+    args = parser.parse_args()
+    count = 100
+    if args.count:
+	count = int(args.count)
+
     wclient = Client(**read_cfg("warden_client_tester.cfg"))
     # Also inline arguments are possible:
     # wclient = Client(
@@ -139,27 +148,17 @@ def main():
     #     idstore="MyClient.id",
     #     name="cz.example.warden.test")
 
-    #print "=== Debug ==="
     #info = wclient.getDebug()
-    #pprint(info)
+    #wclient.logger.debug(info)
 
-    # All methods return something.
-    # If you want to catch possible errors (for example implement some
-    # form of persistent retry, or save failed events for later, you may
-    # check for Error instance and act based on contained info.
-    # If you want just to be informed, this is not necessary, just
-    # configure logging correctly and check logs.
-    #if isinstance(info, Error):
-    #    print info
+    #info = wclient.getInfo()
+    #wclient.logger.info(info)
 
-    print "=== Server info ==="
-    info = wclient.getInfo()
-
-    print "=== Sending 100 event(s) ==="
+    #wclient.logger.debug("Sending %d event(s)" % count)
     start = time()
-    ret = wclient.sendEvents([gen_random_idea(client_name=wclient.name) for i in range(100)])
-    print ret
-    print "Time: %f" % (time()-start)
+    ret = wclient.sendEvents([gen_random_idea(client_name=wclient.name) for i in range(count)])
+    ret['time'] = (time()-start)
+    wclient.logger.info(ret)
 
 if __name__ == "__main__":
     main()

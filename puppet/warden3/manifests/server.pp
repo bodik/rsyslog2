@@ -139,6 +139,9 @@ class warden3::server (
 	ensure_resource('service', 'apache2', {})
 	package { ["libapache2-mod-wsgi"]: ensure => installed, }
 
+        ensure_resource( 'metalib::apache2::a2dismod', "mpm_event", {} )
+        ensure_resource( 'metalib::apache2::a2enmod', "mpm_prefork", { "require" => Metalib::Apache2::A2dismod["mpm_event"]} )
+
 	ensure_resource('file', '/etc/apache2/mods-enabled/cgid.conf', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )
 	ensure_resource('file', '/etc/apache2/mods-enabled/cgid.load', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )
 	ensure_resource('file', '/etc/apache2/sites-enabled/000-default', {"ensure" => absent, "require" => Package["apache2"], "notify" => Service["apache2"],} )

@@ -27,6 +27,7 @@ sys.path.append(path.join(path.dirname(__file__), "..", "lib"))
 
 from jsonschema import Draft4Validator
 
+#import cProfile, pstats, cStringIO
 
 VERSION = "3.0-beta2"
 
@@ -209,7 +210,7 @@ def SysLogger(req, socket="/dev/log", facility=logging.handlers.SysLogHandler.LO
 
 Client = namedtuple("Client",
     ["id", "registered", "requestor", "hostname", "name", "note",
-    "valid", "secret", "read", "debug", "write", "test"])
+    "valid", "secret", "read", "debug", "write", "test", "validate"])
 
 
 
@@ -322,7 +323,8 @@ class X509Authenticator(NoAuthenticator):
         try:
             cert_names = self.get_cert_dns_names(env["SSL_CLIENT_CERT"])
         except:
-            logging.info("authenticate: cannot get or parse certificate from env")
+            exception = self.req.error(message="authenticate: cannot get or parse certificate from env", error=403, exc=sys.exc_info(), env=env)
+            exception.log(logging.getLogger())
             return None
 
         name = args.get("client", [None])[0]
@@ -508,7 +510,7 @@ class MySQL(ObjectReq):
 
 
     def get_client_by_name(self, cert_names, name=None, secret=None):
-        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test FROM clients WHERE valid = 1"]
+        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test, validate FROM clients WHERE valid = 1"]
         params = []
         if name:
             query.append(" AND name = %s")
@@ -529,7 +531,7 @@ class MySQL(ObjectReq):
 
 
     def get_clients(self, id=None):
-        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test FROM clients"]
+        query = ["SELECT id, registered, requestor, hostname, note, valid, name, secret, `read`, debug, `write`, test, validate FROM clients"]
         params = []
         if id:
             query.append("WHERE id = %s")
@@ -549,7 +551,7 @@ class MySQL(ObjectReq):
         else:
             query.append("UPDATE clients SET")
         for attr in ["name", "hostname", "requestor", "secret", "note",
-                      "valid", "read", "write", "debug", "test"]:
+                      "valid", "read", "write", "debug", "test", "validate"]:
             val = kwargs.get(attr, None)
             if val is not None:
                 if attr in ["name", "hostname"]:
@@ -712,7 +714,7 @@ class MySQL(ObjectReq):
 
 
     def getLastReceivedId(self, client):
-        row = self.query("SELECT MAX(event_id) as id FROM last_events WHERE client_id = %s", client.id)[0]
+        row = self.query("SELECT event_id as id FROM last_events WHERE client_id = %s ORDER BY last_events.id DESC LIMIT 1", client.id)[0]
 
         id = row['id'] if row is not None else 0
         logging.debug("getLastReceivedId: id %i for client %i(%s)" % (id, client.id, client.hostname))
@@ -964,19 +966,25 @@ class WardenHandler(ObjectReq):
             id = None
 
         if id is None:
+            # If client was already here, fetch server notion of his last id
             try:
                 id = self.db.getLastReceivedId(self.req.client)
             except Exception, e:
                 logging.info("cannot getLastReceivedId - " + type(e).__name__ + ": " + str(e))
                 
         if id is None:
-            # First access, remember the guy and get him last event
+            # First access, remember the guy and get him last id
             id = self.db.getLastEventId()
             self.db.insertLastReceivedId(self.req.client, id)
             return {
                 "lastid": id,
                 "events": []
             }
+
+        if id<=0:
+            # Client wants to get only last N events and reset server notion of last id
+            id += self.db.getLastEventId()
+            if id<0: id=0
 
         try:
             count = int(count[0])
@@ -1017,6 +1025,18 @@ class WardenHandler(ObjectReq):
         return errlist
 
 
+#    @expose(write=1)
+#    def profile_sendEvents(self, events=[]):
+#        pr = cProfile.Profile()
+#        pr.runcall(self.sendEvents1, events)
+#	stream = cStringIO.StringIO()
+#	ps = pstats.Stats(pr, stream=stream)
+#	ps.sort_stats('cumulative').print_stats(25)
+#	f = open("/tmp/cp.log", "w")
+#	f.write(stream.getvalue())
+#	f.close()
+
+
     @expose(write=1)
     def sendEvents(self, events=[]):
         if not isinstance(events, list):
@@ -1031,10 +1051,11 @@ class WardenHandler(ObjectReq):
 
         saved = 0
         for i, event in enumerate(events[0:self.send_events_limit]):
-            v_errs = self.validator.check(event)
-            if v_errs:
-                errs.extend(self.add_event_nums([i], events, v_errs))
-                continue
+            if self.req.client.validate:
+                v_errs = self.validator.check(event)
+                if v_errs:
+                    errs.extend(self.add_event_nums([i], events, v_errs))
+                    continue
 
             node_errs = self.check_node(event, self.req.client.name)
             if node_errs:
@@ -1283,7 +1304,7 @@ def check_config():
 def list_clients(id=None):
     clients = server.handler.db.get_clients(id)
     order = ["id", "registered", "requestor", "hostname", "name",
-             "secret", "valid", "read", "debug", "write", "test", "note"]
+             "secret", "valid", "read", "debug", "write", "test", "validate", "note"]
     lines = [[str(getattr(client, col)) for col in order] for client in clients]
     col_width = [max(len(val) for val in col) for col in zip(*(lines+[order]))]
     divider = ["-" * l for l in col_width]
@@ -1291,19 +1312,20 @@ def list_clients(id=None):
         print " ".join([val.ljust(width) for val, width in zip(line, col_width)])
 
 
-def register_client(name, hostname, requestor, secret, note, valid, read, write, debug, test):
+def register_client(name, hostname, requestor, secret, note, valid, read, write, debug, test, validate):
     # argparse does _always_ return something, so we cannot rely on missing arguments
     if valid is None: valid = 1
     if read is None: read = 1
     if write is None: write = 0
     if debug is None: debug = 0
     if test is None: test = 1
+    if validate is None: validate = 1
     modify_client(id=None,
             name=name, hostname=hostname, requestor=requestor, secret=secret,
-            note=note, valid=valid, read=read, write=write, debug=debug, test=test)
+            note=note, valid=valid, read=read, write=write, debug=debug, test=test, validate=validate)
 
 
-def modify_client(id, name, hostname, requestor, secret, note, valid, read, write, debug, test):
+def modify_client(id, name, hostname, requestor, secret, note, valid, read, write, debug, test, validate):
 
     def isValidHostname(hostname):
         if len(hostname) > 255:
@@ -1318,7 +1340,7 @@ def modify_client(id, name, hostname, requestor, secret, note, valid, read, writ
             for label in hostname.split("."))
 
     def isValidNSID(nsid):
-        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_]*\\.)*[a-zA-Z_][a-zA-Z0-9_]*$")
+        allowed = re.compile("^(?:[a-zA-Z_][a-zA-Z0-9_\-]*\\.)*[a-zA-Z_][a-zA-Z0-9_\-]*$")
         return allowed.match(nsid)
 
     def isValidEmail(mail):
@@ -1357,7 +1379,7 @@ def modify_client(id, name, hostname, requestor, secret, note, valid, read, writ
     newid = server.handler.db.add_modify_client(
         id=id, name=name, hostname=hostname,
         requestor=requestor, secret=secret, note=note, valid=valid,
-        read=read, write=write, debug=debug, test=test)
+        read=read, write=write, debug=debug, test=test, validate=validate)
 
     list_clients(id=newid)
 
@@ -1417,6 +1439,11 @@ def add_client_args(subargp, mod=False):
     reg_test.add_argument("--test", action="store_const", const=1, default=None,
         help="client is yet in testing phase (default - yes)")
     reg_test.add_argument("--notest", action="store_const", const=0, dest="test", default=None)
+
+    reg_validate = subargp.add_mutually_exclusive_group(required=False)
+    reg_validate.add_argument("--validate", action="store_const", const=1, default=None,
+        help="validate client messages in sendEvents (default - yes)")
+    reg_validate.add_argument("--novalidate", action="store_const", const=0, dest="validate", default=None)
 
 
 def get_args():
