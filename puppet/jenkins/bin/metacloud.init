@@ -38,6 +38,7 @@ rreturn() {
 
 vm_id() {
 	onevm list -v -f NAME=$VMNAME | tail -n1 | awk '{print $1}'
+}
 
 
 vm_destroy() {
