@@ -4,7 +4,7 @@
 
 export ONE_HOST="https://cloud.metacentrum.cz"
 #EnvVars for ONE tools
-export ONE_AUTH="/dev/shm/one_x509"
+export ONE_AUTH="/dev/shm/one_auth"
 touch $ONE_AUTH
 export ONE_XMLRPC="$ONE_HOST:6443/RPC2"
 export ONEUSERNAME=$(cat /dev/shm/username)
@@ -38,7 +38,6 @@ rreturn() {
 
 vm_id() {
 	onevm list -v -f NAME=$VMNAME | tail -n1 | awk '{print $1}'
-}
 
 
 vm_destroy() {
@@ -46,7 +45,7 @@ vm_destroy() {
 	if [ -z "$VMID" ]; then
 		rreturn 1 "metacloud id not detected"
 	fi
-	onevm delete $VMID
+	onevm shutdown --hard $VMID
 	rreturn $? "$0 destroy $@"
 }
 
@@ -141,7 +140,7 @@ vm_build() {
 
 metacloud_login() {
 	cd /dev/shm || exit 1
-	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY
+	oneuser login $ONEUSERNAME --x509 --cert $ONECRT --key $ONEKEY --force
 }
 
 metacloud_creds() {
