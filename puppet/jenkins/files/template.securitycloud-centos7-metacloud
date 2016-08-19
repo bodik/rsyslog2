@@ -1,12 +1,15 @@
-NAME = rsyslog2-wheezy-metacloud
+NAME = securitycloud-centos7-metacloud
 CONTEXT=[EMAIL="$USER[EMAIL]",PUBLIC_IP="$NIC[IP]",SSH_KEY="$USER[SSH_KEY]",TARGET="vdb",TOKEN="YES",USER_DATA="#cloud-config
 # see https://help.ubuntu.com/community/CloudInit
 
 bootcmd:
 - test -L /etc/motd && unlink /etc/motd || /bin/true
 
+manage_etc_hosts: false
+
 runcmd:
 - unlink /etc/nologin || /bin/true
+- touch /root/READY-TO-USE
 
 mounts:
 - [vdc,none,swap,sw,0,0]
@@ -56,13 +59,12 @@ power_state:
 
 ",VM_GID="$GID",VM_GNAME="$GNAME",VM_ID="$VMID",VM_UID="$UID",VM_UNAME="$UNAME"]
 CPU="4"
-DISK=[DEV_PREFIX="vd",IMAGE="METACLOUD-Debian-7.8.0-x86_64-201504051048@metacloud-dukan",IMAGE_UNAME="oneadmin"]
-DISK=[DEV_PREFIX="vd",SIZE="4096",TYPE="swap"]
-DISK=[DEV_PREFIX="vd",FORMAT="ext3",SIZE="40960",TYPE="fs"]
-LOGO="images/logos/debian.png"
+DISK=[DEV_PREFIX="vd",IMAGE="METACLOUD-CentOS-7.1.1503-x86_64-201510131631@metacloud-dukan",IMAGE_UNAME="oneadmin"]
+DISK=[DEV_PREFIX="vd",SIZE="2048",TYPE="swap"]
+DISK=[DEV_PREFIX="vd",FORMAT="ext3",SIZE="20480",TYPE="fs"]
+LOGO="images/logos/centos.png"
 MEMORY="4096"
-NIC=[NETWORK="metacloud-brno-public",NETWORK_UNAME="oneadmin"]
-SUNSTONE_CAPACITY_SELECT="YES"
-SUNSTONE_NETWORK_SELECT="YES"
+NIC=[NETWORK="metacloud-brno-public-bodik",NETWORK_UNAME="bodik"]
+SCHED_REQUIREMENTS="(HYPERVISOR=\"kvm\") & (CLUSTER=\"metacloud-dukan\")"
 VCPU="4"
 

@@ -49,6 +49,15 @@ vm_destroy() {
 	onevm shutdown --hard $VMID
 	rreturn $? "$0 destroy $@"
 }
+#in case of PENDING vm, it cannot be shutdowned even hard, so real destroy comes to play
+vm_destroy2() {
+	VMID=$(/puppet/jenkins/bin/metacloud.init id)
+	if [ -z "$VMID" ]; then
+		rreturn 1 "metacloud id not detected"
+	fi
+	onevm delete $VMID
+	rreturn $? "$0 destroy2 $@"
+}
 
 vm_ssh() {
 	VMIP=$(onevm show $(/puppet/jenkins/bin/metacloud.init id) | grep PUBLIC_IP | awk -F"\"" '{print $2}')
@@ -172,6 +181,18 @@ metacloud_templates() {
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-centos7-metacloud
 	onetemplate delete rsyslog2-centos7-small-metacloud 1>/dev/null
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-centos7-small-metacloud
+
+
+	onetemplate delete securitycloud-jessie-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-metacloud
+	onetemplate delete securitycloud-jessie-small-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-small-metacloud
+
+	onetemplate delete securitycloud-centos7-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-metacloud
+	onetemplate delete securitycloud-centos7-small-metacloud 1>/dev/null
+	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-small-metacloud
+
 }
 
 vm_list() {
@@ -242,6 +263,9 @@ case "$1" in
 	;;
 	destroy)
 		vm_destroy
+	;;
+	destroy2)
+		vm_destroy2
 	;;
 	ssh)
 		vm_ssh "$2"

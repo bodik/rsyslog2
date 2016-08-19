@@ -16,7 +16,7 @@
       <command>export VMNAME=&quot;SCS-$$&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
-/puppet/jenkins/bin/metacloud.init start rsyslog2-centos7-small-metacloud
+/puppet/jenkins/bin/metacloud.init start securitycloud-centos7-small-metacloud
 ############
 
 /puppet/jenkins/bin/metacloud.init ssh &apos;cd / &amp;&amp; git clone http://esb.metacentrum.cz/puppet-securitycloud.git &amp;&amp; cd puppet-securitycloud &amp;&amp; sh securitycloud/bin/standalone.sh&apos;
