@@ -16,7 +16,7 @@
       <command>export VMNAME=&quot;SCDEV-centos&quot;
 /puppet/jenkins/bin/metacloud.init login
 /puppet/jenkins/bin/metacloud.init build
-/puppet/jenkins/bin/metacloud.init start securitycloud-centos7-metacloud
+/puppet/jenkins/bin/metacloud.init start rsyslog2-centos7-metacloud
 /puppet/jenkins/bin/metacloud.init ssh &apos;wget http://esb.metacentrum.cz/puppet-securitycloud.git/bootstrap.install.sh &amp;&amp; sh -x bootstrap.install.sh&apos;
 ############
 

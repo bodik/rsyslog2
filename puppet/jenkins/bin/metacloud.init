@@ -183,15 +183,14 @@ metacloud_templates() {
 	onetemplate create /puppet/jenkins/files/template.rsyslog2-centos7-small-metacloud
 
 
-	onetemplate delete securitycloud-jessie-metacloud 1>/dev/null
-	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-metacloud
-	onetemplate delete securitycloud-jessie-small-metacloud 1>/dev/null
-	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-small-metacloud
-
-	onetemplate delete securitycloud-centos7-metacloud 1>/dev/null
-	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-metacloud
-	onetemplate delete securitycloud-centos7-small-metacloud 1>/dev/null
-	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-small-metacloud
+#	onetemplate delete securitycloud-jessie-metacloud 1>/dev/null
+#	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-metacloud
+#	onetemplate delete securitycloud-jessie-small-metacloud 1>/dev/null
+#	onetemplate create /puppet/jenkins/files/template.securitycloud-jessie-small-metacloud
+#	onetemplate delete securitycloud-centos7-metacloud 1>/dev/null
+#	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-metacloud
+#	onetemplate delete securitycloud-centos7-small-metacloud 1>/dev/null
+#	onetemplate create /puppet/jenkins/files/template.securitycloud-centos7-small-metacloud
 
 }
 
