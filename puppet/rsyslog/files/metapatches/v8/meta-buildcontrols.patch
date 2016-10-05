@@ -1,27 +1,22 @@
-commit 4651babc03f38e9c425f2ac031157b5690422006
-Author: root <root@minos47-2.zcu.cz>
-Date:   Thu Jul 16 03:19:50 2015 +0200
-
-    meta-buildcontrols.patch
-    changelog, control author, notest(fails), noquilt
-
 diff --git a/debian/changelog b/debian/changelog
-index 0b01623..39207a6 100644
+index d06cfbb..3a03b2f 100644
 --- a/debian/changelog
 +++ b/debian/changelog
-@@ -1,3 +1,10 @@
-+rsyslog (8.4.2+deb8u1.rb34) jessie; urgency=medium
+@@ -1,4 +1,11 @@
+-rsyslog (8.16.0-1~bpo8+1) jessie-backports; urgency=medium
++rsyslog (8.16.0~bpo8+1.rb40) jessie-backports; urgency=medium
 +
 +  * Non maintainer upload
 +  * metacentrum.cz specific changes
 +
-+ -- Radoslav Bodo <bodik@cesnet.cz>  Tue, 10 Dec 2015 13:44:55 +0200
++ -- Radoslav Bodo <bodik@cesnet.cz>  Tue, 05 Oct 2016 23:23:23 +0200
 +
- rsyslog (8.4.2-1+deb8u1) jessie; urgency=medium
++syslog (8.16.0-1~bpo8+1) jessie-backports; urgency=medium
  
-   * Disable transactions in ompgsql as they were not working properly.
+   * Rebuild for jessie-backports.
+   * Revert "Enable CZMQ plugins", we don't have libczmq in jessie.
 diff --git a/debian/control b/debian/control
-index 1eb7f6c..eee2999 100644
+index 081455f..d22a87a 100644
 --- a/debian/control
 +++ b/debian/control
 @@ -1,7 +1,7 @@
@@ -33,6 +28,18 @@ index 1eb7f6c..eee2999 100644
  Build-Depends: debhelper (>= 8),
                 dpkg-dev (>= 1.16.1),
                 dh-autoreconf,
+diff --git a/debian/rules b/debian/rules
+index b9df669..a1743dd 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -45,7 +45,6 @@ override_dh_auto_configure:
+ 		--enable-mmpstrucdata \
+ 		--enable-mmsequence \
+ 		--disable-libgcrypt \
+-		--enable-testbench \
+ 		--enable-imdiag \
+ 		--disable-generate-man-pages \
+ 		--with-systemdsystemunitdir=/lib/systemd/system
 diff --git a/debian/source/format b/debian/source/format
 index 163aaf8..89ae9db 100644
 --- a/debian/source/format
