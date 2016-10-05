@@ -26,10 +26,6 @@
 # [*output_es_cluster_name*]
 #   output elasticsearch plugin cluster name config
 #
-# [*process_stream_auth*]
-#   boolean expresion if node has to process auth log
-#   currently is auth stream processed by mongomine, thus defauls to false
-#
 # === Examples
 #
 #   class { "elk::lsl": 
@@ -45,7 +41,6 @@ class elk::lsl (
 	$rediser_service = "_rediser._tcp",
 	$output_es_cluster_name = "mry",
 	$output_es_bind_host = undef,
-	$process_stream_auth = false,
 ) {
 	notice("INFO: pa.sh -v --noop --show_diff -e \"include ${name}\"")
 
@@ -122,7 +117,7 @@ class elk::lsl (
 	} else {
 		notice("input-rediser-nz passive")
 	}
-	if ( $rediser_server_real and $process_stream_auth ) {
+	if ( $rediser_server_real ) {
 		logstash::configfile { 'input-rediser-auth':
 	        	content => template("${module_name}/etc/logstash/conf.d/input-rediser-auth.conf.erb"),
 			order => 10,
