@@ -92,7 +92,7 @@ vm_start() {
 		rreturn $RET "$0 start failed $VMNAME"
 	fi
 	sleep 10
-	for i in `seq 1 300`; do
+	for i in `seq 1 600`; do
 		#this is created by rc.local modified by cloudinit
 		/puppet/jenkins/bin/metacloud.init ssh '[ -f /root/READY-TO-USE ]'
 		if [ $? -eq 0 ]; then

@@ -18,8 +18,8 @@ else
 	CLIENT=$3
 fi
 
-DELIVERED=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -r "logger: $TESTID tmsg" {} \; | wc -l | awk '{print $1}')
-DELIVEREDUNIQ=$(find /var/log/hosts/`date +%Y/%m` -type f -path "*/$CLIENT/*" -name "syslog" -exec grep -r "logger: $TESTID tmsg" {} \; | rev | awk '{print $1}' | sort | uniq | wc -l | awk '{print $1}')
+DELIVERED=$(find /var/log/hosts/`date +%Y/%m` -type f -name "syslog*" -exec grep -r " $CLIENT .*logger: $TESTID tmsg" {} \; | wc -l | awk '{print $1}')
+DELIVEREDUNIQ=$(find /var/log/hosts/`date +%Y/%m` -type f -name "syslog*" -exec grep -r " $CLIENT .*logger: $TESTID tmsg" {} \; | rev | awk '{print $1}' | sort | uniq | wc -l | awk '{print $1}')
 if [ -z "$DELIVERED" ]; then
 	DELIVERED=0
 fi
