@@ -1,6 +1,6 @@
-commit 228533c8262125a3adac58c34bc4d9df3a2a993c
-Author: root <root@minos47-2.zcu.cz>
-Date:   Thu Jul 16 03:29:21 2015 +0200
+commit cbea5dc99ab911f9ef1cd0690dd777a095944e0a
+Author: root <root@took23.ics.muni.cz>
+Date:   Wed Oct 5 14:56:11 2016 +0200
 
     meta-detachcfg.patch
     meta example forwarding
@@ -37,10 +37,10 @@ index 0000000..07e8fa5
 +#)
 +
 diff --git a/debian/rsyslog.install b/debian/rsyslog.install
-index 03f4b6f..a04daea 100644
+index 9d09398..c3dcba7 100644
 --- a/debian/rsyslog.install
 +++ b/debian/rsyslog.install
-@@ -29,3 +29,4 @@ usr/lib/rsyslog/omprog.so
+@@ -28,3 +28,4 @@ usr/lib/rsyslog/omprog.so
  usr/lib/rsyslog/omuxsock.so
  usr/lib/rsyslog/pm*.so
  lib/systemd/system/rsyslog.service
