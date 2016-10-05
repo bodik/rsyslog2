@@ -26,5 +26,6 @@ if [ -z "$RBVERSION" ]; then
 	
 fi
 git checkout $RBVERSION
+service rsyslog stop
 git-buildpackage --git-export-dir=../build-area/ -us -uc --git-debian-branch=$RBVERSION
 
