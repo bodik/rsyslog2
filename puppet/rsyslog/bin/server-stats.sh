@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 echo "-- BEGIN server --"
 uptime
 df -h /db
@@ -40,7 +39,7 @@ printf "%20s %10s %10s\n" Cluster Total Online
 for all in `cat /tmp/rsyslog-stats.clustercount`; do
 	CLUSTER=`echo $all | awk -F',' '{print $2}'`
 	NODES=`echo $all | awk -F',' '{print $1}'`
-	ONLINE=`grep $CLUSTER /tmp/rsyslog-stats.hostsonline | awk '{print $1}'`
+	ONLINE=`grep "${CLUSTER}$" /tmp/rsyslog-stats.hostsonline | awk '{print $1}'`
 	printf "%20s %10s %10s\n" $CLUSTER $NODES $ONLINE
 done
 echo "-- END cluster stats --"
