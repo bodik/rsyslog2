@@ -50,9 +50,10 @@ echo "-- BEGIN lost contact --"
 echo "-- END lost contact --"
 
 
-echo "-- BEGIN talkers --"
-echo -n "most:  "; du -h --max-depth=1 /var/log/hosts/`date +%Y/%m` | sort -h | tail -10 | head -10
-echo -n "few:   "; du -h --max-depth=1 /var/log/hosts/`date +%Y/%m` | sort -h | head -1
-echo -n "total: "; du -sh /var/log/hosts/`date +%Y/%m`
-echo "-- END talkers --"
+echo "-- BEGIN talkers today --"
+find /var/log/hosts/$(date +%Y/%m/%d/) -type f -exec cat {} \; | awk '{print $3}' | sort | uniq -c | sort -n > /tmp/rsyslog-stats.talkers
+echo -n "most:  "; cat /tmp/rsyslog-stats.talkers | tail -5 | head -5
+echo -n "few:   "; cat /tmp/rsyslog-stats.talkers | head -1
+echo -n "total: "; du -sh /var/log/hosts/`date +%Y/%m/%d/`
+echo "-- END talkers today --"
 
