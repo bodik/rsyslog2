@@ -60,7 +60,7 @@ vm_start() {
 		rreturn $? "$0 start failed $VMNAME"
 	fi
 	#TODO: check up and running
-	rreturn 0 "$0 start failed"
+	rreturn 0 "$0 start"
 }
 
 vm_status() {
@@ -149,7 +149,7 @@ case "$1" in
 		vm_list "$2"
 	;;
 	build)
-		vm_build
+		vm_build "$2"
 	;;
 	start)
 		vm_start "$2"
