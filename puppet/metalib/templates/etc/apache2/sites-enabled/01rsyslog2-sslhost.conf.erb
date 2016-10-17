@@ -3,8 +3,8 @@
 	ServerAdmin webmaster@<%= @fqdn %>
 	DocumentRoot /opt/rsyslog2-www
 	ServerName <%= @fqdn %>
-	ErrorLog  /var/log/apache2/rsyslog2-error_log
-	CustomLog /var/log/apache2/rsyslog2-access_log common
+	ErrorLog  /var/log/apache2/rsyslog2-error.log
+	CustomLog /var/log/apache2/rsyslog2-access.log common
 
 	SSLEngine on
 	SSLCertificateKeyFile /etc/apache2/ssl/<%= @fqdn %>.key
