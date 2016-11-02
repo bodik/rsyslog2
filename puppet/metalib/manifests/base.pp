@@ -12,7 +12,7 @@ class metalib::base {
 
 	# globals
 	contain metalib::wget
-	contain metalib::sysctl-hardnet
+	contain metalib::sysctl_hardnet
 	contain metalib::fail2ban
 
 	# generic debianization from next,next,next,... install
