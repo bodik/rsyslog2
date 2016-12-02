@@ -10,9 +10,9 @@ if [ -z $1 ]; then
 fi
 TODAY=$(date +"%s")
 HORIZONT=$(( $TODAY - 3600*24*$1 ))
-ESD=$(facter ipaddress_eth1 ipaddress_eth0 | sort -r | awk '{print $3}' | tr '\n' ' ' | awk '{print $1}')
+ESD=$(netstat -nlpa | grep LISTEN | grep :39200 | head -1 | awk '{print $4}')
 
-for all in $(sh /puppet/elk/bin/listindexes.sh | grep logstash | awk '{print $3}'); do
+for all in $(sh $(dirname $0)/listindexes.sh | grep logstash | awk '{print $3}'); do
 	TMP=$(date -d $(echo $all | sed 's/logstash\-//' | sed 's/\./\-/g') +"%s")
 	if [ $TMP -lt $HORIZONT ]; then
 		#echo "$all to be deleted"

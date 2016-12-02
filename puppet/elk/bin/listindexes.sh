@@ -1,4 +1,4 @@
 #!/bin/sh
 
-ESD=$(facter ipaddress_eth1 ipaddress_eth0 | sort -r | awk '{print $3}' | tr '\n' ' ' | awk '{print $1}')
-curl -s "http://${ESD}:39200/_cat/indices" | sort --key=3
+ESD=$(netstat -nlpa | grep LISTEN | grep :39200 | head -1 | awk '{print $4}')
+curl -s "http://${ESD}/_cat/indices" | sort --key=3
