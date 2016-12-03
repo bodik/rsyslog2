@@ -1,0 +1,7 @@
+$template PerTimeSyslog,"/var/log/hosts/%$YEAR%/%$MONTH%/%$DAY%/syslog.%$YEAR%%$MONTH%%$DAY%.%$HOUR%00"
+$template PerTimeAuth,"/var/log/hosts/%$YEAR%/%$MONTH%/%$DAY%/auth.%$YEAR%%$MONTH%%$DAY%.%$HOUR%00"
+$template PerTimeKern,"/var/log/hosts/%$YEAR%/%$MONTH%/%$DAY%/kern.%$YEAR%%$MONTH%%$DAY%.%$HOUR%00"
+
+auth.*,authpriv.* -?PerTimeAuth;StoreFileFormat
+kern.* -?PerTimeKern;StoreFileFormat
+*.*;kern,auth,authpriv.none -?PerTimeSyslog;StoreFileFormat

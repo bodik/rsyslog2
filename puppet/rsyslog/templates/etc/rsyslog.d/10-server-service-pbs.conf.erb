@@ -1,0 +1,7 @@
+$template ServicePbs,"/var/log/hosts/pbs/%$YEAR%/%$MONTH%/log.%$YEAR%%$MONTH%%$DAY%"
+:programname, contains, "pbs_mom" -?ServicePbs;StoreFileFormat
+:programname, contains, "scratch_report" -?ServicePbs;StoreFileFormat
+
+$template ServiceOverquota,"/var/log/hosts/overquota/%$YEAR%/%$MONTH%/log.%$YEAR%%$MONTH%%$DAY%"
+:programname, contains, "OVER_QUOTA" -?ServiceOverquota;StoreFileFormat
+

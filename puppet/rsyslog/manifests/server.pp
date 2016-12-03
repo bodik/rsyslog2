@@ -42,6 +42,10 @@
 #
 class rsyslog::server ( 
 	$version = "meta",
+
+	$perhost = false,
+	$pertime = true,
+
 	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
@@ -50,25 +54,27 @@ class rsyslog::server (
 	class { "rsyslog::install": version => $version, }
 	service { "rsyslog": ensure => running, }
 
+        notice("server services ACTIVE")
+	rsyslog::install::config { [
+		"/etc/rsyslog.d/00-imudp.conf",
+		"/etc/rsyslog.d/00-imtcp.conf",
+		"/etc/rsyslog.d/00-imrelp.conf",
 
+		"/etc/rsyslog.d/05-server-globals.conf",
 
-	file { "/etc/rsyslog.d.cloud":
-		ensure => directory,
+		"/etc/rsyslog.d/10-server-service-auth.conf",
+		"/etc/rsyslog.d/10-server-service-pbs.conf",
+
+		"/etc/rsyslog.d/zz_stopnonlocalhost.conf"
+		]:
 	}
-	#tcp + relp + gssapi
-	file { "/etc/rsyslog.conf":
-		source => "puppet:///modules/${module_name}/etc/rsyslog-server.conf",
-		owner => "root", group=> "root", mode=>"0644",
-		require => [Class["rsyslog::install"], File["/etc/rsyslog.d.cloud"]],
-		notify => Service["rsyslog"],
-	}
 
+	if ($perhost) { rsyslog::install::config { "/etc/rsyslog.d/10-server-perhost.conf": } }
+	if ($pertime) { rsyslog::install::config { "/etc/rsyslog.d/10-server-pertime.conf": } }
 
-
-	#TODO: toto neni hezke ale vyrovnava to rozdil mezi metacloudem a magratheou ve smyslu provisioningu keytabu
 	if file_exists ("/etc/krb5.keytab") == 1 {
-		file { "/etc/rsyslog.d.cloud/00-imgssapi.conf":
-			content => template("${module_name}/etc/rsyslog.d.cloud/00-imgssapi.conf"),
+		file { "/etc/rsyslog.d/00-imgssapi.conf":
+			content => template("${module_name}/etc/rsyslog.d/00-imgssapi.conf"),
 			owner => "root", group=> "root", mode=>"0644",
 			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
 			notify => Service["rsyslog"],
@@ -87,22 +93,22 @@ class rsyslog::server (
 	}
 
 	if ( $rediser_server_real ) {
-		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf":
-			content => template("${module_name}/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf.erb"),
+		file { "/etc/rsyslog.d/20-forwarder-rediser-syslog.conf":
+			content => template("${module_name}/etc/rsyslog.d/20-forwarder-rediser-syslog.conf.erb"),
 			owner => "root", group=> "root", mode=>"0644",
-			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
+			require => Class["rsyslog::install"],
 			notify => Service["rsyslog"],
 		}
-		file { "/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf":
-			content => template("${module_name}/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf.erb"),
+		file { "/etc/rsyslog.d/21-forwarder-rediser-auth.conf":
+			content => template("${module_name}/etc/rsyslog.d/21-forwarder-rediser-auth.conf.erb"),
 			owner => "root", group=> "root", mode=>"0644",
-			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
+			require => Class["rsyslog::install"],
 			notify => Service["rsyslog"],
 		}
 	        notice("forward rediser ACTIVE")
 	} else {
-		file { "/etc/rsyslog.d.cloud/20-forwarder-rediser-syslog.conf": ensure => absent, }
-		file { "/etc/rsyslog.d.cloud/21-forwarder-rediser-auth.conf": ensure => absent, }
+		file { "/etc/rsyslog.d/20-forwarder-rediser-syslog.conf": ensure => absent, }
+		file { "/etc/rsyslog.d/21-forwarder-rediser-auth.conf": ensure => absent, }
 		notice("forward rediser PASSIVE")
 	}
 
