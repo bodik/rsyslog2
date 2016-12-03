@@ -52,5 +52,15 @@ class rsyslog::install (
 	package { ["bc"]:
 		ensure => installed,
 	}
+
+
+	define config() {
+		file { "${name}":
+			content => template("${module_name}/${name}.erb"),
+			owner => "root", group=> "root", mode=>"0644",
+			require => Package["rsyslog", "rsyslog-gssapi", "rsyslog-relp"],
+			notify => Service["rsyslog"],
+		}
+	}
 }
 
