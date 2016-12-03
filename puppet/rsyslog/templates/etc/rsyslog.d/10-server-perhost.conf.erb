@@ -1,7 +1,6 @@
 $template PerHostSyslog,"/var/log/hosts/perhost/%$YEAR%/%$MONTH%/%fromhost-ip%/syslog"
 $template PerHostAuth,"/var/log/hosts/perhost/%$YEAR%/%$MONTH%/%fromhost-ip%/auth.log"
 $template PerHostKern,"/var/log/hosts/perhost/%$YEAR%/%$MONTH%/%fromhost-ip%/kern.log"
-
 auth.*,authpriv.* -?PerHostAuth;StoreFileFormat
 kern.* -?PerHostKern;StoreFileFormat
 *.*;kern,auth,authpriv.none -?PerHostSyslog;StoreFileFormat
