@@ -49,6 +49,8 @@ class rsyslog::server (
 	$rediser_server = undef,
 	$rediser_auto = true,
 	$rediser_service = "_rediser._tcp",
+
+	$avahi_broadcast = true,
 ) {
 
 	class { "rsyslog::install": version => $version, }
@@ -116,11 +118,15 @@ class rsyslog::server (
 	}
 
 	#autoconfig
-	include metalib::avahi
-	file { "/etc/avahi/services/sysel.service":
-		source => "puppet:///modules/${module_name}/etc/avahi/sysel.service",
-		owner => "root", group => "root", mode => "0644",
-		require => Package["avahi-daemon"], #tady ma byt class ale tvori kruhovou zavislost
-		notify => Service["avahi-daemon"],
+	if($avahi_broadcast) {
+		include metalib::avahi
+		file { "/etc/avahi/services/sysel.service":
+			source => "puppet:///modules/${module_name}/etc/avahi/sysel.service",
+			owner => "root", group => "root", mode => "0644",
+			require => Package["avahi-daemon"], #tady ma byt class ale tvori kruhovou zavislost
+			notify => Service["avahi-daemon"],
+		}
+	} else {
+		file { "/etc/avahi/services/sysel.service": ensure => absent }
 	}
 }
