@@ -58,24 +58,24 @@ class rsyslog::server (
 
         notice("server services ACTIVE")
 	rsyslog::install::config { [
-		"/etc/rsyslog.d/00-imudp.conf",
-		"/etc/rsyslog.d/00-imtcp.conf",
-		"/etc/rsyslog.d/00-imrelp.conf",
+		"/etc/rsyslog.d/00-server-globals.conf",
+		
+		"/etc/rsyslog.d/05-input-imudp.conf",
+		"/etc/rsyslog.d/05-input-imtcp.conf",
+		"/etc/rsyslog.d/05-input-imrelp.conf",
 
-		"/etc/rsyslog.d/05-server-globals.conf",
-
-		"/etc/rsyslog.d/10-server-service-auth.conf",
-		"/etc/rsyslog.d/10-server-service-pbs.conf",
+		"/etc/rsyslog.d/10-log-service-auth.conf",
+		"/etc/rsyslog.d/10-log-service-pbs.conf",
 
 		"/etc/rsyslog.d/zz_stopnonlocalhost.conf"
 		]:
 	}
 
-	if ($perhost) { rsyslog::install::config { "/etc/rsyslog.d/10-server-perhost.conf": } }
-	if ($pertime) { rsyslog::install::config { "/etc/rsyslog.d/10-server-pertime.conf": } }
+	if ($perhost) { rsyslog::install::config { "/etc/rsyslog.d/10-log-perhost.conf": } }
+	if ($pertime) { rsyslog::install::config { "/etc/rsyslog.d/10-log-pertime.conf": } }
 
 	if file_exists ("/etc/krb5.keytab") == 1 {
-		rsyslog::install::config { "/etc/rsyslog.d/00-imgssapi.conf": }
+		rsyslog::install::config { "/etc/rsyslog.d/05-input-imgssapi.conf": }
 	        notice("imgssapi ACTIVE")
 	} else {
 		notice("imgssapi PASSIVE")
