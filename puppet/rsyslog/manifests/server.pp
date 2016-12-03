@@ -73,12 +73,7 @@ class rsyslog::server (
 	if ($pertime) { rsyslog::install::config { "/etc/rsyslog.d/10-server-pertime.conf": } }
 
 	if file_exists ("/etc/krb5.keytab") == 1 {
-		file { "/etc/rsyslog.d/00-imgssapi.conf":
-			content => template("${module_name}/etc/rsyslog.d/00-imgssapi.conf"),
-			owner => "root", group=> "root", mode=>"0644",
-			require => [File["/etc/rsyslog.d.cloud"], Class["rsyslog::install"]],
-			notify => Service["rsyslog"],
-		}
+		rsyslog::install::config { "/etc/rsyslog.d/00-imgssapi.conf": }
 	        notice("imgssapi ACTIVE")
 	} else {
 		notice("imgssapi PASSIVE")
