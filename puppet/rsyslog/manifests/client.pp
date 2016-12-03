@@ -43,18 +43,6 @@ class rsyslog::client (
 
 
 
-	#tcp + relp - gssapi
-	file { "/etc/rsyslog.conf":
-		source => "puppet:///modules/rsyslog/etc/rsyslog-client.conf",
-		owner => "root", group=> "root", mode=>"0644",
-		require => Class["rsyslog::install"],
-		notify => Service["rsyslog"],
-		
-	}
-
-
-
-
 	if ( $rediser_server ) {
 		$rsyslog_server_real = $rsyslog_server
 	} elsif ( $rsyslog_server_auto == true ) {
